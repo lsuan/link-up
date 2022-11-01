@@ -2,7 +2,7 @@ import Calendar from "./Calendar";
 
 function EventForm() {
   return (
-    <section className="p-5">
+    <section className="lg:container mx-auto p-5">
       <h2 className="text-3xl">
         Create an Event
       </h2>
