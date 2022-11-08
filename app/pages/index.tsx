@@ -1,5 +1,5 @@
-import EventForm from "./components/EventForm";
-import Navbar from "./components/Navbar"
+import EventForm from "../components/EventForm";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   return (
