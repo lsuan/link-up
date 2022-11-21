@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+button {
+  @apply rounded-md bg-indigo-400/75 px-3 py-2 text-lg text-white hover:bg-indigo-500/75 !important;
+}
+
+input {
+  @apply rounded-md bg-blue-400/75 p-2 text-lg text-white;
+}

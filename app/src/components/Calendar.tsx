@@ -132,26 +132,26 @@ function Calendar() {
 
   return (
     <section className="w-fit">
-      <div className="text-xl text-center text-beige">
-        <div className="flex justify-center items-center">
+      <div className="text-beige text-center text-xl">
+        <div className="flex items-center justify-center">
           {today < new Date(year, month) ? (
             <FontAwesomeIcon
               icon={faCaretLeft}
               onClick={decrementMonth}
-              className="mr-3 text-2xl text-indigo-400/75 hover:text-indigo-500/75 cursor-pointer"
+              className="mr-3 cursor-pointer text-2xl text-indigo-400/75 hover:text-indigo-500/75"
             />
           ) : (
-            <div className="pr-3 mr-3" />
+            <div className="mr-3 pr-3" />
           )}
           <div className="w-40">{`${monthNames[month]} ${year}`}</div>
           <FontAwesomeIcon
             icon={faCaretRight}
             onClick={incrementMonth}
-            className="ml-3 text-2xl text-indigo-400/75 hover:text-indigo-500/75 cursor-pointer"
+            className="ml-3 cursor-pointer text-2xl text-indigo-400/75 hover:text-indigo-500/75"
           />
         </div>
       </div>
-      <div className="calendar bg-blue-400/75 rounded-md text-center p-3 w-fit">
+      <div className="calendar w-fit rounded-md bg-blue-400/75 p-3 text-center">
         <div className="header grid grid-cols-7 gap-3 pb-2">
           <div className="weekday">Sun</div>
           <div className="weekday">Mon</div>
