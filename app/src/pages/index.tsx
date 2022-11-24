@@ -8,6 +8,7 @@ import EventForm from "../components/EventForm";
 import Calendar from "../components/Calendar";
 
 import { trpc } from "../utils/trpc";
+import Landing from "../components/Landing";
 
 const Home: NextPage = () => {
   // const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
@@ -21,8 +22,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <Navbar />
-        <EventForm />
+        <Landing />
       </main>
     </>
   );
