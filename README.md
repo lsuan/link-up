@@ -11,3 +11,6 @@ A scheduling app that allows users to create events and share them to users to f
 - 11/22/22: User Flow Finished + Trello Board Initialized
   - <a href="https://docs.google.com/document/d/1Ffqq16yud9QUYzOL5IJr6i4enZ2rBT3rzuQaH3gLFK4/edit?usp=sharing">Google Doc</a>
   - <img src="/app/readme-assets/user-flow.png" alt="User Flow" width="80%" height="80%"></img>
+- 12/03/22: Mid-Fidelity Wireframe + Skeleton Site Created
+  - <a href="https://docs.google.com/document/d/14ulF4DZC8HO2Z7QdYG7z2Eteag0gCzDQwSn3oWK1DDM/edit?usp=sharing">Google Doc</a>
+  - <img src="/app/readme-assets/mid-fi%20wireframe%20v1.png" alt="Mid-Fidelity Wireframe" width="80%" height="80%"></img>
