@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function Navbar() {
   return (
-    <section className="dark-puple flex justify-between">
+    <nav className="dark-puple flex justify-between">
       <Link href="/">
         <h1 className="text-5xl">Link Up!</h1>
       </Link>
@@ -24,7 +24,7 @@ function Navbar() {
           <Link href="/settings">Settings</Link>
         </li>
       </ul>
-    </section>
+    </nav>
   );
 }
 

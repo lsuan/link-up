@@ -4,7 +4,7 @@ function Layout({ children }: any) {
   return (
     <>
       <Navbar />
-      {children}
+      <main className="flex flex-col p-8">{children}</main>
     </>
   );
 }

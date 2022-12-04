@@ -3,10 +3,6 @@ import Head from "next/head";
 import Link from "next/link";
 // import { signIn, signOut, useSession } from "next-auth/react";
 
-import Navbar from "../components/Navbar";
-import EventForm from "../components/EventForm";
-import Calendar from "../components/Calendar";
-
 import { trpc } from "../utils/trpc";
 import Landing from "../components/Landing";
 

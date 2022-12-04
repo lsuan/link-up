@@ -14,3 +14,11 @@ export const exampleRouter = router({
     return ctx.prisma.example.findMany();
   }),
 });
+
+export const userRouter = router({
+  getUser: publicProcedure
+    .input(z.object({ email: z.string(), password: z.string() }))
+    .query(({ input }) => {
+      return {};
+    }),
+});

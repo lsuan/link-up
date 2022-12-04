@@ -1,11 +1,11 @@
-// TODO: Redo this file to be /events/{slug}
+// TODO: Redo this file to be /schedules/{slug}
 
-function Event() {
+function Schedule() {
   return (
     <section>
-      <h1>Event Name</h1>
+      <h1>Schedule Name</h1>
     </section>
   );
 }
 
-export default Event;
+export default Schedule;
