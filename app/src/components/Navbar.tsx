@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 function Navbar() {
+  const { data } = useSession();
+
   return (
     <nav className="dark-puple flex justify-between">
       <Link href="/">
@@ -10,7 +13,7 @@ function Navbar() {
       {/* TODO: Add admin view */}
       <ul className="action-btns flex items-center justify-around gap-8">
         <li className="text-indigo-400/75 hover:text-indigo-500/75">
-          <Link href="/login">Login</Link>
+          <a onClick={() => signIn()}>Login</a>
         </li>
         <li className="text-indigo-400/75 hover:text-indigo-500/75">
           <Link href="/register">Register</Link>
@@ -23,6 +26,11 @@ function Navbar() {
         <li>
           <Link href="/settings">Settings</Link>
         </li>
+        {data && (
+          <li>
+            <a onClick={() => signOut()}>Logout</a>
+          </li>
+        )}
       </ul>
     </nav>
   );

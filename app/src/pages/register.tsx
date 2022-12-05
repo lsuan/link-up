@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { trpc } from "../utils/trpc";
 
 type RegisterInputs = {
   email: string;
@@ -7,13 +8,19 @@ type RegisterInputs = {
 };
 
 function Register() {
+  const createUser = trpc.user.createUser.useMutation();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterInputs>();
-  const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
-    console.log(data);
+
+  const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
+    const newUser = await createUser.mutateAsync(data);
+    console.log(newUser);
+
+    // TODO: redirect to dashboard
   };
 
   return (
@@ -26,8 +33,8 @@ function Register() {
         className="mt-4 flex flex-col gap-4"
       >
         <div className="flex flex-col">
+          <label>Email</label>
           <input
-            placeholder="email@example.com"
             {...register("email", {
               required: "Email is required",
               pattern: {
@@ -39,9 +46,9 @@ function Register() {
           {errors.email?.message}
         </div>
         <div className="flex flex-col">
+          <label>Password</label>
           <input
             type={"password"}
-            placeholder="********"
             {...register("password", {
               required: "Password is required",
             })}

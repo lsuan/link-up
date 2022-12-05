@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 button {
-  @apply rounded-lg bg-indigo-400/75 px-3 py-2 text-lg text-white hover:bg-indigo-500/75 !important;
+  @apply rounded-lg bg-indigo-400/75 px-3 py-2 text-lg text-white hover:bg-indigo-500/75 disabled:bg-gray-300 !important;
 }
 
 input {

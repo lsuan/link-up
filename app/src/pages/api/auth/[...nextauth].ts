@@ -24,8 +24,40 @@ export const authOptions: NextAuthOptions = {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
+    CredentialsProvider({
+      type: "credentials",
+      credentials: {},
+      authorize(credentials, req) {
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
+
+        // TODO: fix this logic
+        let result = null;
+        prisma.user
+          .findFirst({
+            where: {
+              email: email,
+              password: password,
+            },
+          })
+          .then((data) => {
+            console.log(data);
+            result = data;
+          });
+
+        console.log(result);
+
+        if (result) return result;
+        return null;
+      },
+    }),
     // ...add more providers here
   ],
+  pages: {
+    signIn: "/login",
+  },
 };
 
 export default NextAuth(authOptions);
