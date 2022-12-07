@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { signIn } from "next-auth/react";
-import { userInfo } from "os";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 type LoginInputs = {
   email: string;
@@ -9,6 +10,9 @@ type LoginInputs = {
 };
 
 function Login() {
+  const [isInvalid, setIsInvalid] = useState<boolean>(false);
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -17,14 +21,16 @@ function Login() {
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     const res = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
+      ...data,
+      redirect: false,
     });
 
-    console.log(res);
-  };
-  const onError = (errors: any) => {
-    console.log(errors);
+    if (res?.error) {
+      setIsInvalid(true);
+    } else {
+      setIsInvalid(false);
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -32,8 +38,9 @@ function Login() {
       <h1>Login</h1>
       <Link href="/register">Register instead</Link>
 
+      {isInvalid && <p>The email and password combination is incorrect.</p>}
       <form
-        onSubmit={handleSubmit(onSubmit, onError)}
+        onSubmit={handleSubmit(onSubmit)}
         className="mt-8 flex flex-col gap-4"
       >
         <div className="flex flex-col">

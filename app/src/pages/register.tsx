@@ -56,7 +56,7 @@ function Register() {
           {errors.password?.message}
         </div>
 
-        <button type="submit">Register</button>
+        <input type="submit">Register</input>
       </form>
     </section>
   );
