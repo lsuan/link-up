@@ -1,5 +1,8 @@
+import { User } from "@prisma/client";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
+import AuthProviders from "../components/AuthProviders";
 import { trpc } from "../utils/trpc";
 
 type RegisterInputs = {
@@ -13,18 +16,44 @@ function Register() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<RegisterInputs>();
 
   const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
-    const newUser = await createUser.mutateAsync(data);
-    console.log(newUser);
+    const res = (await createUser.mutateAsync(data)) as {
+      password: string;
+      email: string;
+      error: string;
+    };
 
-    // TODO: redirect to dashboard
+    if (!res) return;
+
+    // error P2002 is a prisma error which means "Unique constraint failed on the {constraint}"
+    // user email already exists in the db (email is the unique constraint)
+    if (typeof res === "object" && res["error"] === "P2002") {
+      setError(
+        "email",
+        {
+          type: "server side",
+          message: "A user already exists with this email!",
+        },
+        {
+          shouldFocus: true,
+        }
+      );
+      return;
+    }
+
+    signIn("credentials", {
+      email: res.email,
+      password: res.password,
+      callbackUrl: "/dashboard",
+    });
   };
 
   return (
-    <section>
+    <section className="min-h-screen">
       <h1 className="mb-4">Register</h1>
       <Link href="/login">Login instead</Link>
 
@@ -35,6 +64,7 @@ function Register() {
         <div className="flex flex-col">
           <label>Email</label>
           <input
+            type="email"
             {...register("email", {
               required: "Email is required",
               pattern: {
@@ -45,6 +75,8 @@ function Register() {
           />
           {errors.email?.message}
         </div>
+
+        {/* TODO: add password regex (/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%#?&]{8,}$/) */}
         <div className="flex flex-col">
           <label>Password</label>
           <input
@@ -56,8 +88,9 @@ function Register() {
           {errors.password?.message}
         </div>
 
-        <input type="submit">Register</input>
+        <button type="submit">Register</button>
       </form>
+      <AuthProviders />
     </section>
   );
 }

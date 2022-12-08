@@ -2,24 +2,24 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 function Navbar() {
-  console.log("in navbar");
   const { data, status } = useSession();
 
   return (
-    <nav className="dark-puple flex justify-between">
+    <nav className="dark-puple flex justify-between bg-neutral-900 p-4 text-white">
       <Link href="/">
-        <h1 className="text-5xl">Link Up!</h1>
+        <div className="text-3xl">Link Up!</div>
       </Link>
 
       <ul className="action-btns flex items-center justify-around gap-8">
         {status === "unauthenticated" && (
           <>
-            <li className="text-indigo-400/75 hover:text-indigo-500/75">
-              <a className="cursor-pointer" onClick={() => signIn()}>
+            <li className="text-blue-300">
+              {/* <a className="cursor-pointer" onClick={() => signIn()}>
                 Login
-              </a>
+              </a> */}
+              <Link href="/login">Login</Link>
             </li>
-            <li className="text-indigo-400/75 hover:text-indigo-500/75">
+            <li className="text-blue-300">
               <Link href="/register">Register</Link>
             </li>
           </>

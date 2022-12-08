@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-button {
-  @apply rounded-lg bg-indigo-400/75 px-3 py-2 text-lg text-white hover:bg-indigo-500/75 disabled:bg-gray-300 !important;
-}
+@layer {
+  button {
+    @apply cursor-pointer rounded-lg bg-neutral-500 px-4 py-2 text-black !important;
+  }
 
-input {
-  @apply rounded-lg bg-blue-400/75 p-2 text-lg text-white;
+  input {
+    @apply rounded-lg bg-neutral-700 p-2 text-white disabled:bg-neutral-800 disabled:text-neutral-200 !important;
+  }
+
+  a {
+    @apply text-blue-300 !important;
+  }
 }

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import AuthProviders from "../components/AuthProviders";
 
 type LoginInputs = {
   email: string;
@@ -34,7 +35,7 @@ function Login() {
   };
 
   return (
-    <section>
+    <section className="min-h-screen">
       <h1>Login</h1>
       <Link href="/register">Register instead</Link>
 
@@ -67,6 +68,7 @@ function Login() {
           Login
         </button>
       </form>
+      <AuthProviders />
     </section>
   );
 }

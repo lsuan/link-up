@@ -9,34 +9,28 @@ import { prisma } from "../../../server/db/client";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+
   callbacks: {
     jwt: async ({ token, user }) => {
-      console.log("in jwt");
-      console.log(user);
-
       if (user && token) {
         token.id = user.id as string;
       }
       return token;
     },
     session: async ({ session, token }) => {
-      console.log("in session");
-      console.log(session);
-      console.log("end of session");
-      // if (session.user && user) {
-      //   session.user.id = user.id;
-      // }
-
-      if (session.user && token.id) {
+      if (session.user) {
         session.user.id = token.id as string;
       }
 
       return session;
     },
   },
-  session: {
-    strategy: "jwt",
+
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+    maxAge: 15 * 24 * 30 * 60, // might change this later, currently sets it to expire in 15 days
   },
+
   providers: [
     // TODO: check for hashed password
     CredentialsProvider({
@@ -64,12 +58,9 @@ export const authOptions: NextAuthOptions = {
     }),
     // ...add more providers here
   ],
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-    maxAge: 15 * 24 * 30 * 60, // might change this later, currently sets it to expire in 15 days
-  },
-  pages: {
-    signIn: "/login",
+
+  session: {
+    strategy: "jwt",
   },
 };
 
