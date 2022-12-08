@@ -1,8 +1,7 @@
-import { User } from "@prisma/client";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import AuthProviders from "../components/AuthProviders";
+import AuthProviders from "../components/auth/AuthProviders";
 import { trpc } from "../utils/trpc";
 
 type RegisterInputs = {

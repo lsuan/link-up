@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import AuthProviders from "../components/AuthProviders";
+import AuthProviders from "../components/auth/AuthProviders";
 
 type LoginInputs = {
   email: string;
