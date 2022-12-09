@@ -1,4 +1,6 @@
+import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { router, publicProcedure } from "../trpc";
@@ -11,12 +13,15 @@ export const userRouter = router({
         const newUser = await ctx.prisma.user.create({
           data: input,
         });
-        return newUser;
+        return { user: newUser };
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
-          return {
-            error: error.code,
+          const trpcError: TRPCError = {
+            name: "User Registration Error",
+            code: "CONFLICT",
+            message: "User already exists with this email.",
           };
+          return { trpcError: trpcError };
         }
       }
     }),

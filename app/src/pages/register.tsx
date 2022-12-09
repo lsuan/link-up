@@ -1,3 +1,5 @@
+import { User } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
@@ -19,46 +21,44 @@ function Register() {
     formState: { errors },
   } = useForm<RegisterInputs>();
 
+  type RegisterResponse =
+    | {
+        user?: User;
+        trpcError?: TRPCError;
+      }
+    | undefined;
+
   const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
-    const res = (await createUser.mutateAsync(data)) as {
-      password: string;
-      email: string;
-      error: string;
-    };
+    const res: RegisterResponse = await createUser.mutateAsync(data);
 
     if (!res) return;
 
-    // error P2002 is a prisma error which means "Unique constraint failed on the {constraint}"
-    // user email already exists in the db (email is the unique constraint)
-    if (typeof res === "object" && res["error"] === "P2002") {
+    if (res.trpcError) {
       setError(
         "email",
         {
-          type: "server side",
-          message: "A user already exists with this email!",
+          type: "TRPC Error",
+          message: res.trpcError.message,
         },
-        {
-          shouldFocus: true,
-        }
+        { shouldFocus: true }
       );
-      return;
+    } else if (res.user) {
+      signIn("credentials", {
+        email: res.user.email,
+        password: res.user.password,
+        callbackUrl: "/dashboard",
+      });
     }
-
-    signIn("credentials", {
-      email: res.email,
-      password: res.password,
-      callbackUrl: "/dashboard",
-    });
   };
 
   return (
     <section className="min-h-screen">
-      <h1 className="mb-4">Register</h1>
+      <h1 className="mb-2">Register</h1>
       <Link href="/login">Login instead</Link>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-4 flex flex-col gap-4"
+        className="mt-8 flex flex-col gap-4"
       >
         <div className="flex flex-col">
           <label>Email</label>

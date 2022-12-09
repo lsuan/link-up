@@ -36,7 +36,7 @@ function Login() {
 
   return (
     <section className="min-h-screen">
-      <h1>Login</h1>
+      <h1 className="mb-2">Log In</h1>
       <Link href="/register">Register instead</Link>
 
       {isInvalid && <p>The email and password combination is incorrect.</p>}
