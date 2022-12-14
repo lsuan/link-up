@@ -44,7 +44,7 @@ function Calendar() {
           let cell = document.createElement("div");
           let cellText = document.createTextNode("");
           cell.appendChild(cellText);
-          cell.classList.add("cell", "p-1", "m-1", "rounded-md");
+          cell.classList.add("cell", "p-1", "m-1", "rounded-lg");
           row.appendChild(cell);
         } else if (date > daysInMonth(month, year)) {
           break;
@@ -52,7 +52,7 @@ function Calendar() {
           let cell = document.createElement("div");
           let cellText = document.createTextNode(date.toString());
           cell.appendChild(cellText);
-          cell.classList.add(`cell-${date}`, "p-1", "m-1", "rounded-md");
+          cell.classList.add(`cell-${date}`, "p-1", "m-1", "rounded-lg");
           if (
             today.getDate() === date &&
             month === today.getMonth() &&
@@ -151,7 +151,7 @@ function Calendar() {
           />
         </div>
       </div>
-      <div className="calendar w-fit rounded-md bg-blue-400/75 p-3 text-center">
+      <div className="calendar w-fit rounded-lg bg-blue-400/75 p-3 text-center">
         <div className="header grid grid-cols-7 gap-3 pb-2">
           <div className="weekday">Sun</div>
           <div className="weekday">Mon</div>

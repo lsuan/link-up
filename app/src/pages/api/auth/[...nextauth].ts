@@ -1,5 +1,8 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import DiscordProvider from "next-auth/providers/discord";
+import GoogleProvider from "next-auth/providers/google";
+import TwitterProvider from "next-auth/providers/twitter";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
@@ -7,24 +10,71 @@ import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 
 export const authOptions: NextAuthOptions = {
-  // Include user.id on session
+  adapter: PrismaAdapter(prisma),
+
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    jwt: async ({ token, user }) => {
+      if (user && token) {
+        token.id = user.id as string;
       }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+
       return session;
     },
   },
-  // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
+
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+    maxAge: 15 * 24 * 30 * 60, // might change this later, currently sets it to expire in 15 days
+  },
+
   providers: [
+    // TODO: check for hashed password
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {},
+      async authorize(credentials, req) {
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
+
+        const user = await prisma.user.findFirst({
+          where: {
+            email: email,
+            password: password,
+          },
+        });
+
+        return user;
+      },
+    }),
+    // TODO: if possible, prevent discord from always asking to authorize user access for this app
+    // it has something to do with authorization: {params: ...}
+    // look at https://next-auth.js.org/providers/google
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
+    TwitterProvider({
+      clientId: env.TWITTER_CLIENT_ID,
+      clientSecret: env.TWITTER_CLIENT_SECRET,
+    }),
     // ...add more providers here
   ],
+
+  session: {
+    strategy: "jwt",
+  },
 };
 
 export default NextAuth(authOptions);

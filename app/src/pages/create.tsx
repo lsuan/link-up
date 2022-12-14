@@ -1,10 +1,10 @@
-import EventForm from "../components/EventForm";
+import ScheduleForm from "../components/ScheduleForm";
 
 function Create() {
   return (
     <section>
-      <h1>Create an Event</h1>
-      <EventForm />
+      <h1>Plan a Schedule</h1>
+      <ScheduleForm />
     </section>
   );
 }
