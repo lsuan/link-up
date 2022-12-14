@@ -23,10 +23,8 @@ export const serverSchema = z.object({
   DISCORD_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
-  // TWITTER_CLIENT_ID: z.string(),
-  // TWITTER_CLIENT_SECRET: z.string(),
-  // TWITTER_ACCESS_TOKEN: z.string(),
-  // TWITTER_ACCESS_SECRET: z.string(),
+  TWITTER_CLIENT_ID: z.string(),
+  TWITTER_CLIENT_SECRET: z.string(),
 });
 
 /**

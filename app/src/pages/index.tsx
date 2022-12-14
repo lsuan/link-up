@@ -12,10 +12,14 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>LinkUp</title>
-        <meta name="description" content="A scheduling website" />
-        <meta name="author" content="Lee Suan, Lindsey Duong" />
-        <link rel="icon" href="/favicon.ico" />
+        <title key="title">LinkUp</title>
+        <meta
+          key="description"
+          name="description"
+          content="A scheduling website"
+        />
+        <meta key="author" name="author" content="Lee Suan, Lindsey Duong" />
+        <link key="icon" rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col">
         <Landing />
