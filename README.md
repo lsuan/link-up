@@ -14,3 +14,6 @@ A scheduling app that allows users to create events and share them to users to f
 - 12/03/22: Mid-Fidelity Wireframe + Skeleton Site Created
   - <a href="https://docs.google.com/document/d/14ulF4DZC8HO2Z7QdYG7z2Eteag0gCzDQwSn3oWK1DDM/edit?usp=sharing">Google Doc</a>
   - <img src="/app/readme-assets/mid-fi%20wireframe%20v1.png" alt="Mid-Fidelity Wireframe" width="80%" height="80%"></img>
+- 12/17/22: Updated Mid-Fidelity Wireframe + User Testing Plan Created
+  - <a href="https://docs.google.com/document/d/1cNGpNRf6EEDnRWaKRazSElZ-eQrVsR9gc1lptpaCC1o/edit?usp=sharing">User Testing Guide</a>
+  - <img src="/app/readme-assets/mid-fi%20wireframe%20v2.png" alt="Mid-Fidelity Wireframe" width="80%" height="80%"></img>
