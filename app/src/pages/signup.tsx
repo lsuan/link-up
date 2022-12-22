@@ -5,6 +5,7 @@ import AuthProviders from "../components/auth/AuthProviders";
 import { Form } from "../components/form/Form";
 import SignUpForm from "../components/signup/SignUpForm";
 import { SubmitHandler } from "react-hook-form";
+import AuthDivider from "../components/auth/AuthDivider";
 
 type GetStartedInputs = {
   email: string;
@@ -27,7 +28,7 @@ function SignUp() {
   };
 
   return (
-    <section className="min-h-screen">
+    <section>
       <h1 className="mb-2 text-3xl font-semibold">Sign Up</h1>
       <p className="mb-10">
         Already have an account?
@@ -46,6 +47,7 @@ function SignUp() {
             <Form.Input name="email" displayName="Email" type="email" />
             <Form.Submit name="Get Started" type="submit" />
           </Form>
+          <AuthDivider />
           <AuthProviders />
         </>
       ) : (

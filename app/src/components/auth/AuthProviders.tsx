@@ -8,7 +8,6 @@ import AuthIcon from "./AuthIcon";
 function AuthProviders() {
   return (
     <>
-      <div className="my-8 w-full text-center">- or -</div>
       <div className="flex justify-center gap-8">
         <AuthIcon icon={faDiscord} type="discord" />
         <AuthIcon icon={faGoogle} type="google" />

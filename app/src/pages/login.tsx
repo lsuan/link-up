@@ -8,6 +8,7 @@ import AuthProviders from "../components/auth/AuthProviders";
 import { Form } from "../components/form/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import AuthDivider from "../components/auth/AuthDivider";
 
 type LoginInputs = {
   email: string;
@@ -42,7 +43,7 @@ function Login() {
   };
 
   return (
-    <section className="min-h-screen">
+    <section>
       <h1 className="mb-2 text-3xl font-semibold">Log In</h1>
       <p className="mb-10">
         Don't have an account?
@@ -66,6 +67,7 @@ function Login() {
         <Form.Input name="password" displayName="Password" type="password" />
         <Form.Submit name="Log In" type="submit" />
       </Form>
+      <AuthDivider />
       <AuthProviders />
     </section>
   );

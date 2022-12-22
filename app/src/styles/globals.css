@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* needed so that scrolling doesn't show a white background */
+/* TODO: come back to this when implementing dark mode / light mode */
+body {
+  background-color: rgb(23 23 23);
+}
+
 @layer {
   button {
     @apply cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black hover:bg-blue-300 !important;
