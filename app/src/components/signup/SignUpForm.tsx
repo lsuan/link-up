@@ -43,6 +43,7 @@ const SignUpSchema = z.object({
     }),
 });
 
+// FIXME: error doesn't show when email already exists in db
 function SignUpForm(props: { email: string }) {
   const { email } = props;
   const createUser = trpc.user.createUser.useMutation();
@@ -84,12 +85,13 @@ function SignUpForm(props: { email: string }) {
       onSubmit={onSubmit}
       schema={SignUpSchema}
       defaultValues={{ email: email }}
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-4"
     >
       <Form.Input<SignUpInputs>
         name="firstName"
         displayName="First Name"
         type="text"
+        required={true}
       />
       <Form.Input<SignUpInputs>
         name="lastName"
@@ -101,11 +103,13 @@ function SignUpForm(props: { email: string }) {
         name="passwords.password"
         displayName="Password"
         type="password"
+        required={true}
       />
       <Form.Input<SignUpInputs>
         name="passwords.confirmPassword"
         displayName="Confirm Password"
         type="password"
+        required={true}
       />
       <Form.Submit name="Sign Up" type="submit" />
     </Form>

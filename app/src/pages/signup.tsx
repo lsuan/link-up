@@ -28,11 +28,11 @@ function SignUp() {
   };
 
   return (
-    <section>
+    <section className="w-full max-w-md self-center">
       <h1 className="mb-2 text-3xl font-semibold">Sign Up</h1>
       <p className="mb-10">
-        Already have an account?
-        <span className="ml-2">
+        <span className="mr-2">Already have an account?</span>
+        <span>
           <Link href="/signup">Log In</Link>
         </span>
       </p>
@@ -42,9 +42,14 @@ function SignUp() {
           <Form<GetStartedInputs, typeof GetStartedSchema>
             onSubmit={onSubmit}
             schema={GetStartedSchema}
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-4"
           >
-            <Form.Input name="email" displayName="Email" type="email" />
+            <Form.Input
+              name="email"
+              displayName="Email"
+              type="email"
+              required={true}
+            />
             <Form.Submit name="Get Started" type="submit" />
           </Form>
           <AuthDivider />

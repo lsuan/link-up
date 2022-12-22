@@ -43,7 +43,7 @@ function Login() {
   };
 
   return (
-    <section>
+    <section className="w-full max-w-md self-center">
       <h1 className="mb-2 text-3xl font-semibold">Log In</h1>
       <p className="mb-10">
         Don't have an account?
@@ -61,10 +61,20 @@ function Login() {
       <Form
         onSubmit={onSubmit}
         schema={LoginFormSchema}
-        className="flex flex-col gap-2"
+        className="flex flex-col gap-4"
       >
-        <Form.Input name="email" displayName="Email" type="email" />
-        <Form.Input name="password" displayName="Password" type="password" />
+        <Form.Input
+          name="email"
+          displayName="Email"
+          type="email"
+          required={true}
+        />
+        <Form.Input
+          name="password"
+          displayName="Password"
+          type="password"
+          required={true}
+        />
         <Form.Submit name="Log In" type="submit" />
       </Form>
       <AuthDivider />

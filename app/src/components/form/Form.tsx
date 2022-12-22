@@ -54,10 +54,12 @@ Form.Input = function Input<Model extends Record<string, any>>({
   name,
   displayName,
   type,
+  required,
 }: {
   name: string;
   displayName: string;
   type: string;
+  required?: boolean;
 }) {
   const {
     register,
@@ -100,8 +102,26 @@ Form.Input = function Input<Model extends Record<string, any>>({
 
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={name}>{displayName}</label>
-      <input type={type} {...register(name)} disabled={isSubmitting} />
+      <div className="relative">
+        <input
+          className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-white placeholder:text-transparent"
+          placeholder={displayName}
+          type={type}
+          {...register(name)}
+          disabled={isSubmitting}
+        />
+        <label
+          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
+              peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0 
+              peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
+              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-white"
+          htmlFor={name}
+        >
+          {displayName}
+          {required && <span className="ml-1 text-red-500">*</span>}
+        </label>
+      </div>
+
       {parseDeepErrors(errors, name) && (
         <span role="alert" className="text-sm text-red-500">
           <FontAwesomeIcon className="mr-1" icon={faCircleExclamation} />

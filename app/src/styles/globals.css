@@ -13,10 +13,6 @@ body {
     @apply cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black hover:bg-blue-300 !important;
   }
 
-  input {
-    @apply rounded-lg bg-neutral-700 p-2 text-white disabled:bg-neutral-800 disabled:text-neutral-200 !important;
-  }
-
   a {
     @apply text-blue-500 hover:text-blue-300 !important;
   }
