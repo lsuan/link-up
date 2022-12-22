@@ -28,8 +28,14 @@ function SignUp() {
 
   return (
     <section className="min-h-screen">
-      <h1 className="mb-2">Sign Up</h1>
-      <Link href="/login">Login instead</Link>
+      <h1 className="mb-2 text-3xl font-semibold">Sign Up</h1>
+      <p className="mb-10">
+        Already have an account?
+        <span className="ml-2">
+          <Link href="/signup">Log In</Link>
+        </span>
+      </p>
+
       {email === "" ? (
         <>
           <Form<GetStartedInputs, typeof GetStartedSchema>
@@ -38,7 +44,7 @@ function SignUp() {
             className="flex flex-col gap-2"
           >
             <Form.Input name="email" displayName="Email" type="email" />
-            <button type="submit">Get Started</button>
+            <Form.Submit name="Get Started" type="submit" />
           </Form>
           <AuthProviders />
         </>

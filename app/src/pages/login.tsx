@@ -1,24 +1,31 @@
 import Link from "next/link";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { SubmitHandler } from "react-hook-form";
+import { z } from "zod";
 import AuthProviders from "../components/auth/AuthProviders";
+import { Form } from "../components/form/Form";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 type LoginInputs = {
   email: string;
   password: string;
 };
 
+const LoginFormSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required!")
+    .email("Invalid email!")
+    .refine((email) => email.match(/[\w]+@[a-z]+[\.][a-z]+/)),
+  password: z.string().min(1, "Password is required!"),
+});
+
 function Login() {
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
   const router = useRouter();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<LoginInputs>();
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     const res = await signIn("credentials", {
@@ -36,38 +43,29 @@ function Login() {
 
   return (
     <section className="min-h-screen">
-      <h1 className="mb-2">Log In</h1>
-      <Link href="/signup">Sign Up instead</Link>
+      <h1 className="mb-2 text-3xl font-semibold">Log In</h1>
+      <p className="mb-10">
+        Don't have an account?
+        <span className="ml-2">
+          <Link href="/signup">Sign Up</Link>
+        </span>
+      </p>
 
-      {isInvalid && <p>The email and password combination is incorrect.</p>}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mt-8 flex flex-col gap-4"
+      {isInvalid && (
+        <div className="my-2 flex items-center justify-between rounded-lg bg-red-200 px-4 py-2 text-red-500">
+          <FontAwesomeIcon icon={faCircleExclamation} className="mr-3" />
+          The email and password combination is incorrect. Please try again.
+        </div>
+      )}
+      <Form
+        onSubmit={onSubmit}
+        schema={LoginFormSchema}
+        className="flex flex-col gap-2"
       >
-        <div className="flex flex-col">
-          <label>Email</label>
-          <input
-            {...register("email", {
-              required: "Email is required",
-            })}
-          />
-          {errors.email?.message}
-        </div>
-        <div className="flex flex-col">
-          <label>Password</label>
-          <input
-            type={"password"}
-            {...register("password", {
-              required: "Password is required",
-            })}
-          />
-          {errors.password?.message}
-        </div>
-
-        <button type="submit" disabled={!isValid}>
-          Login
-        </button>
-      </form>
+        <Form.Input name="email" displayName="Email" type="email" />
+        <Form.Input name="password" displayName="Password" type="password" />
+        <Form.Submit name="Log In" type="submit" />
+      </Form>
       <AuthProviders />
     </section>
   );

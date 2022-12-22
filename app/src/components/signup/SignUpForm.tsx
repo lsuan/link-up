@@ -107,9 +107,7 @@ function SignUpForm(props: { email: string }) {
         displayName="Confirm Password"
         type="password"
       />
-      <button type="submit" className="mt-4">
-        Sign Up
-      </button>
+      <Form.Submit name="Sign Up" type="submit" />
     </Form>
   );
 }

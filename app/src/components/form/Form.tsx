@@ -1,7 +1,4 @@
-import {
-  faCircleExclamation,
-  faTriangleExclamation,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -106,11 +103,25 @@ Form.Input = function Input<Model extends Record<string, any>>({
       <label htmlFor={name}>{displayName}</label>
       <input type={type} {...register(name)} disabled={isSubmitting} />
       {parseDeepErrors(errors, name) && (
-        <span role="alert" className="text-sm text-red-400">
+        <span role="alert" className="text-sm text-red-500">
           <FontAwesomeIcon className="mr-1" icon={faCircleExclamation} />
           {parseDeepErrors(errors, name) as string}
         </span>
       )}
     </div>
+  );
+};
+
+Form.Submit = function Submit({
+  name,
+  type,
+}: {
+  name: string;
+  type: "button" | "reset" | "submit" | undefined;
+}) {
+  return (
+    <button type={type} className="mt-4">
+      {name}
+    </button>
   );
 };

@@ -4,7 +4,7 @@
 
 @layer {
   button {
-    @apply cursor-pointer rounded-lg bg-neutral-500 px-4 py-2 text-black !important;
+    @apply cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black hover:bg-blue-300 !important;
   }
 
   input {
@@ -12,6 +12,6 @@
   }
 
   a {
-    @apply text-blue-300 !important;
+    @apply text-blue-500 hover:text-blue-300 !important;
   }
 }
