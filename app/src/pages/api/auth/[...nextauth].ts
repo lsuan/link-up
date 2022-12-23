@@ -54,20 +54,43 @@ export const authOptions: NextAuthOptions = {
         return user;
       },
     }),
-    // TODO: if possible, prevent discord from always asking to authorize user access for this app
-    // it has something to do with authorization: {params: ...}
-    // look at https://next-auth.js.org/providers/google
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          id: profile.id,
+          firstName: profile.username,
+          email: profile.email,
+          image: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`,
+        };
+      },
     }),
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+      profile(profile) {
+        const names = profile.name.split(" ");
+        return {
+          id: profile.sub,
+          firstName: names[0],
+          lastName: names[names.length - 1],
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     }),
     TwitterProvider({
       clientId: env.TWITTER_CLIENT_ID,
       clientSecret: env.TWITTER_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          id: profile.id_str,
+          firstName: profile.name,
+          email: profile.email,
+          image: profile.profile_image_url_https,
+        };
+      },
     }),
     // ...add more providers here
   ],

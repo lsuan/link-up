@@ -20,7 +20,7 @@ function Navbar() {
               <Link href="/login">Log In</Link>
             </li>
             <li className="text-blue-300">
-              <Link href="/register">Register</Link>
+              <Link href="/signup">Sign Up</Link>
             </li>
           </>
         )}
