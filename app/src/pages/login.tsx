@@ -4,11 +4,10 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
+import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
 import { Form } from "../components/form/Form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import AuthDivider from "../components/auth/AuthDivider";
+import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
 
 type LoginInputs = {
   email: string;
@@ -53,10 +52,7 @@ function Login() {
       </p>
 
       {isInvalid && (
-        <div className="my-2 flex items-center justify-between rounded-lg bg-red-200 px-4 py-2 text-red-500">
-          <FontAwesomeIcon icon={faCircleExclamation} className="mr-3" />
-          The email and password combination is incorrect. Please try again.
-        </div>
+        <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
       )}
       <Form
         onSubmit={onSubmit}

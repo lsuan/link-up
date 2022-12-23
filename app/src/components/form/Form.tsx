@@ -1,5 +1,3 @@
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import {
@@ -10,6 +8,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { z } from "zod";
+import InputErrorMessage from "./InputErrorMessage";
 
 type GenericOnSubmit = (
   data: Record<string, any>,
@@ -100,6 +99,8 @@ Form.Input = function Input<Model extends Record<string, any>>({
     }
   };
 
+  const error = parseDeepErrors(errors, name);
+
   return (
     <div className="flex flex-col gap-1">
       <div className="relative">
@@ -122,12 +123,7 @@ Form.Input = function Input<Model extends Record<string, any>>({
         </label>
       </div>
 
-      {parseDeepErrors(errors, name) && (
-        <span role="alert" className="text-sm text-red-500">
-          <FontAwesomeIcon className="mr-1" icon={faCircleExclamation} />
-          {parseDeepErrors(errors, name) as string}
-        </span>
-      )}
+      {error && <InputErrorMessage error={error as string} />}
     </div>
   );
 };
