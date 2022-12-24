@@ -33,7 +33,7 @@ function SignUp() {
       <p className="mb-10">
         <span className="mr-2">Already have an account?</span>
         <span>
-          <Link href="/signup">Log In</Link>
+          <Link href="/login">Log In</Link>
         </span>
       </p>
 

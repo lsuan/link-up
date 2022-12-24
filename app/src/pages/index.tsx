@@ -1,11 +1,16 @@
+import { useAtom } from "jotai";
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 // import { signIn, signOut, useSession } from "next-auth/react";
 
 import Landing from "../components/Landing";
+import { menuOpen } from "../components/nav/Navbar";
 
 const Home: NextPage = () => {
   // const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+  const { data, status } = useSession();
+  const [isMenuOpen] = useAtom(menuOpen);
 
   return (
     <>
