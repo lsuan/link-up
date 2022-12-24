@@ -6,8 +6,6 @@ import Head from "next/head";
 
 import Landing from "../components/Landing";
 import { menuOpen } from "../components/nav/Navbar";
-import SignedInNavMenu from "../components/nav/SignedInNavMenu";
-import SignedOutNavMenu from "../components/nav/SignedOutNavMenu";
 
 const Home: NextPage = () => {
   // const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
