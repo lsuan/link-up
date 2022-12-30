@@ -49,10 +49,12 @@ function SignUpForm({ email }: { email: string }) {
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
-    const { email } = data;
+    const { email, firstName, lastName } = data;
     const { password } = data.passwords;
     const res: SignUpResponse = await createUser.mutateAsync({
       email,
+      firstName,
+      lastName,
       password,
     });
 

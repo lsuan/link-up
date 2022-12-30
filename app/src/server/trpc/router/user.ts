@@ -6,7 +6,14 @@ import { router, publicProcedure, protectedProcedure } from "../trpc";
 
 export const userRouter = router({
   createUser: publicProcedure
-    .input(z.object({ email: z.string(), password: z.string() }))
+    .input(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string().nullish(),
+        email: z.string(),
+        password: z.string(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       try {
         const newUser = await ctx.prisma.user.create({
