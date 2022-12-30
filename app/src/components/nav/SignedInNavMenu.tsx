@@ -1,12 +1,12 @@
 import { signOut } from "next-auth/react";
-import NavMenuItem from "./NavMenuItem";
+import MobileNavMenuItem from "./MobileNavMenuItem";
 
 function SignedInNavMenu() {
   return (
     <ul className="flex h-full w-full flex-col items-center bg-neutral-900 text-xl">
-      <NavMenuItem href="/dashboard" name="My Dashboard" />
-      <NavMenuItem href="/dashboard" name="Settings" />
-      <NavMenuItem
+      <MobileNavMenuItem href="/dashboard" name="My Dashboard" />
+      <MobileNavMenuItem href="/dashboard" name="Settings" />
+      <MobileNavMenuItem
         href=""
         name="Sign Out"
         className="border-b-0"

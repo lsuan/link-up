@@ -1,14 +1,11 @@
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { User } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { SubmitHandler, useFormState } from "react-hook-form";
+import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
-import InputErrorMessage from "../form/InputErrorMessage";
 import ServerSideErrorMessage from "../form/ServerSideErrorMessage";
 
 type SignUpInputs = {
@@ -47,7 +44,6 @@ const SignUpSchema = z.object({
     }),
 });
 
-// FIXME: error doesn't show when email already exists in db
 function SignUpForm({ email }: { email: string }) {
   const createUser = trpc.user.createUser.useMutation();
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
