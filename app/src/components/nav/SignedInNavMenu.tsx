@@ -5,7 +5,7 @@ function SignedInNavMenu() {
   return (
     <ul className="flex h-full w-full flex-col items-center bg-neutral-900 text-xl">
       <MobileNavMenuItem href="/dashboard" name="My Dashboard" />
-      <MobileNavMenuItem href="/dashboard" name="Settings" />
+      <MobileNavMenuItem href="/settings" name="Settings" />
       <MobileNavMenuItem
         href=""
         name="Sign Out"

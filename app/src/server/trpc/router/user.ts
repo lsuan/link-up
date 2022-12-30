@@ -1,9 +1,8 @@
-import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { router, publicProcedure } from "../trpc";
+import { router, publicProcedure, protectedProcedure } from "../trpc";
 
 export const userRouter = router({
   createUser: publicProcedure
@@ -23,6 +22,20 @@ export const userRouter = router({
           };
           return { trpcError: trpcError };
         }
+      }
+    }),
+  getUser: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      {
+        if (input.id.length === 0) {
+          return null;
+        }
+
+        const user = await ctx.prisma.user.findFirst({
+          where: { id: input.id },
+        });
+        return user;
       }
     }),
 });
