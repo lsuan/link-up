@@ -1,11 +1,12 @@
 import { TRPCError } from "@trpc/server";
-import { User } from "prisma/prisma-client";
 import { useSession } from "next-auth/react";
+import { User } from "prisma/prisma-client";
 import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
+import ServerSideSuccessMessage from "../components/form/ServerSideSuccessMessage";
 import { trpc } from "../utils/trpc";
 
 type SettingsInputs = {
@@ -16,14 +17,27 @@ type SettingsInputs = {
     password: string;
     confirmPassword: string;
   };
+  success?: {
+    message: string;
+  };
+  trpcError?: {
+    name: string;
+    code: string;
+    message: string;
+  };
 };
 
-type SettingsResponse =
-  | {
-      user?: User;
-      trpcError?: TRPCError;
-    }
-  | undefined;
+type SettingsResponse = {
+  user: User | null;
+  success?: {
+    message: string;
+  };
+  trpcError?: {
+    name: string;
+    code: string;
+    message: string;
+  };
+};
 
 const SettingsSchema = z.object({
   firstName: z.string().min(1, "First name is required!"),
@@ -46,71 +60,86 @@ const SettingsSchema = z.object({
 function Settings() {
   const { data } = useSession();
   const user = trpc.user.getUser.useQuery(
-    { id: data?.user?.id || "" },
+    { id: data?.user?.id as string },
     { enabled: data?.user !== undefined }
   );
+  const updateUser = trpc.user.updateUser.useMutation();
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   const onSubmit: SubmitHandler<SettingsInputs> = async (data) => {
-    console.log(data);
+    const id = user?.data?.id as string;
+    const res: SettingsResponse = await updateUser.mutateAsync({ id, ...data });
+
+    if (res.trpcError) {
+      setInvalidEmailMessage(res.trpcError.message);
+    } else {
+      setSuccessMessage(res.success?.message || "");
+    }
   };
   return (
     <section>
       <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
-      {invalidEmailMessage !== "" && (
-        <ServerSideErrorMessage error={invalidEmailMessage} />
-      )}
-      {/* defaultValues={} */}
-      <Form<SettingsInputs, typeof SettingsSchema>
-        onSubmit={onSubmit}
-        schema={SettingsSchema}
-        defaultValues={{
-          firstName: user.data?.firstName,
-          lastName: user.data?.lastName,
-          email: user.data?.email,
-          passwords: {
-            password: user.data?.password,
-            confirmPassword: user.data?.password,
-          },
-        }}
-        className="flex flex-col gap-4"
-      >
-        <Form.Input<SettingsInputs>
-          name="firstName"
-          displayName="First Name"
-          type="text"
-          required={true}
-        />
-        <Form.Input<SettingsInputs>
-          name="lastName"
-          displayName="Last Name"
-          type="text"
-        />
-
+      {user === undefined ? (
+        <div>Loading...</div>
+      ) : (
         <>
-          <Form.Input<SettingsInputs>
-            name="email"
-            displayName="Email"
-            type="email"
-            required={true}
-          />
+          {invalidEmailMessage !== "" && (
+            <ServerSideErrorMessage error={invalidEmailMessage} />
+          )}{" "}
+          {successMessage !== "" && (
+            <ServerSideSuccessMessage message={successMessage} />
+          )}
+          <Form<SettingsInputs, typeof SettingsSchema>
+            onSubmit={onSubmit}
+            schema={SettingsSchema}
+            defaultValues={{
+              ...user.data,
+              passwords: {
+                password: user.data?.password,
+                confirmPassword: user.data?.password,
+              },
+            }}
+            className="flex flex-col gap-4"
+          >
+            <Form.Input
+              name="firstName"
+              displayName="First Name"
+              type="text"
+              required={true}
+            />
+            <Form.Input name="lastName" displayName="Last Name" type="text" />
+            {/* as of now if user has an account reference, then the user logged in with oauth */}
+            {user.data?.accounts.length === 0 && (
+              <>
+                <Form.Input
+                  name="email"
+                  displayName="Email"
+                  type="email"
+                  required={true}
+                />
 
-          <Form.Input<SettingsInputs>
-            name="passwords.password"
-            displayName="Password"
-            type="password"
-            required={true}
-          />
-          <Form.Input<SettingsInputs>
-            name="passwords.confirmPassword"
-            displayName="Confirm Password"
-            type="password"
-            required={true}
-          />
+                <Form.Input
+                  name="passwords.password"
+                  displayName="Password"
+                  type="password"
+                  required={true}
+                />
+                <Form.Input
+                  name="passwords.confirmPassword"
+                  displayName="Confirm Password"
+                  type="password"
+                  required={true}
+                />
+              </>
+            )}
+
+            {/* add light/dark mode toggle here */}
+
+            <Form.Submit name="Save Changes" type="submit" />
+          </Form>
         </>
-
-        <Form.Submit name="Save Changes" type="submit" />
-      </Form>
+      )}
     </section>
   );
 }

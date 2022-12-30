@@ -49,7 +49,7 @@ export function Form<
   );
 }
 
-Form.Input = function Input<Model extends Record<string, any>>({
+Form.Input = function Input({
   name,
   displayName,
   type,
