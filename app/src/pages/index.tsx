@@ -1,32 +1,13 @@
-import { useAtom } from "jotai";
 import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
-import Head from "next/head";
-// import { signIn, signOut, useSession } from "next-auth/react";
-
 import Landing from "../components/Landing";
-import { menuOpen } from "../components/nav/Navbar";
 
 const Home: NextPage = () => {
   // const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
-  const { data, status } = useSession();
-  const [isMenuOpen] = useAtom(menuOpen);
-
   return (
     <>
-      <Head>
-        <title key="title">LinkUp</title>
-        <meta
-          key="description"
-          name="description"
-          content="A scheduling website"
-        />
-        <meta key="author" name="author" content="Lee Suan, Lindsey Duong" />
-        <link key="icon" rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="flex min-h-screen flex-col">
+      <section className="flex flex-col">
         <Landing />
-      </main>
+      </section>
     </>
   );
 };

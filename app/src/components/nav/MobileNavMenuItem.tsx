@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import Link from "next/link";
 import { menuOpen } from "./Navbar";
 
-function NavMenuItem({
+function MobileNavMenuItem({
   href,
   name,
   className,
@@ -28,4 +28,4 @@ function NavMenuItem({
   );
 }
 
-export default NavMenuItem;
+export default MobileNavMenuItem;
