@@ -6,37 +6,76 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 
-function EventCard() {
+type Event = {
+  scheduleName: string;
+  name: string;
+  date: Date;
+  start: number;
+  end: number;
+  location: string;
+  description: string;
+};
+
+function EventCard({
+  scheduleName,
+  name,
+  date,
+  start,
+  end,
+  location,
+  description,
+}: Event) {
+  const convertDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  };
+  const convertTime = (time: number, timeZone: string) => {
+    const date = new Date(time * 1000);
+    console.log(date);
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+      timeZone: timeZone,
+      timeZoneName: "short",
+    }).format(date);
+  };
+
+  // TODO: figure out how to convert time by location
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-indigo-700 p-6">
-      <h2 className="text-xl">New Year's Party: Happy New Year!</h2>
+    <div className="flex flex-col gap-4 rounded-xl bg-neutral-700 p-6">
+      <h2 className="text-xl">{`${scheduleName}: ${name}`}</h2>
       <ul className="flex flex-col gap-2">
         <li className="flex gap-2">
           <div className="w-4 text-center">
             <FontAwesomeIcon icon={faClock} />
           </div>
-          <p>December 31, 2022 | 8pm-12am</p>
+          <p>{`${convertDate(date)} | 
+            ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
+            end,
+            "America/Los_Angeles"
+          )}`}</p>
         </li>
         <li className="flex gap-2">
           <div className="w-4 text-center">
             <FontAwesomeIcon icon={faLocationPin} />
           </div>
-          <p>My House</p>
+          <p>{location}</p>
         </li>
         <li className="flex gap-2">
           <div className="w-4 text-center">
             <FontAwesomeIcon icon={faNoteSticky} />
           </div>
-          <p>
-            This is a potluck party so bring your own food, snacks, drinks, or
-            utensils! The more food, the merrier! We will also be watching the
-            Countdown. Event says until 12am, but y'all can leave whenever.
-          </p>
+          <p className="line-clamp-2">{description}</p>
         </li>
       </ul>
       <Link
         href={"/schedule"}
-        className="w-full rounded-lg bg-indigo-500 p-2 text-center text-white hover:bg-indigo-300"
+        className="w-full rounded-lg bg-neutral-500 p-2 text-center text-white hover:bg-neutral-300 hover:text-black"
       >
         View
       </Link>

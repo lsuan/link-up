@@ -4,6 +4,52 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import EventCard from "../components/dashboard/EventCard";
 
+type Event = {
+  id: string;
+  scheduleName: string;
+  name: string;
+  date: Date;
+  start: number;
+  end: number;
+  location: string;
+  description: string;
+};
+
+const upcoming: Event[] = [
+  {
+    id: "1",
+    scheduleName: "New Year's Party",
+    name: "Happy New Year!",
+    date: new Date("12/31/2022"),
+    start: 1672545600,
+    end: 1672560000,
+    location: "My House",
+    description:
+      "This is a potluck party so bring your own food, snacks, drinks, or utensils! The more food, the merrier! We will also be watching the Countdown. Event says until 12am, but y'all can leave whenever.",
+  },
+  {
+    id: "2",
+    scheduleName: "Project Meeting",
+    name: "User Testing Responses!",
+    date: new Date("1/4/2022"),
+    start: 1673128800,
+    end: 1673139600,
+    location: "Zoom Link",
+    description:
+      "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
+  },
+  {
+    id: "3",
+    scheduleName: "Project Meeting",
+    name: "General",
+    date: new Date("1/11/2022"),
+    start: 1673736000,
+    end: 1673744400,
+    location: "Zoom Link",
+    description: "Have revisions to design done.",
+  },
+];
+
 function Dashboard() {
   const { data } = useSession();
   return (
@@ -12,13 +58,22 @@ function Dashboard() {
         <h1 className="text-3xl font-semibold">Events</h1>
         <Link
           href="/create"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 p-2 text-white hover:bg-blue-300"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 p-2 text-white hover:bg-blue-300 hover:text-blue-700"
         >
           <FontAwesomeIcon className="text-xl" icon={faPlus} />
         </Link>
       </header>
-      <h2 className="mb-4 text-xl">Upcoming</h2>
-      <EventCard />
+      <h2 className="mb-4 flex items-center text-xl">
+        Upcoming
+        <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-500 text-sm">
+          {upcoming.length}
+        </span>
+      </h2>
+      <div className="flex flex-col gap-4">
+        {upcoming.map((event) => {
+          return <EventCard key={event.name} {...event} />;
+        })}
+      </div>
     </section>
   );
 }
