@@ -16,11 +16,12 @@ function MobileNavMenuItem({
   const [, setIsMenuOpen] = useAtom(menuOpen);
   return (
     <li
-      className={`w-full border-b border-b-gray-500 p-6 text-center ${className}`}
+      className={`flex w-full border-b border-b-gray-500 text-center text-blue-500 hover:text-blue-300 ${className}`}
     >
       <Link
         href={href}
         onClick={onClick ? onClick : () => setIsMenuOpen(false)}
+        className="h-full w-full p-6"
       >
         {name}
       </Link>

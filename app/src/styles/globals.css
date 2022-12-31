@@ -7,9 +7,3 @@
 body {
   background-color: rgb(23 23 23);
 }
-
-@layer {
-  a {
-    @apply text-blue-500 hover:text-blue-300 !important;
-  }
-}
