@@ -2,18 +2,27 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useState } from "react";
 import EventCard from "../components/dashboard/EventCard";
+import Pill from "../components/dashboard/Pill";
 
 type Event = {
   id: string;
   scheduleName: string;
-  name: string;
-  date: Date;
-  start: number;
-  end: number;
-  location: string;
-  description: string;
+  name?: string;
+  date?: Date;
+  start?: number;
+  end?: number;
+  location?: string;
+  description?: string;
 };
+
+const unstarted: Event[] = [
+  {
+    id: "4",
+    scheduleName: "Project Live",
+  },
+];
 
 const upcoming: Event[] = [
   {
@@ -52,28 +61,48 @@ const upcoming: Event[] = [
 
 function Dashboard() {
   const { data } = useSession();
+  const [active, setActive] = useState<string>("upcoming");
+
   return (
     <section className="min-h-screen">
       <header className="mb-12 flex w-full items-center justify-between">
         <h1 className="text-3xl font-semibold">Events</h1>
         <Link
           href="/create"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 p-2 text-white hover:bg-blue-300 hover:text-blue-700"
+          className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-lg text-white hover:bg-blue-300 hover:text-blue-700"
         >
-          <FontAwesomeIcon className="text-xl" icon={faPlus} />
+          <FontAwesomeIcon size={"sm"} icon={faPlus} />
+          Create
         </Link>
       </header>
-      <h2 className="mb-4 flex items-center text-xl">
-        Upcoming
-        <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-500 text-sm">
-          {upcoming.length}
-        </span>
-      </h2>
-      <div className="flex flex-col gap-4">
-        {upcoming.map((event) => {
-          return <EventCard key={event.name} {...event} />;
-        })}
+
+      <div className="mb-4 flex justify-between gap-2 rounded-full border border-gray-500 bg-neutral-500">
+        <Pill
+          name={"upcoming"}
+          active={active}
+          setActive={setActive}
+          amount={upcoming.length}
+        />
+        <Pill
+          name={"ongoing"}
+          active={active}
+          setActive={setActive}
+          amount={unstarted.length}
+        />
       </div>
+      {active === "upcoming" ? (
+        <div className="flex flex-col gap-4">
+          {upcoming.map((event) => {
+            return <EventCard key={event.id} {...event} />;
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {unstarted.map((event) => {
+            return <EventCard key={event.id} {...event} />;
+          })}
+        </div>
+      )}
     </section>
   );
 }
