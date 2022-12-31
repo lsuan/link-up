@@ -49,10 +49,12 @@ function SignUpForm({ email }: { email: string }) {
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
-    const { email } = data;
+    const { email, firstName, lastName } = data;
     const { password } = data.passwords;
     const res: SignUpResponse = await createUser.mutateAsync({
       email,
+      firstName,
+      lastName,
       password,
     });
 
@@ -80,29 +82,21 @@ function SignUpForm({ email }: { email: string }) {
         defaultValues={{ email: email }}
         className="flex flex-col gap-4"
       >
-        <Form.Input<SignUpInputs>
+        <Form.Input
           name="firstName"
           displayName="First Name"
           type="text"
           required={true}
         />
-        <Form.Input<SignUpInputs>
-          name="lastName"
-          displayName="Last Name"
-          type="text"
-        />
-        <Form.Input<SignUpInputs>
-          name="email"
-          displayName="Email"
-          type="email"
-        />
-        <Form.Input<SignUpInputs>
+        <Form.Input name="lastName" displayName="Last Name" type="text" />
+        <Form.Input name="email" displayName="Email" type="email" />
+        <Form.Input
           name="passwords.password"
           displayName="Password"
           type="password"
           required={true}
         />
-        <Form.Input<SignUpInputs>
+        <Form.Input
           name="passwords.confirmPassword"
           displayName="Confirm Password"
           type="password"
