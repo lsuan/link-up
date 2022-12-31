@@ -76,7 +76,7 @@ function Dashboard() {
         </Link>
       </header>
 
-      <div className="mb-4 flex justify-between gap-2 rounded-full border border-gray-500 bg-neutral-500">
+      <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">
         <Pill
           name={"upcoming"}
           active={active}
