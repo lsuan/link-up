@@ -84,7 +84,7 @@ function Dashboard() {
           amount={upcoming.length}
         />
         <Pill
-          name={"ongoing"}
+          name={"unstarted"}
           active={active}
           setActive={setActive}
           amount={unstarted.length}

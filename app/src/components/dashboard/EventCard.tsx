@@ -35,16 +35,14 @@ function EventCard({
         }).format(date)
       : "TBD";
   };
-  const convertTime = (time: number | undefined, timeZone: string) => {
-    return time
-      ? new Intl.DateTimeFormat("en-US", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-          timeZone: timeZone,
-          timeZoneName: "short",
-        }).format(new Date(time * 1000))
-      : "TBD";
+  const convertTime = (time: number, timeZone: string) => {
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+      timeZone: timeZone,
+      timeZoneName: "short",
+    }).format(new Date(time * 1000));
   };
 
   // TODO: figure out how to convert time by location
@@ -56,11 +54,14 @@ function EventCard({
           <div className="w-4 text-center">
             <FontAwesomeIcon icon={faClock} />
           </div>
-          <p>{`${convertDate(date)} | 
-            ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
-            end,
-            "America/Los_Angeles"
-          )}`}</p>
+          <p>{`${convertDate(date)}${
+            start && end
+              ? `| ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
+                  end,
+                  "America/Los_Angeles"
+                )}`
+              : ""
+          }`}</p>
         </li>
         <li className="flex gap-2">
           <div className="w-4 text-center">
