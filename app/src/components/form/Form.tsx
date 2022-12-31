@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { useEffect } from "react";
 import {
   FieldError,
   FieldErrorsImpl,
@@ -36,6 +36,11 @@ export function Form<
     resolver: zodResolver(schema),
   });
   const handleSubmit = methods.handleSubmit;
+  const reset = methods.reset;
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues]);
 
   return (
     <FormProvider {...methods}>

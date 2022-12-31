@@ -1,7 +1,6 @@
-import { TRPCError } from "@trpc/server";
 import { useSession } from "next-auth/react";
 import { User } from "prisma/prisma-client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../components/form/Form";
@@ -12,18 +11,10 @@ import { trpc } from "../utils/trpc";
 type SettingsInputs = {
   firstName: string;
   lastName: string;
-  email: string;
-  passwords: {
+  email?: string;
+  passwords?: {
     password: string;
     confirmPassword: string;
-  };
-  success?: {
-    message: string;
-  };
-  trpcError?: {
-    name: string;
-    code: string;
-    message: string;
   };
 };
 
@@ -39,6 +30,7 @@ type SettingsResponse = {
   };
 };
 
+// FIXME: use a different schema for oauth users?
 const SettingsSchema = z.object({
   firstName: z.string().min(1, "First name is required!"),
   lastName: z.string(),
@@ -64,19 +56,38 @@ function Settings() {
     { enabled: data?.user !== undefined }
   );
   const updateUser = trpc.user.updateUser.useMutation();
+  const [formValues, setFormValues] = useState<Record<string, any>>({
+    ...user.data,
+    passwords: {
+      password: user.data?.password,
+      confirmPassword: user.data?.password,
+    },
+  });
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
 
   const onSubmit: SubmitHandler<SettingsInputs> = async (data) => {
-    const id = user?.data?.id as string;
+    const id = user.data?.id as string;
     const res: SettingsResponse = await updateUser.mutateAsync({ id, ...data });
-
     if (res.trpcError) {
       setInvalidEmailMessage(res.trpcError.message);
     } else {
+      setFormValues(res.user as User);
       setSuccessMessage(res.success?.message || "");
     }
   };
+
+  useEffect(() => {
+    setFormValues({
+      ...user.data,
+      passwords: {
+        password: user.data?.password,
+        confirmPassword: user.data?.password,
+      },
+    });
+  }, [user.data !== undefined]);
+
+  // TODO: add a way to update profile pic
   return (
     <section>
       <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
@@ -93,13 +104,7 @@ function Settings() {
           <Form<SettingsInputs, typeof SettingsSchema>
             onSubmit={onSubmit}
             schema={SettingsSchema}
-            defaultValues={{
-              ...user.data,
-              passwords: {
-                password: user.data?.password,
-                confirmPassword: user.data?.password,
-              },
-            }}
+            defaultValues={formValues}
             className="flex flex-col gap-4"
           >
             <Form.Input
@@ -109,7 +114,9 @@ function Settings() {
               required={true}
             />
             <Form.Input name="lastName" displayName="Last Name" type="text" />
+
             {/* as of now if user has an account reference, then the user logged in with oauth */}
+            {/* might get rid of this check... need to ask lindsey */}
             {user.data?.accounts.length === 0 && (
               <>
                 <Form.Input
