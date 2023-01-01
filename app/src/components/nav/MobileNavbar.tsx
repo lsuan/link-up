@@ -8,7 +8,7 @@ function MobileNavbar() {
 
   return (
     <button
-      className="block text-2xl text-blue-500 hover:text-blue-300 sm:hidden"
+      className="block text-2xl text-blue-500 sm:hidden"
       onClick={() => setIsMenuOpen(!isMenuOpen)}
     >
       {isMenuOpen ? (
