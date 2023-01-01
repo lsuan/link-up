@@ -31,8 +31,8 @@ function EventCard({
     return date
       ? new Intl.DateTimeFormat("en-US", {
           weekday: "short",
-          year: "2-digit",
-          month: "2-digit",
+          year: "numeric",
+          month: "short",
           day: "2-digit",
         }).format(date)
       : "TBD";
@@ -50,14 +50,16 @@ function EventCard({
   // TODO: figure out how to convert time by location
   return (
     <div
-      className={`flex flex-col gap-4 rounded-xl bg-neutral-700 p-4 ${className}`}
+      className={`flex flex-col rounded-xl bg-neutral-700 p-4 ${
+        scheduleName ? "gap-4" : "gap-2"
+      } ${className || ""}`}
     >
       <h3 className="text-lg">{`${scheduleName || ""}${
         scheduleName && name ? ": " : ""
       }${name || ""}`}</h3>
       <ul className="flex flex-col gap-2 text-sm">
-        <li className="flex gap-2">
-          <FontAwesomeIcon icon={faClock} />
+        <li className="flex items-start gap-2">
+          <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
           <p>{`${convertDate(date)} ${
             start && end
               ? `| ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
@@ -67,23 +69,25 @@ function EventCard({
               : ""
           }`}</p>
         </li>
-        <li className="flex gap-2">
-          <FontAwesomeIcon className="w-[14px]" icon={faLocationPin} />
+        <li className="flex items-start gap-2">
+          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
           <p>{location || "TBD"}</p>
         </li>
         {description && (
-          <li className="flex gap-2">
-            <FontAwesomeIcon icon={faNoteSticky} />
-            <p className="line-clamp-2">{description}</p>
+          <li className="flex items-start gap-2">
+            <FontAwesomeIcon className="mt-[3px]" icon={faNoteSticky} />
+            <p className={scheduleName ? "line-clamp-2" : ""}>{description}</p>
           </li>
         )}
       </ul>
-      <Link
-        href={"/schedule"}
-        className="w-full rounded-lg bg-neutral-500 p-2 text-center text-white hover:bg-neutral-300 hover:text-black"
-      >
-        View
-      </Link>
+      {scheduleName && (
+        <Link
+          href={"/schedule"}
+          className="w-full rounded-lg bg-neutral-500 p-2 text-center text-white hover:bg-neutral-300 hover:text-black"
+        >
+          View
+        </Link>
+      )}
     </div>
   );
 }

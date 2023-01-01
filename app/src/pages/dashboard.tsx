@@ -69,7 +69,7 @@ function Dashboard() {
         <h1 className="text-3xl font-semibold">Events</h1>
         <Link
           href="/create"
-          className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-lg text-white hover:bg-blue-300 hover:text-blue-700"
+          className="flex items-center justify-center gap-1 rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-blue-300 hover:text-blue-700"
         >
           <FontAwesomeIcon size={"sm"} icon={faPlus} />
           Create
