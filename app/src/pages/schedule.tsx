@@ -5,7 +5,10 @@ import {
   faShareFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { atom, useAtom } from "jotai";
+import { useEffect, useState } from "react";
 import EventCard from "../components/dashboard/EventCard";
+import SuccessNotice from "../components/schedule/SuccessNotice";
 import BackArrow from "../components/shared/BackArrow";
 
 type Event = {
@@ -41,17 +44,34 @@ const events: Event[] = [
   },
 ];
 
+export const noticeShown = atom(true);
+
 function Schedule() {
   const eventSectionWidth = `w-[${events.length * (16 + 256)}px]`;
+  const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
+
+  useEffect(() => {
+    if (isNoticeShown) {
+      const interval = setInterval(() => {
+        setIsNoticeShown(false);
+      }, 2500);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, []);
+
   return (
     <section>
+      {isNoticeShown && <SuccessNotice action="created" />}
       <div className="px-8">
         <BackArrow />
         <header className="mb-8 mt-4 flex w-full items-start justify-between gap-2">
           <h1 className="text-3xl font-semibold">
             A Very Long Schedule Name Example
           </h1>
-          <button className="flex items-center justify-center gap-1 rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-blue-300 hover:text-blue-700">
+          <button className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-blue-300 hover:text-blue-700">
             <FontAwesomeIcon icon={faShareFromSquare} />
             Share
           </button>
@@ -79,7 +99,7 @@ function Schedule() {
       <div className="my-8 w-full bg-neutral-500 py-8 px-8">
         <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
         <button className="w-full rounded-lg border border-white bg-neutral-900 p-2 hover:bg-neutral-700">
-          <FontAwesomeIcon icon={faPenToSquare} className="mr-1" />
+          <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
           Add/Edit Availability
         </button>
       </div>
