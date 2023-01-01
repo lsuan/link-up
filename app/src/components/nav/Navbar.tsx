@@ -17,7 +17,7 @@ function Navbar() {
       </Link>
       <MobileNavbar />
 
-      <ul className="hidden items-center justify-between gap-8 text-lg text-blue-500 sm:flex">
+      <ul className="hidden items-center justify-between gap-8 text-lg text-blue-500 transition-colors sm:flex">
         {status !== "authenticated" ? (
           <>
             <NavbarItem href="/" name="About" />

@@ -11,11 +11,11 @@ function Pill({
 }) {
   return (
     <h2
-      className={`flex w-full cursor-pointer items-center justify-center rounded-full text-center capitalize ${
+      className={`flex w-full cursor-pointer items-center justify-center rounded-full p-2 text-center capitalize transition-colors ${
         active === name
           ? "bg-neutral-300 text-black"
           : "bg-neutral-500 text-white hover:bg-neutral-600"
-      } p-2 text-center`}
+      }`}
       onClick={() => setActive(name)}
     >
       {name}

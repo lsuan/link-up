@@ -143,7 +143,7 @@ Form.Submit = function Submit({
   return (
     <button
       type={type}
-      className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black hover:bg-blue-300"
+      className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black transition-all hover:bg-blue-300"
     >
       {name}
     </button>

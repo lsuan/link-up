@@ -16,7 +16,7 @@ function MobileNavMenuItem({
   const [, setIsMenuOpen] = useAtom(menuOpen);
   return (
     <li
-      className={`flex w-full border-b border-b-gray-500 text-center text-blue-500 hover:text-blue-300 ${className}`}
+      className={`flex w-full border-b border-b-gray-500 text-center text-blue-500 hover:text-blue-300 ${className} transition-colors`}
     >
       <Link
         href={href}

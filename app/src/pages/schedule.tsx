@@ -1,6 +1,7 @@
 // TODO: Redo this file to be /schedules/{slug}
 
 import {
+  faListCheck,
   faPenToSquare,
   faShareFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
@@ -23,38 +24,38 @@ type Event = {
 };
 
 const events: Event[] = [
-  {
-    id: "2",
-    name: "User Testing Responses!",
-    date: new Date("1/4/2022"),
-    start: 1673128800,
-    end: 1673139600,
-    location: "Zoom Link",
-    description:
-      "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
-  },
-  {
-    id: "3",
-    name: "General",
-    date: new Date("1/11/2022"),
-    start: 1673736000,
-    end: 1673744400,
-    location: "Zoom Link",
-    description: "Have revisions to design done.",
-  },
+  // {
+  //   id: "2",
+  //   name: "User Testing Responses!",
+  //   date: new Date("1/4/2022"),
+  //   start: 1673128800,
+  //   end: 1673139600,
+  //   location: "Zoom Link",
+  //   description:
+  //     "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
+  // },
+  // {
+  //   id: "3",
+  //   name: "General",
+  //   date: new Date("1/11/2022"),
+  //   start: 1673736000,
+  //   end: 1673744400,
+  //   location: "Zoom Link",
+  //   description: "Have revisions to design done.",
+  // },
 ];
 
 export const noticeShown = atom(true);
 
 function Schedule() {
-  const eventSectionWidth = `w-[${events.length * (16 + 256)}px]`;
+  const eventSectionWidth = `w-[${events.length * 256 + 16 * events.length}px]`;
   const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
 
   useEffect(() => {
     if (isNoticeShown) {
       const interval = setInterval(() => {
         setIsNoticeShown(false);
-      }, 2500);
+      }, 3000);
 
       return () => {
         clearInterval(interval);
@@ -71,7 +72,7 @@ function Schedule() {
           <h1 className="text-3xl font-semibold">
             A Very Long Schedule Name Example
           </h1>
-          <button className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-blue-300 hover:text-blue-700">
+          <button className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
             <FontAwesomeIcon icon={faShareFromSquare} />
             Share
           </button>
@@ -82,23 +83,35 @@ function Schedule() {
           start.
         </div>
         <div className="z-10 mb-4 font-semibold">Hosted by: User</div>
-        <div className="overflow-x-auto overflow-y-hidden pb-6">
-          <div className={`flex gap-4  ${eventSectionWidth}`}>
-            {events.map((event) => {
-              return <EventCard key={event.id} {...event} className="w-64" />;
-            })}
-          </div>
-          {/* {events.length > 1 && (
+
+        {events.length > 0 ? (
+          <div className="overflow-x-auto overflow-y-hidden pb-6">
+            <div className={`flex justify-between ${eventSectionWidth}`}>
+              {events.map((event) => {
+                return <EventCard key={event.id} {...event} className="w-64" />;
+              })}
+            </div>
+            {/* {events.length > 1 && (
             <div className="my-4">
               <div className="w-8/12 rounded-full bg-neutral-300 p-1"></div>
             </div>
           )} */}
-        </div>
+          </div>
+        ) : (
+          <div className="my-8 rounded-lg bg-neutral-500 p-4 text-center">
+            <h4 className="font-semibol mb-2 text-xl">
+              Waiting for Responses...
+            </h4>
+            <div className="">
+              Click the Share button at the top to share this event to others!
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="my-8 w-full bg-neutral-500 py-8 px-8">
         <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
-        <button className="w-full rounded-lg border border-white bg-neutral-900 p-2 hover:bg-neutral-700">
+        <button className="w-full rounded-lg border border-white bg-neutral-900 p-2 transition-colors hover:bg-neutral-700">
           <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
           Add/Edit Availability
         </button>
@@ -107,7 +120,8 @@ function Schedule() {
         <h3 className="mb-4 text-3xl font-semibold">
           Ready to finalize dates and times?
         </h3>
-        <button className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black">
+        <button className="w-full rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
+          <FontAwesomeIcon icon={faListCheck} className="mr-2" />
           Publish Event(s)
         </button>
       </div>

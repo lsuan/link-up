@@ -1,4 +1,6 @@
 import {
+  faArrowRight,
+  faArrowRightLong,
   faClock,
   faLocationPin,
   faNoteSticky,
@@ -83,9 +85,13 @@ function EventCard({
       {scheduleName && (
         <Link
           href={"/schedule"}
-          className="w-full rounded-lg bg-neutral-500 p-2 text-center text-white hover:bg-neutral-300 hover:text-black"
+          className="group w-full rounded-lg bg-neutral-500 p-2 text-center text-white transition-all hover:bg-neutral-300 hover:text-black"
         >
           View
+          <FontAwesomeIcon
+            icon={faArrowRightLong}
+            className="ml-2 transition-transform group-hover:translate-x-2"
+          />
         </Link>
       )}
     </div>

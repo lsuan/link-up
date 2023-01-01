@@ -13,7 +13,7 @@ function SuccessNotice({ action }: { action: string }) {
       </div>
       <FontAwesomeIcon
         icon={faClose}
-        className="cursor-pointer text-neutral-300"
+        className="cursor-pointer text-neutral-500 transition-colors hover:text-neutral-300"
         onClick={() => setIsNoticeShown(false)}
       />
     </div>
