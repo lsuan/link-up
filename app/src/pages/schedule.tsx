@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import EventCard from "../components/dashboard/EventCard";
+import Share from "../components/schedule/Share";
 import SuccessNotice from "../components/schedule/SuccessNotice";
 import BackArrow from "../components/shared/BackArrow";
 
@@ -45,11 +46,16 @@ const events: Event[] = [
   // },
 ];
 
-export const noticeShown = atom(true);
+// TODO: implement correct noticeShown functionality on successful schedule create + publish
+export const noticeShown = atom(false);
+export const noticeMessage = atom("You have successfully created a schedule!");
+export const sharePopupShown = atom(false);
 
 function Schedule() {
   const eventSectionWidth = `w-[${events.length * 256 + 16 * events.length}px]`;
   const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
+  const [isSharePopupShown, setIsSharePopupShown] = useAtom(sharePopupShown);
+  const [noticePopupMessage, setNoticePopupMessage] = useAtom(noticeMessage);
 
   useEffect(() => {
     if (isNoticeShown) {
@@ -61,18 +67,23 @@ function Schedule() {
         clearInterval(interval);
       };
     }
-  }, []);
+  }, [isNoticeShown]);
 
   return (
-    <section>
-      {isNoticeShown && <SuccessNotice action="created" />}
+    <section className="">
+      {isNoticeShown && <SuccessNotice />}
       <div className="px-8">
+        {isSharePopupShown && <Share />}
+
         <BackArrow />
         <header className="mb-8 mt-4 flex w-full items-start justify-between gap-2">
           <h1 className="text-3xl font-semibold">
             A Very Long Schedule Name Example
           </h1>
-          <button className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
+          <button
+            className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => setIsSharePopupShown(!isSharePopupShown)}
+          >
             <FontAwesomeIcon icon={faShareFromSquare} />
             Share
           </button>
