@@ -2,6 +2,7 @@ import { atom, useAtom } from "jotai";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import MobileNavbar from "./MobileNavbar";
+import NavbarItem from "./NavbarItem";
 
 export const menuOpen = atom(false);
 
@@ -16,35 +17,23 @@ function Navbar() {
       </Link>
       <MobileNavbar />
 
-      <ul className="hidden items-center justify-between gap-8 text-lg text-blue-500 hover:text-blue-300 sm:flex">
+      <ul className="hidden items-center justify-between gap-8 text-lg text-blue-500 sm:flex">
         {status !== "authenticated" ? (
           <>
-            <li>
-              <Link href="/">About</Link>
-            </li>
-            <li>
-              <Link href="/">Contact Us</Link>
-            </li>
-            <li>
-              <Link href="/login">Log In</Link>
-            </li>
-            <li>
-              <Link href="/signup">Sign Up</Link>
-            </li>
+            <NavbarItem href="/" name="About" />
+            <NavbarItem href="/" name="Contact Us" />
+            <NavbarItem href="/login" name="Log In" />
+            <NavbarItem href="/signup" name="Sign Up" />
           </>
         ) : (
           <>
-            <li>
-              <Link href="/dashboard">My Dashboard</Link>
-            </li>
-            <li>
-              <Link href="/settings">Settings</Link>
-            </li>
-            <li>
-              <Link href="" onClick={() => signOut({ callbackUrl: "/" })}>
-                Sign Out
-              </Link>
-            </li>
+            <NavbarItem href="/dashboard" name="My Dashboard" />
+            <NavbarItem href="/settings" name="Settings" />
+            <NavbarItem
+              href="/"
+              name="Sign Out"
+              onClick={() => signOut({ callbackUrl: "/" })}
+            />
           </>
         )}
       </ul>

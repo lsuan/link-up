@@ -54,7 +54,7 @@ function EventCard({
           <div className="w-4 text-center">
             <FontAwesomeIcon icon={faClock} />
           </div>
-          <p>{`${convertDate(date)}${
+          <p>{`${convertDate(date)} ${
             start && end
               ? `| ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
                   end,
