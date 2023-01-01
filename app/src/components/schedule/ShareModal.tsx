@@ -21,7 +21,7 @@ function Share() {
   };
 
   return (
-    <div className="sticky top-10 z-10 rounded-lg bg-neutral-900 p-6 shadow-md shadow-neutral-500">
+    <div className="top-30 fixed left-1/2 z-10 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-500 bg-neutral-900 p-6 transition-all">
       <header className="flex justify-between">
         <h2 className="text-xl font-semibold">Share Schedule</h2>
         <FontAwesomeIcon

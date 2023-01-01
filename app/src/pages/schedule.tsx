@@ -1,15 +1,13 @@
 // TODO: Redo this file to be /schedules/{slug}
 
-import {
-  faListCheck,
-  faPenToSquare,
-  faShareFromSquare,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import EventCard from "../components/dashboard/EventCard";
-import Share from "../components/schedule/Share";
+import AvailabilitySection from "../components/schedule/AvailabilitySection";
+import PublishSection from "../components/schedule/PublishSection";
+import Share from "../components/schedule/ShareModal";
 import SuccessNotice from "../components/schedule/SuccessNotice";
 import BackArrow from "../components/shared/BackArrow";
 
@@ -55,7 +53,6 @@ function Schedule() {
   const eventSectionWidth = `w-[${events.length * 256 + 16 * events.length}px]`;
   const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
   const [isSharePopupShown, setIsSharePopupShown] = useAtom(sharePopupShown);
-  const [noticePopupMessage, setNoticePopupMessage] = useAtom(noticeMessage);
 
   useEffect(() => {
     if (isNoticeShown) {
@@ -69,74 +66,95 @@ function Schedule() {
     }
   }, [isNoticeShown]);
 
+  useEffect(() => {
+    const links = document.querySelectorAll("section a");
+    const buttons = document.querySelectorAll("section button");
+    const disable = (element: Element) => {
+      element.setAttribute("disabled", "true");
+    };
+    const enable = (element: Element) => {
+      element.removeAttribute("disabled");
+    };
+    window.onkeyup = (e) => {
+      console.log(e.key);
+      if (e.key === "Escape") {
+        setIsSharePopupShown(false);
+      }
+    };
+    if (isSharePopupShown) {
+      links.forEach((link) => {
+        disable(link);
+      });
+      buttons.forEach((button) => {
+        disable(button);
+      });
+    } else {
+      links.forEach((link) => {
+        enable(link);
+      });
+      buttons.forEach((button) => {
+        enable(button);
+      });
+    }
+  }, [isSharePopupShown]);
+
   return (
-    <section className="">
-      {isNoticeShown && <SuccessNotice />}
-      <div className="px-8">
-        {isSharePopupShown && <Share />}
+    <>
+      {isSharePopupShown && <Share />}
+      <section className={isSharePopupShown ? "blur-md transition-all" : ""}>
+        {isNoticeShown && <SuccessNotice />}
+        <div className="px-8">
+          <BackArrow />
+          <header className="mb-8 mt-4 flex w-full items-start justify-between gap-2">
+            <h1 className="text-3xl font-semibold">
+              A Very Long Schedule Name Example
+            </h1>
+            <button
+              className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+              onClick={() => setIsSharePopupShown(!isSharePopupShown)}
+            >
+              <FontAwesomeIcon icon={faShareFromSquare} />
+              Share
+            </button>
+          </header>
+          <div className="my-4">
+            This will be the schedule for our bootcamp group’s meetings.
+            Everyone should make sure to review the dates and locations before
+            the events start.
+          </div>
+          <div className="z-10 mb-4 font-semibold">Hosted by: User</div>
 
-        <BackArrow />
-        <header className="mb-8 mt-4 flex w-full items-start justify-between gap-2">
-          <h1 className="text-3xl font-semibold">
-            A Very Long Schedule Name Example
-          </h1>
-          <button
-            className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-            onClick={() => setIsSharePopupShown(!isSharePopupShown)}
-          >
-            <FontAwesomeIcon icon={faShareFromSquare} />
-            Share
-          </button>
-        </header>
-        <div className="my-4">
-          This will be the schedule for our bootcamp group’s meetings. Everyone
-          should make sure to review the dates and locations before the events
-          start.
-        </div>
-        <div className="z-10 mb-4 font-semibold">Hosted by: User</div>
-
-        {events.length > 0 ? (
-          <div className="overflow-x-auto overflow-y-hidden pb-6">
-            <div className={`flex justify-between ${eventSectionWidth}`}>
-              {events.map((event) => {
-                return <EventCard key={event.id} {...event} className="w-64" />;
-              })}
-            </div>
-            {/* {events.length > 1 && (
+          {events.length > 0 ? (
+            <div className="overflow-x-auto overflow-y-hidden pb-6">
+              <div className={`flex justify-between ${eventSectionWidth}`}>
+                {events.map((event) => {
+                  return (
+                    <EventCard key={event.id} {...event} className="w-64" />
+                  );
+                })}
+              </div>
+              {/* {events.length > 1 && (
             <div className="my-4">
               <div className="w-8/12 rounded-full bg-neutral-300 p-1"></div>
             </div>
           )} */}
-          </div>
-        ) : (
-          <div className="my-8 rounded-lg bg-neutral-500 p-4 text-center">
-            <h4 className="font-semibol mb-2 text-xl">
-              Waiting for Responses...
-            </h4>
-            <div className="">
-              Click the Share button at the top to share this event to others!
             </div>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="my-8 rounded-lg bg-neutral-500 p-4 text-center">
+              <h4 className="mb-2 text-xl font-semibold">
+                Waiting for Responses...
+              </h4>
+              <div>
+                Click the Share button at the top to share this event to others!
+              </div>
+            </div>
+          )}
+        </div>
 
-      <div className="my-8 w-full bg-neutral-500 py-8 px-8">
-        <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
-        <button className="w-full rounded-lg border border-white bg-neutral-900 p-2 transition-colors hover:bg-neutral-700">
-          <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
-          Add/Edit Availability
-        </button>
-      </div>
-      <div className="my-8 w-full px-8">
-        <h3 className="mb-4 text-3xl font-semibold">
-          Ready to finalize dates and times?
-        </h3>
-        <button className="w-full rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
-          <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-          Publish Event(s)
-        </button>
-      </div>
-    </section>
+        <AvailabilitySection />
+        <PublishSection />
+      </section>
+    </>
   );
 }
 
