@@ -89,7 +89,7 @@ function Settings() {
 
   // TODO: add a way to update profile pic
   return (
-    <section>
+    <section className="px-8">
       <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
       {user === undefined ? (
         <div>Loading...</div>

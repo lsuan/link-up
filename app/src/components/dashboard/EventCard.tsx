@@ -7,13 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 
 type Event = {
-  scheduleName: string;
+  scheduleName?: string;
   name?: string;
   date?: Date;
   start?: number;
   end?: number;
   location?: string;
   description?: string;
+  className?: string;
 };
 
 function EventCard({
@@ -24,11 +25,12 @@ function EventCard({
   end,
   location,
   description,
+  className,
 }: Event) {
   const convertDate = (date: Date | undefined) => {
     return date
       ? new Intl.DateTimeFormat("en-US", {
-          weekday: "long",
+          weekday: "short",
           year: "2-digit",
           month: "2-digit",
           day: "2-digit",
@@ -47,13 +49,15 @@ function EventCard({
 
   // TODO: figure out how to convert time by location
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-neutral-700 p-6">
-      <h3 className="text-xl">{`${scheduleName}${name ? `: ${name}` : ""}`}</h3>
-      <ul className="flex flex-col gap-2">
+    <div
+      className={`flex flex-col gap-4 rounded-xl bg-neutral-700 p-4 ${className}`}
+    >
+      <h3 className="text-lg">{`${scheduleName || ""}${
+        scheduleName && name ? ": " : ""
+      }${name || ""}`}</h3>
+      <ul className="flex flex-col gap-2 text-sm">
         <li className="flex gap-2">
-          <div className="w-4 text-center">
-            <FontAwesomeIcon icon={faClock} />
-          </div>
+          <FontAwesomeIcon icon={faClock} />
           <p>{`${convertDate(date)} ${
             start && end
               ? `| ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
@@ -64,16 +68,12 @@ function EventCard({
           }`}</p>
         </li>
         <li className="flex gap-2">
-          <div className="w-4 text-center">
-            <FontAwesomeIcon icon={faLocationPin} />
-          </div>
+          <FontAwesomeIcon className="w-[14px]" icon={faLocationPin} />
           <p>{location || "TBD"}</p>
         </li>
         {description && (
           <li className="flex gap-2">
-            <div className="w-4 text-center">
-              <FontAwesomeIcon icon={faNoteSticky} />
-            </div>
+            <FontAwesomeIcon icon={faNoteSticky} />
             <p className="line-clamp-2">{description}</p>
           </li>
         )}

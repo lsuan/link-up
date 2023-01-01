@@ -28,7 +28,7 @@ function SignUp() {
   };
 
   return (
-    <section className="w-full max-w-md self-center">
+    <section className="w-full max-w-md self-center px-8">
       <h1 className="mb-2 text-3xl font-semibold">Sign Up</h1>
       <p className="mb-10">
         <span className="mr-2">Already have an account?</span>
