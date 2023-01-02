@@ -1,4 +1,9 @@
 function AvailabilityTable() {
-  return <section>Availability Table </section>;
+  return (
+    <section>
+      <div className="border-full">Key</div>
+      <div>Availability Table </div>
+    </section>
+  );
 }
 export default AvailabilityTable;

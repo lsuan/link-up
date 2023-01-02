@@ -93,6 +93,10 @@ function Schedule() {
               Share
             </button>
           </header>
+          <p>
+            <span className="underline">Deadline to Fill By</span>: Month Day
+            Year (maybe switch this and hosted by)
+          </p>
           <div className="my-4">
             This will be the schedule for our bootcamp group’s meetings.
             Everyone should make sure to review the dates and locations before
