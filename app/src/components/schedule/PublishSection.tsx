@@ -8,8 +8,8 @@ function PublishSection() {
       <h3 className="mb-4 text-3xl font-semibold">
         Ready to finalize dates and times?
       </h3>
-      <button className="w-full rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
-        <Link href="/schedule/publish">
+      <button className="flex w-full justify-center rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
+        <Link className="w-full" href="/schedule/publish">
           <FontAwesomeIcon icon={faListCheck} className="mr-2" />
           Publish Event(s)
         </Link>

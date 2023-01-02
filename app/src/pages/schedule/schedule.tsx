@@ -80,7 +80,7 @@ function Schedule() {
       <section className={isSharePopupShown ? "blur-md transition-all" : ""}>
         {isNoticeShown && <SuccessNotice />}
         <div className="px-8">
-          <BackArrow />
+          <BackArrow href="/dashboard" page="Dashboard" />
           <header className="mb-8 mt-4 flex w-full items-start justify-between gap-2">
             <h1 className="text-3xl font-semibold">
               A Very Long Schedule Name Example

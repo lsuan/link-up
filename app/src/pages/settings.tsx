@@ -91,7 +91,7 @@ function Settings() {
   // TODO: add a way to update profile pic
   return (
     <section className="px-8">
-      <BackArrow />
+      <BackArrow href="/dashboard" page="Dashboard" />
       <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
       {user === undefined ? (
         <div>Loading...</div>
