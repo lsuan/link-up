@@ -1,17 +1,27 @@
 import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
+import { useEffect } from "react";
 import {
   noticeMessage,
   noticeShown,
   sharePopupShown,
-} from "../../pages/schedule";
+} from "../../pages/schedule/schedule";
 
 function Share() {
-  const [, setIsSharePopupShown] = useAtom(sharePopupShown);
+  const [isSharePopupShown, setIsSharePopupShown] = useAtom(sharePopupShown);
   const [, setNoticePopupMessage] = useAtom(noticeMessage);
   const [, setIsNoticeShown] = useAtom(noticeShown);
   const scheduleLink = window.location.toString();
+
+  useEffect(() => {
+    window.onkeyup = (e) => {
+      console.log(e.key);
+      if (e.key === "Escape") {
+        setIsSharePopupShown(false);
+      }
+    };
+  }, [isSharePopupShown]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(scheduleLink);

@@ -84,7 +84,7 @@ function EventCard({
       </ul>
       {scheduleName && (
         <Link
-          href={"/schedule"}
+          href={"/schedule/schedule"}
           className="group w-full rounded-lg bg-neutral-500 p-2 text-center text-white transition-all hover:bg-neutral-300 hover:text-black"
         >
           View

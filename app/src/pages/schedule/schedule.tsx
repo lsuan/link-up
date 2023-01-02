@@ -4,12 +4,12 @@ import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
-import EventCard from "../components/dashboard/EventCard";
-import AvailabilitySection from "../components/schedule/AvailabilitySection";
-import PublishSection from "../components/schedule/PublishSection";
-import Share from "../components/schedule/ShareModal";
-import SuccessNotice from "../components/schedule/SuccessNotice";
-import BackArrow from "../components/shared/BackArrow";
+import EventCard from "../../components/dashboard/EventCard";
+import AvailabilitySection from "../../components/schedule/AvailabilitySection";
+import PublishSection from "../../components/schedule/PublishSection";
+import Share from "../../components/schedule/ShareModal";
+import SuccessNotice from "../../components/schedule/SuccessNotice";
+import BackArrow from "../../components/shared/BackArrow";
 
 type Event = {
   id: string;
@@ -66,41 +66,17 @@ function Schedule() {
     }
   }, [isNoticeShown]);
 
-  useEffect(() => {
-    const links = document.querySelectorAll("section a");
-    const buttons = document.querySelectorAll("section button");
-    const disable = (element: Element) => {
-      element.setAttribute("disabled", "true");
-    };
-    const enable = (element: Element) => {
-      element.removeAttribute("disabled");
-    };
-    window.onkeyup = (e) => {
-      console.log(e.key);
-      if (e.key === "Escape") {
-        setIsSharePopupShown(false);
-      }
-    };
-    if (isSharePopupShown) {
-      links.forEach((link) => {
-        disable(link);
-      });
-      buttons.forEach((button) => {
-        disable(button);
-      });
-    } else {
-      links.forEach((link) => {
-        enable(link);
-      });
-      buttons.forEach((button) => {
-        enable(button);
-      });
-    }
-  }, [isSharePopupShown]);
-
   return (
     <>
-      {isSharePopupShown && <Share />}
+      {isSharePopupShown && (
+        <div className="z-10">
+          <Share />
+          <div
+            className="absolute left-0 top-0 h-full w-full bg-neutral-700 opacity-50"
+            onClick={() => setIsSharePopupShown(false)}
+          ></div>
+        </div>
+      )}
       <section className={isSharePopupShown ? "blur-md transition-all" : ""}>
         {isNoticeShown && <SuccessNotice />}
         <div className="px-8">
@@ -140,7 +116,7 @@ function Schedule() {
           )} */}
             </div>
           ) : (
-            <div className="my-8 rounded-lg bg-neutral-500 p-4 text-center">
+            <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...
               </h4>

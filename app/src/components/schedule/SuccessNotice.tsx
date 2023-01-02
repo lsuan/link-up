@@ -1,7 +1,7 @@
 import { faCheckCircle, faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
-import { noticeMessage, noticeShown } from "../../pages/schedule";
+import { noticeMessage, noticeShown } from "../../pages/schedule/schedule";
 
 function SuccessNotice() {
   const [, setIsNoticeShown] = useAtom(noticeShown);
