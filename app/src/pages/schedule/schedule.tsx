@@ -3,7 +3,7 @@
 import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
-import { useEffect } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import EventCard from "../../components/dashboard/EventCard";
 import AvailabilitySection from "../../components/schedule/AvailabilitySection";
 import PublishSection from "../../components/schedule/PublishSection";
@@ -23,25 +23,25 @@ type Event = {
 };
 
 const events: Event[] = [
-  // {
-  //   id: "2",
-  //   name: "User Testing Responses!",
-  //   date: new Date("1/4/2022"),
-  //   start: 1673128800,
-  //   end: 1673139600,
-  //   location: "Zoom Link",
-  //   description:
-  //     "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
-  // },
-  // {
-  //   id: "3",
-  //   name: "General",
-  //   date: new Date("1/11/2022"),
-  //   start: 1673736000,
-  //   end: 1673744400,
-  //   location: "Zoom Link",
-  //   description: "Have revisions to design done.",
-  // },
+  {
+    id: "2",
+    name: "User Testing Responses!",
+    date: new Date("1/4/2022"),
+    start: 1673128800,
+    end: 1673139600,
+    location: "Zoom Link",
+    description:
+      "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
+  },
+  {
+    id: "3",
+    name: "General",
+    date: new Date("1/11/2022"),
+    start: 1673736000,
+    end: 1673744400,
+    location: "Zoom Link",
+    description: "Have revisions to design done.",
+  },
 ];
 
 // TODO: implement correct noticeShown functionality on successful schedule create + publish
@@ -50,7 +50,8 @@ export const noticeMessage = atom("You have successfully created a schedule!");
 export const sharePopupShown = atom(false);
 
 function Schedule() {
-  const eventSectionWidth = `w-[${events.length * 256 + 16 * events.length}px]`;
+  const eventSectionWidth = events.length * 256 + 16 * events.length;
+  const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
   const [isSharePopupShown, setIsSharePopupShown] = useAtom(sharePopupShown);
 
@@ -77,7 +78,9 @@ function Schedule() {
           ></div>
         </div>
       )}
-      <section className={isSharePopupShown ? "blur-md transition-all" : ""}>
+      <section
+        className={`${isSharePopupShown ? "blur-md transition-all" : ""}`}
+      >
         {isNoticeShown && <SuccessNotice />}
         <div className="px-8">
           <BackArrow href="/dashboard" page="Dashboard" />
@@ -95,7 +98,7 @@ function Schedule() {
           </header>
           <p>
             <span className="underline">Deadline to Fill By</span>: Month Day
-            Year (maybe switch this and hosted by)
+            Year (maybe move this down to availability section)
           </p>
           <div className="my-4">
             This will be the schedule for our bootcamp group’s meetings.
@@ -105,20 +108,19 @@ function Schedule() {
           <div className="z-10 mb-4 font-semibold">Hosted by: User</div>
 
           {events.length > 0 ? (
-            <div className="overflow-x-auto overflow-y-hidden pb-6">
-              <div className={`flex justify-between ${eventSectionWidth}`}>
-                {events.map((event) => {
-                  return (
-                    <EventCard key={event.id} {...event} className="w-64" />
-                  );
-                })}
+            <>
+              <div className="horizontal-scrollbar overflow-x-scroll pb-4">
+                <div
+                  className={`flex w-fit justify-between gap-4 ${eventSectionWidthClass}`}
+                >
+                  {events.map((event) => {
+                    return (
+                      <EventCard key={event.id} {...event} className="w-64" />
+                    );
+                  })}
+                </div>
               </div>
-              {/* {events.length > 1 && (
-            <div className="my-4">
-              <div className="w-8/12 rounded-full bg-neutral-300 p-1"></div>
-            </div>
-          )} */}
-            </div>
+            </>
           ) : (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
