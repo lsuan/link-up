@@ -7,3 +7,22 @@
 body {
   background-color: rgb(23 23 23);
 }
+
+.horizontal-scrollbar {
+  scrollbar-color: rgb(212 212 212 / var(--tw-bg-opacity));
+  scrollbar-width: thin;
+}
+
+.horizontal-scrollbar::-webkit-scrollbar {
+  background-color: transparent;
+  height: 0.5rem;
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 0.5rem;
+  background-color: rgb(212 212 212 / var(--tw-bg-opacity));
+}

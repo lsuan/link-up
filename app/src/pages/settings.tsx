@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Form } from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
 import ServerSideSuccessMessage from "../components/form/ServerSideSuccessMessage";
+import BackArrow from "../components/shared/BackArrow";
 import { trpc } from "../utils/trpc";
 
 type SettingsInputs = {
@@ -89,7 +90,8 @@ function Settings() {
 
   // TODO: add a way to update profile pic
   return (
-    <section>
+    <section className="px-8">
+      <BackArrow href="/dashboard" page="Dashboard" />
       <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
       {user === undefined ? (
         <div>Loading...</div>

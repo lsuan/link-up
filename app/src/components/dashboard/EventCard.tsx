@@ -1,20 +1,26 @@
 import {
+  faArrowRightLong,
+  faCalendarPlus,
   faClock,
   faLocationPin,
   faNoteSticky,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { atom, useAtom } from "jotai";
 import Link from "next/link";
 
 type Event = {
-  scheduleName: string;
+  scheduleName?: string;
   name?: string;
   date?: Date;
   start?: number;
   end?: number;
   location?: string;
   description?: string;
+  className?: string;
 };
+
+export const addToCalendarModal = atom(false);
 
 function EventCard({
   scheduleName,
@@ -24,13 +30,15 @@ function EventCard({
   end,
   location,
   description,
+  className,
 }: Event) {
+  const [, setIsAddToCalendarModalShown] = useAtom(addToCalendarModal);
   const convertDate = (date: Date | undefined) => {
     return date
       ? new Intl.DateTimeFormat("en-US", {
-          weekday: "long",
-          year: "2-digit",
-          month: "2-digit",
+          weekday: "short",
+          year: "numeric",
+          month: "short",
           day: "2-digit",
         }).format(date)
       : "TBD";
@@ -47,13 +55,28 @@ function EventCard({
 
   // TODO: figure out how to convert time by location
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-neutral-700 p-6">
-      <h3 className="text-xl">{`${scheduleName}${name ? `: ${name}` : ""}`}</h3>
-      <ul className="flex flex-col gap-2">
-        <li className="flex gap-2">
-          <div className="w-4 text-center">
-            <FontAwesomeIcon icon={faClock} />
-          </div>
+    <div
+      className={`flex flex-col rounded-xl bg-neutral-700 p-4 ${
+        scheduleName ? "gap-4" : "gap-2"
+      } ${className || ""}`}
+    >
+      <header className="relative flex items-start justify-between gap-2">
+        <h3 className="w-9/12 text-lg">{`${scheduleName || ""}${
+          scheduleName && name ? ": " : ""
+        }${name || ""}`}</h3>
+        {!scheduleName && (
+          <button
+            className="absolute right-0 flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => setIsAddToCalendarModalShown(true)}
+          >
+            <FontAwesomeIcon icon={faCalendarPlus} className="w-full" />
+          </button>
+        )}
+      </header>
+
+      <ul className="flex flex-col gap-2 text-sm">
+        <li className="flex items-start gap-2">
+          <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
           <p>{`${convertDate(date)} ${
             start && end
               ? `| ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
@@ -63,27 +86,29 @@ function EventCard({
               : ""
           }`}</p>
         </li>
-        <li className="flex gap-2">
-          <div className="w-4 text-center">
-            <FontAwesomeIcon icon={faLocationPin} />
-          </div>
+        <li className="flex items-start gap-2">
+          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
           <p>{location || "TBD"}</p>
         </li>
         {description && (
-          <li className="flex gap-2">
-            <div className="w-4 text-center">
-              <FontAwesomeIcon icon={faNoteSticky} />
-            </div>
-            <p className="line-clamp-2">{description}</p>
+          <li className="flex items-start gap-2">
+            <FontAwesomeIcon className="mt-[3px]" icon={faNoteSticky} />
+            <p className={scheduleName ? "line-clamp-2" : ""}>{description}</p>
           </li>
         )}
       </ul>
-      <Link
-        href={"/schedule"}
-        className="w-full rounded-lg bg-neutral-500 p-2 text-center text-white hover:bg-neutral-300 hover:text-black"
-      >
-        View
-      </Link>
+      {scheduleName && (
+        <Link
+          href={"/schedule/schedule"}
+          className="group w-full rounded-lg bg-neutral-500 p-2 text-center text-white transition-all hover:bg-neutral-300 hover:text-black"
+        >
+          View
+          <FontAwesomeIcon
+            icon={faArrowRightLong}
+            className="ml-2 transition-transform group-hover:translate-x-2"
+          />
+        </Link>
+      )}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import Pill from "../components/dashboard/Pill";
 
 type Event = {
   id: string;
-  scheduleName: string;
+  scheduleName?: string;
   name?: string;
   date?: Date;
   start?: number;
@@ -64,12 +64,12 @@ function Dashboard() {
   const [active, setActive] = useState<string>("upcoming");
 
   return (
-    <section className="min-h-screen">
+    <section className="min-h-screen px-8">
       <header className="mb-12 flex w-full items-center justify-between">
         <h1 className="text-3xl font-semibold">Events</h1>
         <Link
           href="/create"
-          className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-lg text-white hover:bg-blue-300 hover:text-blue-700"
+          className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
         >
           <FontAwesomeIcon size={"sm"} icon={faPlus} />
           Create

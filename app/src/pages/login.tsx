@@ -42,7 +42,7 @@ function Login() {
   };
 
   return (
-    <section className="w-full max-w-md self-center">
+    <section className="w-full max-w-md self-center px-8">
       <h1 className="mb-2 text-3xl font-semibold">Log In</h1>
       <p className="mb-10">
         Don't have an account?

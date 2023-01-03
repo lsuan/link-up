@@ -21,7 +21,7 @@ function Layout({ children }: any) {
         <link key="icon" rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <main className="relative flex flex-col bg-neutral-900 p-8 text-white">
+      <main className="relative flex flex-col bg-neutral-900 py-8 text-white">
         <>
           {isMenuOpen &&
             (status === "authenticated" ? (
