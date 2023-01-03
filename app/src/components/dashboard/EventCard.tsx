@@ -1,11 +1,12 @@
 import {
-  faArrowRight,
   faArrowRightLong,
+  faCalendarPlus,
   faClock,
   faLocationPin,
   faNoteSticky,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { atom, useAtom } from "jotai";
 import Link from "next/link";
 
 type Event = {
@@ -19,6 +20,8 @@ type Event = {
   className?: string;
 };
 
+export const addToCalendarModal = atom(false);
+
 function EventCard({
   scheduleName,
   name,
@@ -29,6 +32,7 @@ function EventCard({
   description,
   className,
 }: Event) {
+  const [, setIsAddToCalendarModalShown] = useAtom(addToCalendarModal);
   const convertDate = (date: Date | undefined) => {
     return date
       ? new Intl.DateTimeFormat("en-US", {
@@ -56,9 +60,20 @@ function EventCard({
         scheduleName ? "gap-4" : "gap-2"
       } ${className || ""}`}
     >
-      <h3 className="text-lg">{`${scheduleName || ""}${
-        scheduleName && name ? ": " : ""
-      }${name || ""}`}</h3>
+      <header className="relative flex items-start justify-between gap-2">
+        <h3 className="w-9/12 text-lg">{`${scheduleName || ""}${
+          scheduleName && name ? ": " : ""
+        }${name || ""}`}</h3>
+        {!scheduleName && (
+          <button
+            className="absolute right-0 flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => setIsAddToCalendarModalShown(true)}
+          >
+            <FontAwesomeIcon icon={faCalendarPlus} className="w-full" />
+          </button>
+        )}
+      </header>
+
       <ul className="flex flex-col gap-2 text-sm">
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px]" icon={faClock} />

@@ -5,11 +5,11 @@ import { useEffect } from "react";
 import {
   noticeMessage,
   noticeShown,
-  sharePopupShown,
+  shareModalShown,
 } from "../../pages/schedule/schedule";
 
 function Share() {
-  const [isSharePopupShown, setIsSharePopupShown] = useAtom(sharePopupShown);
+  const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [, setNoticePopupMessage] = useAtom(noticeMessage);
   const [, setIsNoticeShown] = useAtom(noticeShown);
   const scheduleLink = window.location.toString();
@@ -18,26 +18,26 @@ function Share() {
     window.onkeyup = (e) => {
       console.log(e.key);
       if (e.key === "Escape") {
-        setIsSharePopupShown(false);
+        setIsShareModalShown(false);
       }
     };
-  }, [isSharePopupShown]);
+  }, [isShareModalShown]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(scheduleLink);
-    setIsSharePopupShown(false);
+    setIsShareModalShown(false);
     setNoticePopupMessage("Copied to clipboard.");
     setIsNoticeShown(true);
   };
 
   return (
-    <div className="top-30 fixed left-1/2 z-10 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-500 bg-neutral-900 p-6 transition-all">
+    <div className="absolute top-0 left-1/2 z-20 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-500 bg-neutral-900 p-6 transition-all">
       <header className="flex justify-between">
         <h2 className="text-xl font-semibold">Share Schedule</h2>
         <FontAwesomeIcon
           icon={faClose}
           className="cursor-pointer text-neutral-500 transition-colors hover:text-neutral-300"
-          onClick={() => setIsSharePopupShown(false)}
+          onClick={() => setIsShareModalShown(false)}
         />
       </header>
 

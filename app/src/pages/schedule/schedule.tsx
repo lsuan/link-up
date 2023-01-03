@@ -3,8 +3,11 @@
 import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
-import { BaseSyntheticEvent, useEffect, useState } from "react";
-import EventCard from "../../components/dashboard/EventCard";
+import { useEffect } from "react";
+import EventCard, {
+  addToCalendarModal,
+} from "../../components/dashboard/EventCard";
+import AddToCalendarModal from "../../components/schedule/AddToCalendarModal";
 import AvailabilitySection from "../../components/schedule/AvailabilitySection";
 import PublishSection from "../../components/schedule/PublishSection";
 import Share from "../../components/schedule/ShareModal";
@@ -47,13 +50,15 @@ const events: Event[] = [
 // TODO: implement correct noticeShown functionality on successful schedule create + publish
 export const noticeShown = atom(false);
 export const noticeMessage = atom("You have successfully created a schedule!");
-export const sharePopupShown = atom(false);
+export const shareModalShown = atom(false);
 
 function Schedule() {
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
-  const [isSharePopupShown, setIsSharePopupShown] = useAtom(sharePopupShown);
+  const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
+  const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
+    useAtom(addToCalendarModal);
 
   useEffect(() => {
     if (isNoticeShown) {
@@ -69,28 +74,30 @@ function Schedule() {
 
   return (
     <>
-      {isSharePopupShown && (
-        <div className="z-10">
-          <Share />
-          <div
-            className="absolute left-0 top-0 h-full w-full bg-neutral-700 opacity-50"
-            onClick={() => setIsSharePopupShown(false)}
-          ></div>
-        </div>
+      {isShareModalShown && (
+        <div
+          className="absolute left-0 top-0 z-10 h-full w-full bg-neutral-700 opacity-90 blur-sm transition-all"
+          onClick={() => setIsShareModalShown(false)}
+        ></div>
       )}
-      <section
-        className={`${isSharePopupShown ? "blur-md transition-all" : ""}`}
-      >
+      {isAddToCalendarModalShown && (
+        <div
+          className="absolute left-0 top-0 z-10 h-full w-full bg-neutral-700 opacity-90 blur-sm transition-all"
+          onClick={() => setIsAddToCalendarModalShown(false)}
+        ></div>
+      )}
+      <section>
         {isNoticeShown && <SuccessNotice />}
         <div className="px-8">
           <BackArrow href="/dashboard" page="Dashboard" />
-          <header className="mb-8 mt-4 flex w-full items-start justify-between gap-2">
+          <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
             <h1 className="text-3xl font-semibold">
               A Very Long Schedule Name Example
             </h1>
+            {isShareModalShown && <Share />}
             <button
               className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-              onClick={() => setIsSharePopupShown(!isSharePopupShown)}
+              onClick={() => setIsShareModalShown(!isShareModalShown)}
             >
               <FontAwesomeIcon icon={faShareFromSquare} />
               Share
@@ -108,7 +115,8 @@ function Schedule() {
           <div className="z-10 mb-4 font-semibold">Hosted by: User</div>
 
           {events.length > 0 ? (
-            <>
+            <div className="relative">
+              {isAddToCalendarModalShown && <AddToCalendarModal />}
               <div className="horizontal-scrollbar overflow-x-scroll pb-4">
                 <div
                   className={`flex w-fit justify-between gap-4 ${eventSectionWidthClass}`}
@@ -120,7 +128,7 @@ function Schedule() {
                   })}
                 </div>
               </div>
-            </>
+            </div>
           ) : (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
