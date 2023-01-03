@@ -26,3 +26,30 @@ body {
   border-radius: 0.5rem;
   background-color: rgb(212 212 212 / var(--tw-bg-opacity));
 }
+
+.react-datepicker-popper {
+  z-index: 100;
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: rgb(212 212 212 / var(--tw-bg-opacity));
+  color: black;
+}
+.react-datepicker__day-names {
+  padding: 0.5rem 0;
+}
+.react-datepicker__day-names,
+.react-datepicker__week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+.react-datepicker__day--outside-month {
+  color: rgb(212 212 212 / var(--tw-bg-opacity));
+  opacity: 0.25;
+}
+
+.react-datepicker__day--in-range {
+  background-color: rgb(212 212 212 / var(--tw-bg-opacity));
+  color: black;
+}

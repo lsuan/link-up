@@ -1,13 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import {
-  FieldError,
-  FieldErrorsImpl,
-  FormProvider,
-  useForm,
-  useFormContext,
-} from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { parseDeepErrors } from "../../utils/formHelpers";
 import InputErrorMessage from "./InputErrorMessage";
 
 type GenericOnSubmit = (
@@ -70,40 +65,6 @@ Form.Input = function Input({
     formState: { isSubmitting, errors },
   } = useFormContext();
 
-  const parseDeepErrors = (
-    errors: Partial<
-      FieldErrorsImpl<{
-        [x: string]: any;
-      }>
-    >,
-    name: string
-  ) => {
-    if (Object.keys(errors).length === 0) return;
-    console.log(errors);
-
-    const parsedName = name.split(".");
-    if (parsedName.length <= 1) return errors[name]?.message;
-
-    if (parsedName[0] && errors.hasOwnProperty(parsedName[0])) {
-      const root = errors[parsedName[0]];
-      if (root) {
-        console.log(root);
-        let children = "";
-        for (let i = 1; i < parsedName.length; i++) {
-          const child = parsedName[i] as string;
-          if (root.hasOwnProperty(child)) {
-            children += child;
-          }
-        }
-        let innerObject = { message: "" };
-        if (root.hasOwnProperty(children)) {
-          innerObject = root[children as keyof FieldError] as any;
-        }
-        return root.message ? root.message : innerObject.message;
-      }
-    }
-  };
-
   const error = parseDeepErrors(errors, name);
 
   return (
@@ -133,6 +94,59 @@ Form.Input = function Input({
   );
 };
 
+Form.Select = function Select({
+  name,
+  displayName,
+  options,
+  value,
+  required,
+  className,
+}: {
+  name: string;
+  displayName: string;
+  options: any[];
+  value?: any;
+  required?: boolean;
+  className?: string;
+}) {
+  const {
+    register,
+    formState: { isSubmitting, errors },
+  } = useFormContext();
+
+  const error = parseDeepErrors(errors, name);
+  return (
+    <div className="flex w-full flex-col gap-1">
+      <div className="relative">
+        <select
+          key={name}
+          value={value}
+          {...register(name)}
+          className={`peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-white placeholder:text-transparent ${
+            className || ""
+          }`}
+          placeholder={displayName}
+        >
+          {options.map((option, index) => (
+            <option key={index}>{option}</option>
+          ))}
+        </select>
+        <label
+          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
+        peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0 
+        peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
+        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-white"
+          htmlFor={name}
+        >
+          {displayName}
+          {required && <span className="ml-1 text-red-500">*</span>}
+        </label>
+      </div>
+      {error && <InputErrorMessage error={error as string} />}
+    </div>
+  );
+};
+
 Form.Submit = function Submit({
   name,
   type,
@@ -143,7 +157,7 @@ Form.Submit = function Submit({
   return (
     <button
       type={type}
-      className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black transition-all hover:bg-blue-300"
+      className="mt-4 cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-black transition-colors hover:bg-blue-300"
     >
       {name}
     </button>
