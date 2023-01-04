@@ -1,6 +1,7 @@
 import { faCalendarDay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
+import { useRouter } from "next/router";
 import { forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
@@ -10,7 +11,9 @@ import {
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
 import { Form } from "../components/form/Form";
+import BackArrow from "../components/shared/BackArrow";
 import { getTimeOptions, MINUTES } from "../utils/formHelpers";
+import { notice } from "./schedule/schedule";
 
 type CreateScheduleInputs = {
   scheduleName: string;
@@ -29,14 +32,14 @@ type CreateScheduleInputs = {
 
 const CreateScheduleSchema = z.object({
   scheduleName: z.string().min(1, "Schedule name is required!"),
-  description: z.string(),
+  description: z.string().optional(),
   dateRange: z
     .object({
       startDate: z
-        .date({ required_error: "Start date must be set!" })
+        .date({ invalid_type_error: "Start date must be set!" })
         .min(new Date(), { message: "Start date must not be in the past!" }),
       endDate: z
-        .date({ required_error: "End date must be set!" })
+        .date({ invalid_type_error: "End date must be set!" })
         .min(new Date(), { message: "End date must not be in the past!" }),
     })
     .refine((data) => data.endDate > data.startDate, {
@@ -47,7 +50,6 @@ const CreateScheduleSchema = z.object({
   deadline: z
     .date()
     .min(new Date(), { message: "Deadline must not be in the past!" })
-    .nullish()
     .optional(),
   numberOfEvents: z
     .number()
@@ -59,6 +61,8 @@ type SubmitHandler = {};
 
 function Create() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
+  const [, setNoticeMessage] = useAtom(notice);
+  const router = useRouter();
   const [defaultValues, setDefaultValues] = useState<Record<string, any>>({
     dateRange: { startDate: new Date(), endDate: null },
     startTime: "9:00 AM",
@@ -69,6 +73,8 @@ function Create() {
 
   const handleSubmit = (data: SubmitHandler) => {
     console.log(data);
+    setNoticeMessage("Your schedule has successfully been created!");
+    router.push("/schedule/schedule");
   };
 
   const getEventLengthOptions = () => {
@@ -114,108 +120,104 @@ function Create() {
 
   // TODO: add defaultValues + account for datepicker values
   return (
-    <>
-      <section className="px-8">
-        {isDatePickerOpen && (
-          <div
-            className={
-              "absolute top-0 left-0 z-50 h-full w-full overflow-hidden bg-neutral-700 opacity-90 blur-sm transition-all"
-            }
-          ></div>
-        )}
-        <h1 className="mb-12 text-3xl">Plan a Schedule</h1>
-        <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
-          onSubmit={handleSubmit}
-          schema={CreateScheduleSchema}
-          className="flex flex-col gap-4"
-          defaultValues={defaultValues}
-        >
-          <Form.Input
-            name="scheduleName"
-            displayName="Name"
-            type="text"
-            required={true}
-          />
-          {/* TODO: add tinymce integration */}
-          <Form.Input
-            name="description"
-            displayName="Description"
-            type="text"
-          />
-          {/* <Calendar /> */}
-          <div className="relative mt-2 mb-4 rounded-lg bg-neutral-700 p-4 pb-3">
-            <DatePicker
-              id="calendarDatePicker"
-              selected={defaultValues.dateRange.startDate}
-              onChange={(dates) =>
-                setDefaultValues({
-                  ...defaultValues,
-                  dateRange: { startDate: dates[0], endDate: dates[1] },
-                })
-              }
-              startDate={defaultValues.dateRange.startDate}
-              endDate={defaultValues.dateRange.endDate}
-              selectsRange
-              inline
-              dayClassName={(_) => "p-1 m-1 rounded-lg"}
-              renderCustomHeader={CalendarHeader}
-              showDisabledMonthNavigation
-            />
-          </div>
+    <section className="px-8">
+      <BackArrow href="/dashboard" page="Dashboard" />
+      {isDatePickerOpen && (
+        <div
+          className={
+            "absolute top-0 left-0 z-50 h-full w-full overflow-hidden bg-neutral-700 opacity-90 blur-sm transition-all"
+          }
+        ></div>
+      )}
+      <h1 className="mb-12 text-3xl">Plan a Schedule</h1>
+      <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
+        onSubmit={handleSubmit}
+        schema={CreateScheduleSchema}
+        className="flex flex-col gap-4"
+        defaultValues={defaultValues}
+      >
+        <Form.Input
+          name="scheduleName"
+          displayName="Name"
+          type="text"
+          required={true}
+        />
+        {/* TODO: add tinymce integration */}
+        <Form.Input name="description" displayName="Description" type="text" />
 
-          <div className="flex justify-between gap-4">
-            <Form.Select
-              name="startTime"
-              displayName="No Earlier Than"
-              options={getTimeOptions()}
-              required={true}
-            />
-            <Form.Select
-              name="endTime"
-              displayName="No Later Than"
-              options={getTimeOptions()}
-              required={true}
-            />
-          </div>
+        <div className="relative mt-2 mb-4 rounded-lg bg-neutral-700 p-4 pb-3">
+          {/* uncomment for disabled if we need this functionality */}
+          {/* <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" /> */}
           <DatePicker
-            selected={defaultValues.deadline}
-            onChange={(date) =>
-              setDefaultValues({ ...defaultValues, deadline: date })
+            id="calendarDatePicker"
+            selected={defaultValues.dateRange.startDate}
+            onChange={(dates) =>
+              setDefaultValues({
+                ...defaultValues,
+                dateRange: { startDate: dates[0], endDate: dates[1] },
+              })
             }
-            customInput={<DeadlineDatePicker />}
-            calendarContainer={({ children }) => (
-              <CalendarContainer
-                title={"When should attendees send their availability by?"}
-                className="border border-neutral-500"
-              >
-                {children}
-              </CalendarContainer>
-            )}
-            onCalendarOpen={() => setIsDatePickerOpen(true)}
-            onCalendarClose={() => setIsDatePickerOpen(false)}
+            startDate={defaultValues.dateRange.startDate}
+            endDate={defaultValues.dateRange.endDate}
+            selectsRange
+            inline
             dayClassName={(_) => "p-1 m-1 rounded-lg"}
             renderCustomHeader={CalendarHeader}
-            showDisabledMonthNavigation
           />
+        </div>
 
-          <div className="flex justify-between gap-4">
-            <Form.Select
-              name="numberOfEvents"
-              displayName="Number of Events"
-              options={[1, 2, 3, 4, 5]}
-              required={true}
-            />
-            <Form.Select
-              name="lengthOfEvents"
-              displayName="Length of Events"
-              options={getEventLengthOptions()}
-              required={true}
-            />
-          </div>
-          <Form.Submit name="Create Schedule" type="submit" />
-        </Form>
-      </section>
-    </>
+        <div className="flex justify-between gap-4">
+          <Form.Select
+            name="startTime"
+            displayName="No Earlier Than"
+            options={getTimeOptions()}
+            required={true}
+          />
+          <Form.Select
+            name="endTime"
+            displayName="No Later Than"
+            options={getTimeOptions()}
+            required={true}
+          />
+        </div>
+        <DatePicker
+          selected={defaultValues.deadline}
+          onChange={(date) =>
+            setDefaultValues({ ...defaultValues, deadline: date })
+          }
+          customInput={<DeadlineDatePicker />}
+          calendarContainer={({ children }) => (
+            <CalendarContainer
+              title={"When should attendees send their availability by?"}
+              className="border border-neutral-500"
+            >
+              {children}
+            </CalendarContainer>
+          )}
+          onCalendarOpen={() => setIsDatePickerOpen(true)}
+          onCalendarClose={() => setIsDatePickerOpen(false)}
+          dayClassName={(_) => "p-1 m-1 rounded-lg"}
+          renderCustomHeader={CalendarHeader}
+          showDisabledMonthNavigation
+        />
+
+        <div className="flex justify-between gap-4">
+          <Form.Select
+            name="numberOfEvents"
+            displayName="Number of Events"
+            options={[1, 2, 3, 4, 5]}
+            required={true}
+          />
+          <Form.Select
+            name="lengthOfEvents"
+            displayName="Length of Events"
+            options={getEventLengthOptions()}
+            required={true}
+          />
+        </div>
+        <Form.Submit name="Create Schedule" type="submit" />
+      </Form>
+    </section>
   );
 }
 

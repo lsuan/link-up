@@ -2,16 +2,11 @@ import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
-import {
-  noticeMessage,
-  noticeShown,
-  shareModalShown,
-} from "../../pages/schedule/schedule";
+import { notice, shareModalShown } from "../../pages/schedule/schedule";
 
 function Share() {
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
-  const [, setNoticePopupMessage] = useAtom(noticeMessage);
-  const [, setIsNoticeShown] = useAtom(noticeShown);
+  const [, setNoticeMessage] = useAtom(notice);
   const scheduleLink = window.location.toString();
 
   useEffect(() => {
@@ -26,8 +21,7 @@ function Share() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(scheduleLink);
     setIsShareModalShown(false);
-    setNoticePopupMessage("Copied to clipboard.");
-    setIsNoticeShown(true);
+    setNoticeMessage("Copied to clipboard.");
   };
 
   return (
