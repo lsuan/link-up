@@ -4,7 +4,7 @@ import {
   faAngleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { atom, useAtom } from "jotai";
 import { MONTHS } from "../../utils/formHelpers";
 
 export const datePickerOpen = atom(false);

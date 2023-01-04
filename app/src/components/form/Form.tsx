@@ -54,11 +54,13 @@ Form.Input = function Input({
   displayName,
   type,
   required,
+  hidden,
 }: {
   name: string;
   displayName: string;
   type: string;
   required?: boolean;
+  hidden?: boolean;
 }) {
   const {
     register,
@@ -68,7 +70,7 @@ Form.Input = function Input({
   const error = parseDeepErrors(errors, name);
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className={`flex flex-col gap-1 ${hidden ? "hidden" : ""}`}>
       <div className="relative">
         <input
           className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-white placeholder:text-transparent"
@@ -98,14 +100,12 @@ Form.Select = function Select({
   name,
   displayName,
   options,
-  value,
   required,
   className,
 }: {
   name: string;
   displayName: string;
   options: any[];
-  value?: any;
   required?: boolean;
   className?: string;
 }) {
@@ -120,7 +120,6 @@ Form.Select = function Select({
       <div className="relative">
         <select
           key={name}
-          value={value}
           {...register(name)}
           className={`peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-white placeholder:text-transparent ${
             className || ""
@@ -128,7 +127,9 @@ Form.Select = function Select({
           placeholder={displayName}
         >
           {options.map((option, index) => (
-            <option key={index}>{option}</option>
+            <option key={index} value={option.value}>
+              {option}
+            </option>
           ))}
         </select>
         <label

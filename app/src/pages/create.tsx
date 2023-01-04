@@ -1,7 +1,7 @@
 import { faCalendarDay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
 import {
@@ -10,25 +10,25 @@ import {
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
 import { Form } from "../components/form/Form";
-import { getTimeOptions } from "../utils/formHelpers";
+import { getTimeOptions, MINUTES } from "../utils/formHelpers";
 
 type CreateScheduleInputs = {
-  name: string;
-  description?: string;
+  scheduleName: string;
+  description: string;
   dateRange: {
-    startDate: Date;
-    endDate: Date;
+    startDate: Date | null;
+    endDate: Date | null;
   };
-  startTime: number;
-  endTime: number;
+  startTime: string;
+  endTime: string;
   timeZone: string;
-  deadline?: Date;
+  deadline?: Date | null;
   numberOfEvents: number;
   lengthOfEvents: string;
 };
 
 const CreateScheduleSchema = z.object({
-  name: z.string().min(1, "Schedule name is required!"),
+  scheduleName: z.string().min(1, "Schedule name is required!"),
   description: z.string(),
   dateRange: z
     .object({
@@ -42,12 +42,13 @@ const CreateScheduleSchema = z.object({
     .refine((data) => data.endDate > data.startDate, {
       message: "End date must be after start date!",
     }),
-  startTime: z.number({ required_error: "Start time is required!" }),
-  endTime: z.number({ required_error: "End time must be set!" }),
-  timeZone: z.string({ required_error: "Timezone must be specified!" }),
+  startTime: z.string({ required_error: "Start time is required!" }),
+  endTime: z.string({ required_error: "End time must be set!" }),
   deadline: z
     .date()
-    .min(new Date(), { message: "Deadline must not be in the past!" }),
+    .min(new Date(), { message: "Deadline must not be in the past!" })
+    .nullish()
+    .optional(),
   numberOfEvents: z
     .number()
     .min(1, { message: "You must have at least one event!" }),
@@ -57,26 +58,21 @@ const CreateScheduleSchema = z.object({
 type SubmitHandler = {};
 
 function Create() {
-  const [deadline, setDeadline] = useState<Date | undefined>();
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [endDate, setEndDate] = useState<Date | null>();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
-
-  const handleCalendarChange = (dates: [Date | null, Date | null]) => {
-    const [startDate, endDate] = dates;
-    setStartDate(startDate);
-    setEndDate(endDate);
-  };
+  const [defaultValues, setDefaultValues] = useState<Record<string, any>>({
+    dateRange: { startDate: new Date(), endDate: null },
+    startTime: "9:00 AM",
+    endTime: "5:00 PM",
+    numberOfEvents: 1,
+    lengthOfEvents: "1 hour",
+  });
 
   const handleSubmit = (data: SubmitHandler) => {
     console.log(data);
   };
 
   const getEventLengthOptions = () => {
-    const mins: Array<string | number> = [
-      15, 30, 45, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720,
-      780, 840, 900, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440,
-    ];
+    const mins = [...MINUTES];
 
     const options = mins.map((min) => {
       if (typeof min == "number" && min >= 60) {
@@ -88,7 +84,7 @@ function Create() {
     return options;
   };
 
-  const DatePickerInput = forwardRef(
+  const DeadlineDatePicker = forwardRef(
     (
       { value, onClick }: { value?: string; onClick?: () => void },
       ref: any
@@ -97,12 +93,16 @@ function Create() {
         <div className="relative">
           <button
             type="button"
-            className="w-full rounded-lg border border-neutral-500 bg-neutral-900 px-4 py-2 text-left"
+            className=" w-full rounded-lg border border-neutral-500 bg-neutral-900 px-4 py-2 text-left"
             onClick={onClick}
             ref={ref}
           >
             <FontAwesomeIcon icon={faCalendarDay} className="mr-2" />
-            {value || "Select a date..."}
+            {value ? (
+              value
+            ) : (
+              <span className="text-neutral-500">Select a date...</span>
+            )}
           </button>
           <label className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all">
             Deadline to Fill By
@@ -112,6 +112,7 @@ function Create() {
     )
   );
 
+  // TODO: add defaultValues + account for datepicker values
   return (
     <>
       <section className="px-8">
@@ -127,9 +128,10 @@ function Create() {
           onSubmit={handleSubmit}
           schema={CreateScheduleSchema}
           className="flex flex-col gap-4"
+          defaultValues={defaultValues}
         >
           <Form.Input
-            name="name"
+            name="scheduleName"
             displayName="Name"
             type="text"
             required={true}
@@ -142,19 +144,17 @@ function Create() {
           />
           {/* <Calendar /> */}
           <div className="relative mt-2 mb-4 rounded-lg bg-neutral-700 p-4 pb-3">
-            {/* <label
-              className="absolute left-1 top-0 z-20 ml-2 flex -translate-y-2 rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all"
-              htmlFor={"calendarDatePicker"}
-            >
-              How long should the schedule be?
-              <span className="ml-1 text-red-500">*</span>
-            </label> */}
             <DatePicker
               id="calendarDatePicker"
-              selected={startDate}
-              onChange={(dates) => handleCalendarChange(dates)}
-              startDate={startDate}
-              endDate={endDate}
+              selected={defaultValues.dateRange.startDate}
+              onChange={(dates) =>
+                setDefaultValues({
+                  ...defaultValues,
+                  dateRange: { startDate: dates[0], endDate: dates[1] },
+                })
+              }
+              startDate={defaultValues.dateRange.startDate}
+              endDate={defaultValues.dateRange.endDate}
               selectsRange
               inline
               dayClassName={(_) => "p-1 m-1 rounded-lg"}
@@ -168,21 +168,21 @@ function Create() {
               name="startTime"
               displayName="No Earlier Than"
               options={getTimeOptions()}
-              value={"9:00 AM"}
               required={true}
             />
             <Form.Select
               name="endTime"
               displayName="No Later Than"
-              value={"5:00 PM"}
               options={getTimeOptions()}
               required={true}
             />
           </div>
           <DatePicker
-            selected={deadline}
-            onChange={(date: Date) => setDeadline(date)}
-            customInput={<DatePickerInput />}
+            selected={defaultValues.deadline}
+            onChange={(date) =>
+              setDefaultValues({ ...defaultValues, deadline: date })
+            }
+            customInput={<DeadlineDatePicker />}
             calendarContainer={({ children }) => (
               <CalendarContainer
                 title={"When should attendees send their availability by?"}
@@ -196,7 +196,8 @@ function Create() {
             dayClassName={(_) => "p-1 m-1 rounded-lg"}
             renderCustomHeader={CalendarHeader}
             showDisabledMonthNavigation
-          ></DatePicker>
+          />
+
           <div className="flex justify-between gap-4">
             <Form.Select
               name="numberOfEvents"
