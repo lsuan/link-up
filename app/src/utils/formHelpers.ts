@@ -9,8 +9,6 @@ export const parseDeepErrors = (
   name: string
 ) => {
   if (Object.keys(errors).length === 0) return;
-  console.log(errors);
-
   const parsedName = name.split(".");
   if (parsedName.length <= 1) return errors[name]?.message;
 

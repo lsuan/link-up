@@ -13,6 +13,7 @@ import PublishSection from "../../components/schedule/PublishSection";
 import Share from "../../components/schedule/ShareModal";
 import SuccessNotice from "../../components/schedule/SuccessNotice";
 import BackArrow from "../../components/shared/BackArrow";
+import ModalBackground from "../../components/shared/ModalBackground";
 
 type Event = {
   id: string;
@@ -47,7 +48,7 @@ const events: Event[] = [
   },
 ];
 
-export const notice = atom("You have successfully created a schedule!");
+export const notice = atom("");
 export const shareModalShown = atom(false);
 
 function Schedule() {
@@ -72,7 +73,15 @@ function Schedule() {
 
   return (
     <>
-      {isShareModalShown && (
+      <ModalBackground
+        isModalOpen={isShareModalShown}
+        setIsModalOpen={setIsShareModalShown}
+      />
+      <ModalBackground
+        isModalOpen={isAddToCalendarModalShown}
+        setIsModalOpen={setIsAddToCalendarModalShown}
+      />
+      {/* {isShareModalShown && (
         <div
           className="absolute left-0 top-0 z-10 h-full w-full bg-neutral-700 opacity-90 blur-sm transition-all"
           onClick={() => setIsShareModalShown(false)}
@@ -83,7 +92,7 @@ function Schedule() {
           className="absolute left-0 top-0 z-10 h-full w-full bg-neutral-700 opacity-90 blur-sm transition-all"
           onClick={() => setIsAddToCalendarModalShown(false)}
         ></div>
-      )}
+      )} */}
       <section>
         {noticeMessage !== "" && <SuccessNotice />}
         <div className="px-8">
