@@ -102,7 +102,7 @@ function SignUpForm({ email }: { email: string }) {
           type="password"
           required={true}
         />
-        <Form.Submit name="Sign Up" type="submit" />
+        <Form.Button name="Sign Up" type="submit" />
       </Form>
     </>
   );

@@ -2,12 +2,57 @@ import {
   faClose,
   faAngleLeft,
   faAngleRight,
+  faCalendarDay,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
+import { forwardRef } from "react";
 import { MONTHS } from "../../utils/formHelpers";
 
 export const datePickerOpen = atom(false);
+
+export const CustomDatePicker = forwardRef(
+  (
+    {
+      value,
+      onClick,
+      label,
+      required,
+    }: {
+      value?: string;
+      onClick?: () => void;
+      label: string;
+      required?: boolean;
+    },
+    ref: any
+  ) => (
+    <div className="flex flex-col">
+      <div className="relative">
+        <button
+          type="button"
+          className=" w-full rounded-lg border border-neutral-500 bg-neutral-900 px-4 py-2 text-left"
+          onClick={onClick}
+          ref={ref}
+        >
+          <FontAwesomeIcon icon={faCalendarDay} className="mr-2" />
+          {value ? (
+            value
+          ) : (
+            <span className={`text-neutral-500 ${required}`}>
+              Select a date...
+            </span>
+          )}
+        </button>
+        <label
+          className={`absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all ${required}`}
+        >
+          {label}
+          {required && <span className="ml-1 text-red-500">*</span>}
+        </label>
+      </div>
+    </div>
+  )
+);
 
 export const CalendarContainer = ({
   title,
