@@ -28,8 +28,11 @@ function PublishEventCard({
           <button className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
             <FontAwesomeIcon icon={faTrash} />
           </button>
-          <button className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
-            <FontAwesomeIcon icon={faEdit} onClick={() => setCardEditState()} />
+          <button
+            className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => setCardEditState()}
+          >
+            <FontAwesomeIcon icon={faEdit} />
           </button>
         </div>
       </header>

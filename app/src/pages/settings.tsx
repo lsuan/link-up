@@ -145,7 +145,7 @@ function Settings() {
 
             {/* add light/dark mode toggle here */}
 
-            <Form.Submit name="Save Changes" type="submit" />
+            <Form.Button name="Save Changes" type="submit" />
           </Form>
         </>
       )}

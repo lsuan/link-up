@@ -50,7 +50,7 @@ function SignUp() {
               type="email"
               required={true}
             />
-            <Form.Submit name="Get Started" type="submit" />
+            <Form.Button name="Get Started" type="submit" />
           </Form>
           <AuthDivider />
           <AuthProviders />

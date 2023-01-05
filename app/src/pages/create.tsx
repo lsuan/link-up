@@ -188,7 +188,7 @@ function Create() {
             required={true}
           />
         </div>
-        <Form.Submit name="Create Schedule" type="submit" />
+        <Form.Button name="Create Schedule" type="submit" />
       </Form>
     </section>
   );

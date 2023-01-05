@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { notice } from "./schedule";
 import AvailabilityTable from "../../components/schedule/AvailbilityTable";
 import EditEventCard from "../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../components/schedule/publish/PublishEventCard";
 import BackArrow from "../../components/shared/BackArrow";
-import { notice } from "./schedule";
 
 const events = [];
 function Publish() {
@@ -19,6 +19,11 @@ function Publish() {
     setNoticeMessage("Your events have been successfully published!");
     router.push("/schedule/schedule");
   };
+
+  // TODO: implement deleting + adding an event
+  const deleteEvent = (index: number) => {};
+
+  const addEvent = () => {};
 
   return (
     <section className="px-8">
@@ -43,7 +48,10 @@ function Publish() {
             setIsEditing={setIsEditing}
           />
         )}
-        <button className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
+        <button
+          className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+          onClick={() => addEvent()}
+        >
           <FontAwesomeIcon icon={faPlus} />
         </button>
       </div>

@@ -61,15 +61,21 @@ function EditEventCard({
         className="flex flex-col gap-4"
         defaultValues={{ eventDate }}
       >
-        <Form.Input name="eventName" displayName="Event Name" type="text" />
+        <Form.Input
+          name="eventName"
+          displayName="Event Name"
+          type="text"
+          required
+        />
         <DatePicker
           selected={eventDate}
           onChange={(date) => setEventDate(date)}
-          customInput={<CustomDatePicker label="Date" />}
+          customInput={<CustomDatePicker label="Date" required />}
           calendarContainer={({ children }) => (
             <CalendarContainer
-              title={"When should this event occur?"}
+              title="When should this event occur?"
               className="border border-neutral-500"
+              required
             >
               {children}
             </CalendarContainer>
@@ -95,8 +101,8 @@ function EditEventCard({
         <Form.Input name="location" displayName="Location" type="text" />
         <Form.Input name="description" displayName="Description" type="text" />
         <div className="flex justify-end gap-2">
-          <Form.Submit type="button" name="Delete" />
-          <Form.Submit type="submit" name="Save" />
+          <Form.Button type="button" name="Delete" />
+          <Form.Button type="submit" name="Save" />
         </div>
       </Form>
     </div>

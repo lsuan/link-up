@@ -71,7 +71,7 @@ function Login() {
           type="password"
           required={true}
         />
-        <Form.Submit name="Log In" type="submit" />
+        <Form.Button name="Log In" type="submit" />
       </Form>
       <AuthDivider />
       <AuthProviders />
