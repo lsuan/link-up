@@ -47,30 +47,28 @@ const events: Event[] = [
   },
 ];
 
-// TODO: implement correct noticeShown functionality on successful schedule create + publish
-export const noticeShown = atom(false);
-export const noticeMessage = atom("You have successfully created a schedule!");
+export const notice = atom("You have successfully created a schedule!");
 export const shareModalShown = atom(false);
 
 function Schedule() {
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
-  const [isNoticeShown, setIsNoticeShown] = useAtom(noticeShown);
+  const [noticeMessage, setNoticeMessage] = useAtom(notice);
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
     useAtom(addToCalendarModal);
 
   useEffect(() => {
-    if (isNoticeShown) {
+    if (noticeMessage !== "") {
       const interval = setInterval(() => {
-        setIsNoticeShown(false);
+        setNoticeMessage("");
       }, 3000);
 
       return () => {
         clearInterval(interval);
       };
     }
-  }, [isNoticeShown]);
+  }, [noticeMessage]);
 
   return (
     <>
@@ -87,7 +85,7 @@ function Schedule() {
         ></div>
       )}
       <section>
-        {isNoticeShown && <SuccessNotice />}
+        {noticeMessage !== "" && <SuccessNotice />}
         <div className="px-8">
           <BackArrow href="/dashboard" page="Dashboard" />
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">

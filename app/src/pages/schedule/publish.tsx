@@ -5,17 +5,15 @@ import { useRouter } from "next/router";
 import AvailabilityTable from "../../components/schedule/AvailbilityTable";
 import PublishEventCard from "../../components/schedule/publish/PublishEventCard";
 import BackArrow from "../../components/shared/BackArrow";
-import { noticeMessage, noticeShown } from "./schedule";
+import { notice } from "./schedule";
 
 const events = [];
 function Publish() {
-  const [, setNoticeMessage] = useAtom(noticeMessage);
-  const [, setIsNoticeShown] = useAtom(noticeShown);
+  const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
 
   const handlePublish = () => {
     setNoticeMessage("Your events have been successfully published!");
-    setIsNoticeShown(true);
     router.push("/schedule/schedule");
   };
 
