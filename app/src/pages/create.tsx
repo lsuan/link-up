@@ -11,6 +11,7 @@ import {
 } from "../components/form/DatePickerHelpers";
 import { Form } from "../components/form/Form";
 import BackArrow from "../components/shared/BackArrow";
+import ModalBackground from "../components/shared/ModalBackground";
 import { getTimeOptions, MINUTES } from "../utils/formHelpers";
 import { notice } from "./schedule/schedule";
 
@@ -93,13 +94,7 @@ function Create() {
   return (
     <section className="px-8">
       <BackArrow href="/dashboard" page="Dashboard" />
-      {isDatePickerOpen && (
-        <div
-          className={
-            "absolute top-0 left-0 z-50 h-full w-full overflow-hidden bg-neutral-700 opacity-90 blur-sm transition-all"
-          }
-        ></div>
-      )}
+      <ModalBackground isModalOpen={isDatePickerOpen} />
       <h1 className="mb-12 text-3xl">Plan a Schedule</h1>
       <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
         onSubmit={handleSubmit}

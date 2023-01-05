@@ -78,7 +78,7 @@ export const CalendarContainer = ({
       <div
         className={`max-w-xs rounded-lg bg-neutral-700 p-4 pb-3 ${className}`}
       >
-        <header className="relative mb-4 font-semibold">
+        <header className="relative mb-4 pr-6 font-semibold">
           <h3>
             {title}
             {required && <span className="ml-1 text-red-500">*</span>}
