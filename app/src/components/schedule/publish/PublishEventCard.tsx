@@ -6,7 +6,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function PublishEventCard() {
+function PublishEventCard({
+  index,
+  isEditing,
+  setIsEditing,
+}: {
+  index: number;
+  isEditing: boolean[];
+  setIsEditing: (state: boolean[]) => void;
+}) {
+  const setCardEditState = () => {
+    const prevCards = isEditing.slice(0, index);
+    const rest = isEditing.slice(index + 1);
+    setIsEditing([...prevCards, true, ...rest]);
+  };
   return (
     <div className="w-full rounded-lg bg-neutral-500 p-6">
       <header className="relative">
@@ -16,7 +29,7 @@ function PublishEventCard() {
             <FontAwesomeIcon icon={faTrash} />
           </button>
           <button className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
-            <FontAwesomeIcon icon={faEdit} />
+            <FontAwesomeIcon icon={faEdit} onClick={() => setCardEditState()} />
           </button>
         </div>
       </header>

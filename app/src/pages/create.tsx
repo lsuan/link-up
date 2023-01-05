@@ -1,13 +1,12 @@
-import { faCalendarDay } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
 import {
   CalendarContainer,
   CalendarHeader,
+  CustomDatePicker,
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
 import { Form } from "../components/form/Form";
@@ -90,34 +89,6 @@ function Create() {
     return options;
   };
 
-  const DeadlineDatePicker = forwardRef(
-    (
-      { value, onClick }: { value?: string; onClick?: () => void },
-      ref: any
-    ) => (
-      <div className="flex flex-col">
-        <div className="relative">
-          <button
-            type="button"
-            className=" w-full rounded-lg border border-neutral-500 bg-neutral-900 px-4 py-2 text-left"
-            onClick={onClick}
-            ref={ref}
-          >
-            <FontAwesomeIcon icon={faCalendarDay} className="mr-2" />
-            {value ? (
-              value
-            ) : (
-              <span className="text-neutral-500">Select a date...</span>
-            )}
-          </button>
-          <label className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all">
-            Deadline to Fill By
-          </label>
-        </div>
-      </div>
-    )
-  );
-
   // TODO: add defaultValues + account for datepicker values
   return (
     <section className="px-8">
@@ -185,7 +156,9 @@ function Create() {
           onChange={(date) =>
             setDefaultValues({ ...defaultValues, deadline: date })
           }
-          customInput={<DeadlineDatePicker />}
+          customInput={
+            <CustomDatePicker label="Deadline to fill by"></CustomDatePicker>
+          }
           calendarContainer={({ children }) => (
             <CalendarContainer
               title={"When should attendees send their availability by?"}

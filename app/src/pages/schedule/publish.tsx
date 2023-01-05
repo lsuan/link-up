@@ -2,7 +2,9 @@ import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import AvailabilityTable from "../../components/schedule/AvailbilityTable";
+import EditEventCard from "../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../components/schedule/publish/PublishEventCard";
 import BackArrow from "../../components/shared/BackArrow";
 import { notice } from "./schedule";
@@ -10,6 +12,7 @@ import { notice } from "./schedule";
 const events = [];
 function Publish() {
   const [, setNoticeMessage] = useAtom(notice);
+  const [isEditing, setIsEditing] = useState<boolean[]>([false]);
   const router = useRouter();
 
   const handlePublish = () => {
@@ -27,7 +30,19 @@ function Publish() {
         each):
       </h3>
       <div className="my-4 flex flex-col items-center gap-2">
-        <PublishEventCard />
+        {isEditing[0] ? (
+          <EditEventCard
+            index={0}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+          />
+        ) : (
+          <PublishEventCard
+            index={0}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+          />
+        )}
         <button className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
           <FontAwesomeIcon icon={faPlus} />
         </button>
