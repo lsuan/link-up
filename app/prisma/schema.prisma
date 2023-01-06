@@ -60,6 +60,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  schedules     Schedule[]
 }
 
 model VerificationToken {
@@ -68,4 +69,19 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Schedule {
+  id             String @id @default(cuid())
+  name           String
+  description    String?
+  startDate      DateTime
+  endDate        DateTime
+  startTime      String
+  endTime        String
+  deadline       String?
+  numberOfEvents Int
+  lengthOfEvents String
+  userId         String
+  host           User @relation(fields: [userId], references: [id])
 }
