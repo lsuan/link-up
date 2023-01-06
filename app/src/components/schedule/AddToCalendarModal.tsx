@@ -11,7 +11,6 @@ function AddToCalendarModal() {
 
   useEffect(() => {
     window.onkeyup = (e) => {
-      console.log(e.key);
       if (e.key === "Escape") {
         setIsAddToCalendarModalShown(false);
       }

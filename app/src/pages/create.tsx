@@ -26,7 +26,7 @@ type CreateScheduleInputs = {
   endTime: string;
   timeZone: string;
   deadline?: Date | null;
-  numberOfEvents: number;
+  numberOfEvents: string;
   lengthOfEvents: string;
 };
 
@@ -52,7 +52,7 @@ const CreateScheduleSchema = z.object({
     .min(new Date(), { message: "Deadline must not be in the past!" })
     .optional(),
   numberOfEvents: z
-    .number()
+    .string()
     .min(1, { message: "You must have at least one event!" }),
   lengthOfEvents: z.string(),
 });
@@ -67,12 +67,11 @@ function Create() {
     dateRange: { startDate: new Date(), endDate: null },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
-    numberOfEvents: 1,
+    numberOfEvents: "1",
     lengthOfEvents: "1 hour",
   });
 
   const handleSubmit = (data: SubmitHandler) => {
-    console.log(data);
     setNoticeMessage("Your schedule has successfully been created!");
     router.push("/schedule/schedule");
   };

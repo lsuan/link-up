@@ -11,7 +11,6 @@ function Share() {
 
   useEffect(() => {
     window.onkeyup = (e) => {
-      console.log(e.key);
       if (e.key === "Escape") {
         setIsShareModalShown(false);
       }

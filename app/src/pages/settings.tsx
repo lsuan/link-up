@@ -11,7 +11,7 @@ import { trpc } from "../utils/trpc";
 
 type SettingsInputs = {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email?: string;
   passwords?: {
     password: string;
@@ -34,7 +34,7 @@ type SettingsResponse = {
 // FIXME: use a different schema for oauth users?
 const SettingsSchema = z.object({
   firstName: z.string().min(1, "First name is required!"),
-  lastName: z.string(),
+  lastName: z.string().nullish().optional(),
   email: z
     .string()
     .min(1, "Email is required!")

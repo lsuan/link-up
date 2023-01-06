@@ -52,7 +52,7 @@ export const userRouter = router({
       z.object({
         id: z.string(),
         firstName: z.string(),
-        lastName: z.string().nullish(),
+        lastName: z.string().optional(),
         email: z.string().optional(),
         password: z.string().optional(),
       })
@@ -61,6 +61,9 @@ export const userRouter = router({
       const otherUser = await ctx.prisma.user.findUnique({
         where: { email: input.email },
       });
+
+      console.log("in user update");
+      console.log(input);
 
       if (otherUser?.id !== input.id) {
         const trpcError: TRPCError = {

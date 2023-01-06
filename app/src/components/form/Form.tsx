@@ -120,6 +120,7 @@ Form.Select = function Select({
   } = useFormContext();
 
   const error = parseDeepErrors(errors, name);
+  console.log(error);
   return (
     <div className="flex w-full flex-col gap-1">
       <fieldset className="relative">
@@ -132,7 +133,7 @@ Form.Select = function Select({
           placeholder={displayName}
         >
           {options.map((option, index) => (
-            <option key={index} value={option.value}>
+            <option key={index} value={option}>
               {option}
             </option>
           ))}
