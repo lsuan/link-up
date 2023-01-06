@@ -1,7 +1,9 @@
 import { useAtom } from "jotai";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
+import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import {
   CalendarContainer,
@@ -13,6 +15,7 @@ import { Form } from "../components/form/Form";
 import BackArrow from "../components/shared/BackArrow";
 import ModalBackground from "../components/shared/ModalBackground";
 import { getTimeOptions, MINUTES } from "../utils/formHelpers";
+import { trpc } from "../utils/trpc";
 import { notice } from "./schedule/schedule";
 
 type CreateScheduleInputs = {
@@ -26,7 +29,7 @@ type CreateScheduleInputs = {
   endTime: string;
   timeZone: string;
   deadline?: Date | null;
-  numberOfEvents: string;
+  numberOfEvents: number;
   lengthOfEvents: string;
 };
 
@@ -52,14 +55,14 @@ const CreateScheduleSchema = z.object({
     .min(new Date(), { message: "Deadline must not be in the past!" })
     .optional(),
   numberOfEvents: z
-    .string()
+    .number()
     .min(1, { message: "You must have at least one event!" }),
   lengthOfEvents: z.string(),
 });
 
-type SubmitHandler = {};
-
 function Create() {
+  const { data: sessionData } = useSession();
+  const createSchedule = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
@@ -67,13 +70,43 @@ function Create() {
     dateRange: { startDate: new Date(), endDate: null },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
-    numberOfEvents: "1",
+    numberOfEvents: 1,
     lengthOfEvents: "1 hour",
   });
 
-  const handleSubmit = (data: SubmitHandler) => {
-    setNoticeMessage("Your schedule has successfully been created!");
-    router.push("/schedule/schedule");
+  const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (data) => {
+    const {
+      scheduleName: name,
+      description,
+      startTime,
+      endTime,
+      deadline,
+      numberOfEvents,
+      lengthOfEvents,
+    } = data;
+    const { startDate, endDate } = data.dateRange as {
+      startDate: Date;
+      endDate: Date;
+    };
+    const userId = sessionData?.user?.id as string;
+
+    const res = await createSchedule.mutateAsync({
+      name,
+      description,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      deadline,
+      numberOfEvents,
+      lengthOfEvents,
+      userId,
+    });
+
+    if (res) {
+      setNoticeMessage("Your schedule has successfully been created!");
+      router.push("/schedule/schedule");
+    }
   };
 
   const getEventLengthOptions = () => {

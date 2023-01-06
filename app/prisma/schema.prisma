@@ -72,16 +72,17 @@ model VerificationToken {
 }
 
 model Schedule {
-  id             String @id @default(cuid())
+  id             String   @id @default(cuid())
   name           String
   description    String?
-  startDate      DateTime
-  endDate        DateTime
+  startDate      DateTime @db.DateTime()
+  endDate        DateTime @db.DateTime()
   startTime      String
   endTime        String
-  deadline       String?
-  numberOfEvents Int
+  deadline       DateTime?
+  numberOfEvents Int      @db.UnsignedTinyInt
   lengthOfEvents String
   userId         String
-  host           User @relation(fields: [userId], references: [id])
+  host           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @db.Timestamp(0) @default(now())
 }
