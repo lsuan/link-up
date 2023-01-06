@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
   createSchedule: protectedProcedure
@@ -24,5 +24,26 @@ export const scheduleRouter = router({
         },
       });
       return { schedule: newSchedule };
+    }),
+
+  getScheduleFromSlugId: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        id: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { name, id } = input;
+      const schedule = await ctx.prisma.schedule.findFirst({
+        where: {
+          id: {
+            endsWith: id,
+          },
+          name: name,
+        },
+      });
+
+      return schedule;
     }),
 });

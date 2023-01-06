@@ -34,17 +34,15 @@ export const userRouter = router({
   getUser: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      {
-        if (input.id.length === 0) {
-          return null;
-        }
-
-        const user = await ctx.prisma.user.findFirst({
-          where: { id: input.id },
-          include: { accounts: true },
-        });
-        return user;
+      if (input.id.length === 0) {
+        return null;
       }
+
+      const user = await ctx.prisma.user.findFirst({
+        where: { id: input.id },
+        include: { accounts: true },
+      });
+      return user;
     }),
 
   updateUser: protectedProcedure
@@ -61,9 +59,6 @@ export const userRouter = router({
       const otherUser = await ctx.prisma.user.findUnique({
         where: { email: input.email },
       });
-
-      console.log("in user update");
-      console.log(input);
 
       if (otherUser?.id !== input.id) {
         const trpcError: TRPCError = {

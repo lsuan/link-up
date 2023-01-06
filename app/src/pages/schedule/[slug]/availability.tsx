@@ -1,5 +1,5 @@
-import AvailabilityTable from "../../components/schedule/AvailbilityTable";
-import BackArrow from "../../components/shared/BackArrow";
+import AvailabilityTable from "../../../components/schedule/AvailbilityTable";
+import BackArrow from "../../../components/shared/BackArrow";
 
 function Availability() {
   return (

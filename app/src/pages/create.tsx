@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -16,7 +16,7 @@ import BackArrow from "../components/shared/BackArrow";
 import ModalBackground from "../components/shared/ModalBackground";
 import { getTimeOptions, MINUTES } from "../utils/formHelpers";
 import { trpc } from "../utils/trpc";
-import { notice } from "./schedule/schedule";
+import { notice } from "./schedule/[slug]";
 
 type CreateScheduleInputs = {
   scheduleName: string;
@@ -104,8 +104,12 @@ function Create() {
     });
 
     if (res) {
+      const { name, id } = res.schedule;
+      const joinedName = name.toLowerCase().split(" ").join("-");
+      const lastOfId = res.schedule.id.substring(id.length - 8);
+      const slug = `${joinedName}-${lastOfId}`;
       setNoticeMessage("Your schedule has successfully been created!");
-      router.push("/schedule/schedule");
+      router.push(`schedule/${slug}`);
     }
   };
 
