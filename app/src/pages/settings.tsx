@@ -54,7 +54,7 @@ function Settings() {
   const { data } = useSession();
   const user = trpc.user.getUser.useQuery(
     { id: data?.user?.id as string },
-    { enabled: data?.user !== undefined }
+    { enabled: data?.user !== undefined, refetchOnWindowFocus: false }
   );
   const updateUser = trpc.user.updateUser.useMutation();
   const [formValues, setFormValues] = useState<Record<string, any>>({

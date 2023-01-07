@@ -97,6 +97,7 @@ function Dashboard() {
           {unstarted.data?.map((schedule) => {
             return (
               <UnstartedCard
+                key={schedule.id}
                 id={schedule.id}
                 name={schedule.name}
                 description={schedule.description}

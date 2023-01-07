@@ -60,13 +60,18 @@ function Schedule() {
   const { data: sessionData } = useSession();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
-  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery({
-    name: name,
-    id: scheduleIdPart,
-  });
-  const host = trpc.user.getUser.useQuery({ id: schedule?.data?.userId || "" });
+  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
+    {
+      name: name,
+      id: scheduleIdPart,
+    },
+    { enabled: sessionData?.user !== undefined, refetchOnWindowFocus: false }
+  );
+  const host = trpc.user.getUser.useQuery(
+    { id: schedule?.data?.userId || "" },
+    { enabled: schedule?.data !== undefined, refetchOnWindowFocus: false }
+  );
   const isHost = host.data?.id === sessionData?.user?.id;
-
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [noticeMessage, setNoticeMessage] = useAtom(notice);
@@ -111,13 +116,13 @@ function Schedule() {
               Share
             </button>
           </header>
-          <p>
-            {schedule?.data?.deadline && (
-              <span className="underline">
-                {schedule?.data?.deadline.toLocaleDateString()}
-              </span>
-            )}
-          </p>
+
+          {schedule?.data?.deadline && (
+            <p>
+              <span className="underline">Deadline to Fill By</span>
+              <span>{`: ${schedule?.data?.deadline.toLocaleDateString()}`}</span>
+            </p>
+          )}
           <div className="my-4">{schedule?.data?.description}</div>
           <div className="z-10 mb-4 font-semibold">{`Hosted by: ${
             host?.data?.firstName
@@ -150,8 +155,12 @@ function Schedule() {
           )}
         </div>
 
-        <AvailabilitySection />
-        <PublishSection />
+        {schedule.data && (
+          <>
+            <AvailabilitySection schedule={schedule.data} />
+            <PublishSection />
+          </>
+        )}
       </section>
     </>
   );
