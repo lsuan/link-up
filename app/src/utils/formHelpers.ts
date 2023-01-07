@@ -15,7 +15,6 @@ export const parseDeepErrors = (
   if (parsedName[0] && errors.hasOwnProperty(parsedName[0])) {
     const root = errors[parsedName[0]];
     if (root) {
-      console.log(root);
       let children = "";
       for (let i = 1; i < parsedName.length; i++) {
         const child = parsedName[i] as string;

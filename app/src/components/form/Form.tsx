@@ -1,9 +1,4 @@
-import {
-  faArrowsSpin,
-  faCircleNotch,
-  faEllipsis,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
@@ -120,19 +115,20 @@ Form.Select = function Select({
   } = useFormContext();
 
   const error = parseDeepErrors(errors, name);
+  // console.log(error);
   return (
     <div className="flex w-full flex-col gap-1">
       <fieldset className="relative">
         <select
           key={name}
-          {...register(name)}
+          {...register(name, { valueAsNumber: typeof options[0] === "number" })}
           className={`peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-white placeholder:text-transparent ${
             className || ""
           }`}
           placeholder={displayName}
         >
           {options.map((option, index) => (
-            <option key={index} value={option.value}>
+            <option key={index} value={option}>
               {option}
             </option>
           ))}

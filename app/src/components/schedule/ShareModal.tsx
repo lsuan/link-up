@@ -2,7 +2,7 @@ import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
-import { notice, shareModalShown } from "../../pages/schedule/schedule";
+import { notice, shareModalShown } from "../../pages/schedule/[slug]";
 
 function Share() {
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
@@ -11,7 +11,6 @@ function Share() {
 
   useEffect(() => {
     window.onkeyup = (e) => {
-      console.log(e.key);
       if (e.key === "Escape") {
         setIsShareModalShown(false);
       }

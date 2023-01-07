@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { notice } from "./schedule";
-import AvailabilityTable from "../../components/schedule/AvailbilityTable";
-import EditEventCard from "../../components/schedule/publish/EditEventCard";
-import PublishEventCard from "../../components/schedule/publish/PublishEventCard";
-import BackArrow from "../../components/shared/BackArrow";
+import { notice } from ".";
+import AvailabilityTable from "../../../components/schedule/AvailbilityTable";
+import EditEventCard from "../../../components/schedule/publish/EditEventCard";
+import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
+import BackArrow from "../../../components/shared/BackArrow";
 
 const events = [];
 function Publish() {

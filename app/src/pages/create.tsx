@@ -1,7 +1,9 @@
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
+import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import {
   CalendarContainer,
@@ -13,7 +15,8 @@ import { Form } from "../components/form/Form";
 import BackArrow from "../components/shared/BackArrow";
 import ModalBackground from "../components/shared/ModalBackground";
 import { getTimeOptions, MINUTES } from "../utils/formHelpers";
-import { notice } from "./schedule/schedule";
+import { trpc } from "../utils/trpc";
+import { notice } from "./schedule/[slug]";
 
 type CreateScheduleInputs = {
   scheduleName: string;
@@ -57,9 +60,9 @@ const CreateScheduleSchema = z.object({
   lengthOfEvents: z.string(),
 });
 
-type SubmitHandler = {};
-
 function Create() {
+  const { data: sessionData } = useSession();
+  const createSchedule = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
@@ -71,10 +74,43 @@ function Create() {
     lengthOfEvents: "1 hour",
   });
 
-  const handleSubmit = (data: SubmitHandler) => {
-    console.log(data);
-    setNoticeMessage("Your schedule has successfully been created!");
-    router.push("/schedule/schedule");
+  const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (data) => {
+    const {
+      scheduleName: name,
+      description,
+      startTime,
+      endTime,
+      deadline,
+      numberOfEvents,
+      lengthOfEvents,
+    } = data;
+    const { startDate, endDate } = data.dateRange as {
+      startDate: Date;
+      endDate: Date;
+    };
+    const userId = sessionData?.user?.id as string;
+
+    const res = await createSchedule.mutateAsync({
+      name,
+      description,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      deadline,
+      numberOfEvents,
+      lengthOfEvents,
+      userId,
+    });
+
+    if (res) {
+      const { name, id } = res.schedule;
+      const joinedName = name.toLowerCase().split(" ").join("-");
+      const lastOfId = res.schedule.id.substring(id.length - 8);
+      const slug = `${joinedName}-${lastOfId}`;
+      setNoticeMessage("Your schedule has successfully been created!");
+      router.push(`schedule/${slug}`);
+    }
   };
 
   const getEventLengthOptions = () => {

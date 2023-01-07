@@ -1,19 +1,20 @@
-// TODO: Redo this file to be /schedules/{slug}
-
 import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import EventCard, {
   addToCalendarModal,
-} from "../../components/dashboard/EventCard";
-import AddToCalendarModal from "../../components/schedule/AddToCalendarModal";
-import AvailabilitySection from "../../components/schedule/AvailabilitySection";
-import PublishSection from "../../components/schedule/PublishSection";
-import Share from "../../components/schedule/ShareModal";
-import SuccessNotice from "../../components/schedule/SuccessNotice";
-import BackArrow from "../../components/shared/BackArrow";
-import ModalBackground from "../../components/shared/ModalBackground";
+} from "../../../components/dashboard/EventCard";
+import AddToCalendarModal from "../../../components/schedule/AddToCalendarModal";
+import AvailabilitySection from "../../../components/schedule/AvailabilitySection";
+import PublishSection from "../../../components/schedule/PublishSection";
+import Share from "../../../components/schedule/ShareModal";
+import SuccessNotice from "../../../components/schedule/SuccessNotice";
+import BackArrow from "../../../components/shared/BackArrow";
+import ModalBackground from "../../../components/shared/ModalBackground";
+import { trpc } from "../../../utils/trpc";
 
 type Event = {
   id: string;
@@ -52,6 +53,21 @@ export const notice = atom("");
 export const shareModalShown = atom(false);
 
 function Schedule() {
+  const router = useRouter();
+  // this is needed since it is different from the actual user
+  // users can still browse this page even if they are not logged in
+  const { data: sessionData } = useSession();
+  const { slug } = router.query as { slug: string };
+  const parsed = slug?.split("-");
+  const scheduleIdPart = parsed?.pop() || ("" as string);
+  const name = parsed?.join(" ") || "";
+  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery({
+    name: name,
+    id: scheduleIdPart,
+  });
+  const host = trpc.user.getUser.useQuery({ id: schedule?.data?.userId || "" });
+  const isHost = host.data?.id === sessionData?.user?.id;
+
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [noticeMessage, setNoticeMessage] = useAtom(notice);
@@ -81,26 +97,12 @@ function Schedule() {
         isModalOpen={isAddToCalendarModalShown}
         setIsModalOpen={setIsAddToCalendarModalShown}
       />
-      {/* {isShareModalShown && (
-        <div
-          className="absolute left-0 top-0 z-10 h-full w-full bg-neutral-700 opacity-90 blur-sm transition-all"
-          onClick={() => setIsShareModalShown(false)}
-        ></div>
-      )}
-      {isAddToCalendarModalShown && (
-        <div
-          className="absolute left-0 top-0 z-10 h-full w-full bg-neutral-700 opacity-90 blur-sm transition-all"
-          onClick={() => setIsAddToCalendarModalShown(false)}
-        ></div>
-      )} */}
       <section>
         {noticeMessage !== "" && <SuccessNotice />}
         <div className="px-8">
           <BackArrow href="/dashboard" page="Dashboard" />
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
-            <h1 className="text-3xl font-semibold">
-              A Very Long Schedule Name Example
-            </h1>
+            <h1 className="text-3xl font-semibold">{schedule?.data?.name}</h1>
             {isShareModalShown && <Share />}
             <button
               className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
@@ -111,15 +113,16 @@ function Schedule() {
             </button>
           </header>
           <p>
-            <span className="underline">Deadline to Fill By</span>: Month Day
-            Year (maybe move this down to availability section)
+            {schedule?.data?.deadline && (
+              <span className="underline">
+                {schedule?.data?.deadline.toLocaleDateString()}
+              </span>
+            )}
           </p>
-          <div className="my-4">
-            This will be the schedule for our bootcamp group’s meetings.
-            Everyone should make sure to review the dates and locations before
-            the events start.
-          </div>
-          <div className="z-10 mb-4 font-semibold">Hosted by: User</div>
+          <div className="my-4">{schedule?.data?.description}</div>
+          <div className="z-10 mb-4 font-semibold">{`Hosted by: ${
+            host?.data?.firstName
+          } ${host?.data?.lastName || ""}`}</div>
 
           {events.length > 0 ? (
             <div className="relative">

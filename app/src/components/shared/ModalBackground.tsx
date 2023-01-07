@@ -5,7 +5,6 @@ function ModalBackground({
   isModalOpen: boolean;
   setIsModalOpen?: (state: boolean) => void;
 }) {
-  console.log(isModalOpen);
   return (
     <>
       {isModalOpen && (
