@@ -14,6 +14,7 @@ import Share from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import ModalBackground from "../../../components/shared/ModalBackground";
+import { parseSlug } from "../../../utils/scheduleSlug";
 import { trpc } from "../../../utils/trpc";
 
 type Event = {
@@ -58,9 +59,7 @@ function Schedule() {
   // users can still browse this page even if they are not logged in
   const { data: sessionData } = useSession();
   const { slug } = router.query as { slug: string };
-  const parsed = slug?.split("-");
-  const scheduleIdPart = parsed?.pop() || ("" as string);
-  const name = parsed?.join(" ") || "";
+  const { name, scheduleIdPart } = parseSlug(slug);
   const schedule = trpc.schedule.getScheduleFromSlugId.useQuery({
     name: name,
     id: scheduleIdPart,

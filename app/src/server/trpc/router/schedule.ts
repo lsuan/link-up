@@ -46,4 +46,16 @@ export const scheduleRouter = router({
 
       return schedule;
     }),
+
+  getUnstartedSchedules: protectedProcedure.query(async ({ ctx }) => {
+    const unstarted = await ctx.prisma.schedule.findMany({
+      where: {
+        events: {
+          none: {},
+        },
+      },
+    });
+
+    return unstarted;
+  }),
 });
