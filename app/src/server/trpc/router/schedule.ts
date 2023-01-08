@@ -58,4 +58,7 @@ export const scheduleRouter = router({
 
     return unstarted;
   }),
+
+  // setAvailability: publicProcedure
+  // .input(z.object())
 });

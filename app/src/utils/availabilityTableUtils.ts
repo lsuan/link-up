@@ -15,6 +15,85 @@ const getHourNumber = (time: string) => {
   }
 };
 
+const createDateLabels = (startDate: Date, endDate: Date) => {
+  const dateLabels = document.createElement("div");
+  dateLabels.classList.add(
+    "sticky",
+    "top-0",
+    "flex",
+    "w-fit",
+    "justify-center"
+  );
+  const fillCell = document.createElement("div");
+  fillCell.classList.add("w-12", "px-2");
+  dateLabels.append(fillCell);
+  for (
+    let date = new Date(startDate);
+    date < endDate;
+    date.setDate(date.getDate() + 1)
+  ) {
+    const dateLabel = document.createElement("label");
+    dateLabel.classList.add(
+      "text-xs",
+      "text-center",
+      "font-semibold",
+      "pb-2",
+      "select-none",
+      "pointer-events-none",
+      "w-20",
+      "text-center"
+    );
+
+    const dateText = new Intl.DateTimeFormat("en-us", {
+      weekday: "short",
+      day: "2-digit",
+      month: "2-digit",
+    }).format(date);
+
+    dateLabel.innerText = `${dateText}`;
+    dateLabels.append(dateLabel);
+  }
+  return dateLabels;
+};
+
+const createHourLabels = (startHour: number, endHour: number) => {
+  const allHours = [...Array(endHour - startHour + 1).keys()].map(
+    (i) => i + startHour
+  );
+  const formattedHours = getFormattedHours(allHours, "short");
+
+  const hourLabels = document.createElement("div");
+  hourLabels.classList.add(
+    "flex",
+    "flex-col",
+    "w-12",
+    "px-2",
+    "sticky",
+    "left-0",
+    "items-center",
+    "justify-between",
+    "bg-inherit",
+    "gap-3"
+  );
+
+  formattedHours.forEach((hour) => {
+    const hourLabel = document.createElement("div");
+    hourLabel.classList.add(
+      "text-xs",
+      "font-semibold",
+      "w-max",
+      "flex",
+      "justify-center",
+      "items-start",
+      "pointer-events-none"
+    );
+    hourLabel.innerText = `${hour}`;
+    hourLabels.appendChild(hourLabel);
+  });
+
+  return hourLabels;
+};
+
 export const createTable = (
   startDate: Date,
   endDate: Date,
@@ -28,97 +107,58 @@ export const createTable = (
     return;
   }
 
+  const dateBeforeEnd = new Date(endDate).setDate(endDate.getDate() - 1);
+
+  const dateLabels = createDateLabels(startDate, endDate);
+  table.parentElement?.prepend(dateLabels);
+
   const startHour = getHourNumber(startTime),
     endHour = getHourNumber(endTime);
+  const hourLabels = createHourLabels(startHour, endHour);
+  table.append(hourLabels);
 
-  const allHours = [...Array(endHour - startHour + 1).keys()].map(
-    (i) => i + startHour
-  );
-  const formattedHours = getFormattedHours(allHours, "short");
-
-  const hoursContainer = document.createElement("div");
-  hoursContainer.classList.add(
+  const availabilityGrid = document.createElement("div");
+  availabilityGrid.classList.add(
+    "rounded-lg",
     "flex",
-    "flex-col",
-    "pr-1",
-    "sticky",
-    "left-0",
-    "items-center",
-    "justify-end",
-    "bg-neutral-500"
+    "border",
+    "overflow-hidden"
   );
-
-  formattedHours.forEach((hour) => {
-    const hourLabel = document.createElement("div");
-    hourLabel.classList.add(
-      "h-8",
-      "text-xs",
-      "font-semibold",
-      "w-max",
-      "flex",
-      "justify-center",
-      "items-center",
-      "pointer-events-none"
-    );
-    hourLabel.innerText = `${hour}`;
-    hoursContainer.appendChild(hourLabel);
-  });
-  table.parentElement?.prepend(hoursContainer);
 
   for (
-    let date = new Date(startDate);
-    date <= endDate;
-    date.setDate(date.getDate() + 1)
+    let date = new Date(startDate), colIndex = 0;
+    date < endDate;
+    date.setDate(date.getDate() + 1), colIndex++
   ) {
-    const colContainer = document.createElement("div");
-    colContainer.classList.add("flex", "flex-col");
-
-    const colLabel = document.createElement("label");
-    const dateLabel = new Intl.DateTimeFormat("en-us", {
-      weekday: "short",
-      day: "2-digit",
-      month: "2-digit",
-    }).format(date);
-    colLabel.classList.add(
-      "text-sm",
-      "text-center",
-      "font-semibold",
-      "pb-2",
-      "select-none",
-      "pointer-events-none"
-    );
-    colLabel.innerText = `${dateLabel}`;
-
     const col = document.createElement("div");
-
-    colContainer.append(colLabel, col);
     col.classList.add("flex", "flex-col", "rounded-lg", "day-col");
     col.setAttribute("data-date", date.toISOString());
 
-    for (let hour = startHour, index = 0; hour <= endHour; hour++, index++) {
+    for (
+      let hour = startHour, rowIndex = 0;
+      hour < endHour;
+      hour++, rowIndex++
+    ) {
       const cell = document.createElement("div");
-      cell.classList.add("h-8", "border", "hover:cursor-pointer", "w-20");
-      cell.setAttribute("data-time", hour.toString());
-      if (index === 0 && date.getDate() === startDate.getDate()) {
-        cell.classList.add("rounded-tl-lg");
+      cell.setAttribute("data-time", `${hour}-${hour + 1}`);
+      cell.setAttribute("data-row-index", rowIndex.toString());
+      cell.setAttribute("data-col-index", colIndex.toString());
+      cell.classList.add(
+        "time-cell",
+        "h-8",
+        "hover:cursor-pointer",
+        "w-20",
+        "transition-colors"
+      );
+      if (date < new Date(dateBeforeEnd)) {
+        cell.classList.add("border-r");
       }
-      if (
-        hour === getHourNumber(endTime) &&
-        date.getDate() === startDate.getDate()
-      ) {
-        cell.classList.add("rounded-bl-lg");
-      }
-      if (index === 0 && date.getDate() === endDate.getDate()) {
-        cell.classList.add("rounded-tr-lg");
-      }
-      if (
-        hour === getHourNumber(endTime) &&
-        date.getDate() === endDate.getDate()
-      ) {
-        cell.classList.add("rounded-br-lg");
+      if (hour !== endHour - 1) {
+        cell.classList.add("border-b");
       }
       col.append(cell);
     }
-    table.append(colContainer);
+    availabilityGrid.append(col);
   }
+  table.append(availabilityGrid);
 };

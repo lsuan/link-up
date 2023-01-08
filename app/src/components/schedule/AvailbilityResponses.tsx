@@ -13,12 +13,11 @@ function AvailabilityResponses({ schedule }: AvailabilityProps) {
       endTime,
       "availability-responses"
     );
-  }, [createTable]);
+  }, []);
 
   return (
     <section>
-      <div className="rounded-full">Key</div>
-      <div className="horizontal-scrollbar relative my-4 flex overflow-x-scroll pb-4">
+      <div className="horizontal-scrollbar availability-table relative my-4 grid place-items-center overflow-x-scroll pb-4">
         <div
           className="border-grey-500 flex w-fit pl-1"
           id="availability-responses"
