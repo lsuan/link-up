@@ -132,7 +132,8 @@ export const createTable = (
   ) {
     const col = document.createElement("div");
     col.classList.add("flex", "flex-col", "rounded-lg", "day-col");
-    col.setAttribute("data-date", date.toISOString());
+    const dateData = date.toISOString().split("T")[0] as string;
+    col.setAttribute("data-date", dateData);
 
     for (
       let hour = startHour, rowIndex = 0;

@@ -1,12 +1,15 @@
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { createTable } from "../../utils/availabilityTableUtils";
+import { trpc } from "../../utils/trpc";
 import { AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityInput({ schedule }: AvailabilityProps) {
+  const { data: sessionData } = useSession();
   const { startDate, endDate, startTime, endTime } = schedule;
-  const [availability, setAvailability] = useState(
-    new Map<string, Set<string>>()
-  );
+  const setScheduleAvailability = trpc.schedule.setAvailability.useMutation();
+  const [guestUser, setGuestUser] = useState<string>();
+  const [availability, setAvailability] = useState(new Map<string, string[]>());
   const [isTableReady, setIsTableReady] = useState<boolean>(false);
 
   useEffect(() => {
@@ -90,12 +93,30 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
       cell.addEventListener("mouseup", (e) => {
         e.preventDefault();
         isEditing = false;
-        setAvailability(currentAvailability);
+        const newMap = new Map<string, string[]>();
+        for (const [key, values] of currentAvailability) {
+        }
+        setAvailability(newMap);
       });
     });
   }, [isTableReady]);
 
-  const save = () => {};
+  const save = async () => {
+    const user = sessionData?.user?.id || (guestUser as string);
+    const times = Object.fromEntries(availability);
+    const attendee = {
+      user: user,
+      availability: times,
+    };
+
+    const res = await setScheduleAvailability.mutateAsync({
+      id: schedule.id,
+      attendee: JSON.stringify(attendee),
+    });
+    // if (res) {
+    //   console.log(res);
+    // }
+  };
 
   return (
     <section>

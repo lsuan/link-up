@@ -59,6 +59,19 @@ export const scheduleRouter = router({
     return unstarted;
   }),
 
-  // setAvailability: publicProcedure
-  // .input(z.object())
+  setAvailability: publicProcedure
+    .input(z.object({ id: z.string(), attendee: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const jsonData = JSON.parse(input.attendee);
+      const dataToStore = JSON.parse(
+        `{"${jsonData["user"]}": {"availability": ${JSON.stringify(
+          jsonData["availability"]
+        )}}}`
+      );
+      const schedule = ctx.prisma.schedule.update({
+        data: { attendees: dataToStore },
+        where: { id: input.id },
+      });
+      return schedule;
+    }),
 });
