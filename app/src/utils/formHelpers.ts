@@ -36,19 +36,26 @@ export const getTimeOptions = () => {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
     21, 22, 23, 24,
   ];
+  const formattedHours = getFormattedHours(hours, "long");
+  return formattedHours;
+};
 
+export const getFormattedHours = (hours: number[], style: "long" | "short") => {
   const formattedHours = hours.map((hour) => {
+    let format;
     if (hour > 12 && hour < 24) {
-      return `${hour - 12}:00 PM`;
+      format = `${hour - 12}x PM`;
     } else if (hour == 12) {
-      return "12:00 PM";
+      format = "12x PM";
     } else if (hour == 0 || hour == 24) {
-      return "12:00 AM";
+      format = "12x AM";
     } else {
-      return `${hour}:00 AM`;
+      format = `${hour}x AM`;
     }
+    return style === "long"
+      ? format.replace("x", ":00")
+      : format.replace("x", "");
   });
-
   return formattedHours;
 };
 
