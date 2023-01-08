@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import EventCard, {
   addToCalendarModal,
 } from "../../../components/dashboard/EventCard";
@@ -74,22 +73,9 @@ function Schedule() {
   const isHost = host.data?.id === sessionData?.user?.id;
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
-  const [noticeMessage, setNoticeMessage] = useAtom(notice);
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
     useAtom(addToCalendarModal);
-
-  useEffect(() => {
-    if (noticeMessage !== "") {
-      const interval = setInterval(() => {
-        setNoticeMessage("");
-      }, 3000);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [noticeMessage]);
 
   return (
     <>
@@ -102,7 +88,7 @@ function Schedule() {
         setIsModalOpen={setIsAddToCalendarModalShown}
       />
       <section>
-        {noticeMessage !== "" && <SuccessNotice />}
+        <SuccessNotice />
         <div className="px-8">
           <BackArrow href="/dashboard" page="Dashboard" />
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
