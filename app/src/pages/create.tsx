@@ -14,8 +14,8 @@ import {
 import { Form } from "../components/form/Form";
 import BackArrow from "../components/shared/BackArrow";
 import ModalBackground from "../components/shared/ModalBackground";
-import { getTimeOptions, MINUTES } from "../utils/formHelpers";
-import { createSlug } from "../utils/scheduleSlug";
+import { getTimeOptions, MINUTES } from "../utils/formUtils";
+import { createSlug } from "../utils/scheduleSlugUtils";
 import { trpc } from "../utils/trpc";
 import { notice } from "./schedule/[slug]";
 

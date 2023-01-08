@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { createSlug } from "../../utils/scheduleSlug";
+import { createSlug } from "../../utils/scheduleSlugUtils";
 
 type Event = {
   // scheduleId: string;

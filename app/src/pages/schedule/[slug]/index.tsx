@@ -14,7 +14,7 @@ import Share from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { parseSlug } from "../../../utils/scheduleSlug";
+import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
 type Event = {
@@ -157,7 +157,7 @@ function Schedule() {
 
         {schedule.data && (
           <>
-            <AvailabilitySection schedule={schedule.data} />
+            <AvailabilitySection schedule={schedule.data} slug={slug} />
             <PublishSection />
           </>
         )}

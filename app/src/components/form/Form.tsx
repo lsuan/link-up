@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { parseDeepErrors } from "../../utils/formHelpers";
+import { parseDeepErrors } from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
 
 type GenericOnSubmit = (

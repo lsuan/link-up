@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { createSlug } from "../../utils/scheduleSlug";
+import { createSlug } from "../../utils/scheduleSlugUtils";
 
 type UnstartedProps = {
   id: string;

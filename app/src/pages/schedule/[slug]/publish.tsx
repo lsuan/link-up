@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { notice } from ".";
-import AvailabilityTable from "../../../components/schedule/AvailbilityTable";
+import AvailabilityResponses from "../../../components/schedule/AvailbilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
 import BackArrow from "../../../components/shared/BackArrow";
@@ -29,7 +29,7 @@ function Publish() {
     <section className="px-8">
       <BackArrow href="/schedule/schedule" page="Schedule" />
       <h1 className="mb-12 text-3xl font-semibold">Publish Event(s)</h1>
-      <AvailabilityTable />
+      <AvailabilityResponses />
       <h3 className="my-4 font-semibold">
         These are the best times based on your preferences (2 events, 2 hours
         each):
