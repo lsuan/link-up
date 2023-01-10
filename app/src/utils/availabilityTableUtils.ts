@@ -1,5 +1,10 @@
 import { getFormattedHours } from "./formUtils";
 
+export type UserAvailability = {
+  user: string;
+  availability: object;
+};
+
 export const resetResponses = () => {
   document
     .querySelectorAll("#availability-responses .date-col .time-cell")
@@ -170,4 +175,22 @@ export const createTable = (
     availabilityGrid.append(col);
   }
   table.append(availabilityGrid);
+};
+
+export const fillTable = (
+  attendees: UserAvailability[],
+  tableId: "availability-responses" | "availability-input"
+) => {
+  attendees.forEach((attendee) => {
+    for (const [date, hours] of Object.entries(attendee.availability)) {
+      console.log(date, hours);
+      hours.forEach((hour: string) => {
+        document
+          .querySelector(
+            `#${tableId} .date-col[data-date="${date}"] .time-cell[data-time="${hour}"]`
+          )
+          ?.classList.add("bg-indigo-500");
+      });
+    }
+  });
 };

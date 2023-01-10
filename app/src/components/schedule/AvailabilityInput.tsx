@@ -2,19 +2,44 @@ import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { notice } from "../../pages/schedule/[slug]";
-import { createTable } from "../../utils/availabilityTableUtils";
+import {
+  UserAvailability,
+  createTable,
+  fillTable,
+} from "../../utils/availabilityTableUtils";
 import { trpc } from "../../utils/trpc";
 import { AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
-  const { startDate, endDate, startTime, endTime } = schedule;
+  const { id, startDate, endDate, startTime, endTime } = schedule;
   const [isTableReady, setIsTableReady] = useState<boolean>(false);
   const setScheduleAvailability = trpc.schedule.setAvailability.useMutation();
-  const [availability, setAvailability] = useState(new Map<string, string[]>());
-  const [guestUser, setGuestUser] = useState<string>();
+  const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const userAvailability = trpc.schedule.getUserAvailability.useQuery(
+    {
+      id,
+      user: sessionData?.user?.id ?? guestUser,
+    },
+    {
+      enabled: sessionData?.user !== undefined,
+      refetchOnWindowFocus: false,
+      onSuccess: (data) => onSuccess(data),
+    }
+  );
+
+  const onSuccess = (data: UserAvailability[]) => {
+    fillTable(data, "availability-input");
+    const userAvailability = data[0];
+    const currentAvailability = new Map<string, string[]>();
+    for (const [date, hours] of Object.entries(
+      userAvailability?.availability || {}
+    )) {
+      currentAvailability.set(date, hours);
+    }
+  };
 
   useEffect(() => {
     createTable(startDate, endDate, startTime, endTime, "availability-input");
@@ -65,7 +90,6 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
           setIsDisabled(false);
         });
 
-        // TODO: revisit to implement square fill in functionality
         cell.addEventListener("mouseover", (e) => {
           e.preventDefault();
           if (!isEditing || !startCell) {
@@ -105,21 +129,31 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
         cell.addEventListener("mouseup", (e) => {
           e.preventDefault();
           isEditing = false;
-          const newMap = new Map<string, string[]>();
-          for (const [key, values] of currentAvailability) {
-            newMap.set(key, [...values]);
-          }
-          setAvailability(newMap);
         });
       });
   }, [isTableReady]);
 
   const save = async () => {
     const user = sessionData?.user?.id || (guestUser as string);
-    const times = Object.fromEntries(availability);
+    const times = new Map<string, string[]>();
+    document
+      .querySelectorAll("#availability-input .date-col")
+      .forEach((dateCol) => {
+        let hours: string[] = [];
+        for (const cell of dateCol.children) {
+          if (cell.classList.contains("bg-indigo-500")) {
+            hours.push(cell.getAttribute("data-time") ?? "");
+          }
+        }
+        const date = dateCol.getAttribute("data-date");
+        if (date && hours.length > 0) {
+          times.set(date, hours);
+        }
+      });
+
     const attendee = {
       user: user,
-      availability: times,
+      availability: Object.fromEntries(times),
     };
 
     const res = await setScheduleAvailability.mutateAsync({
