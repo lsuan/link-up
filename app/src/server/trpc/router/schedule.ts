@@ -81,15 +81,16 @@ export const scheduleRouter = router({
       let dataToStore;
 
       if (prevData.length > 0) {
-        const found = prevData.filter(
-          (entry) => entry["user"] === jsonData["user"]
+        const otherData = prevData.filter(
+          (entry) => entry["user"] !== jsonData["user"]
         );
+        dataToStore = otherData.concat([jsonData]);
 
-        if (found) {
-          dataToStore = [jsonData];
-        } else {
-          dataToStore = prevData.concat([jsonData]);
-        }
+        // if (found) {
+        //   dataToStore = [jsonData];
+        // } else {
+        //   dataToStore = prevData.concat([jsonData]);
+        // }
         // const otherData =
         //   prevData.filter((entry) => entry["user"] !== jsonData["user"]) ?? [];
         // const found = prevData.filter(
