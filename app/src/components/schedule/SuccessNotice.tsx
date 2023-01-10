@@ -22,7 +22,7 @@ function SuccessNotice() {
   return (
     <>
       {noticeMessage !== "" && (
-        <div className="sticky top-0 -mt-8 flex w-full justify-between bg-neutral-900 p-4 shadow-md shadow-neutral-700">
+        <div className="sticky top-0 z-10 -mt-8 flex w-full justify-between bg-neutral-900 p-4 shadow-md shadow-neutral-700">
           <div className="text-sm">
             <FontAwesomeIcon
               icon={faCheckCircle}

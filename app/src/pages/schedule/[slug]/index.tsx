@@ -1,5 +1,6 @@
 import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { User } from "@prisma/client";
 import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -64,13 +65,10 @@ function Schedule() {
       name: name,
       id: scheduleIdPart,
     },
-    { enabled: sessionData?.user !== undefined, refetchOnWindowFocus: false }
+    { enabled: router.isReady, refetchOnWindowFocus: false }
   );
-  const host = trpc.user.getUser.useQuery(
-    { id: schedule?.data?.userId || "" },
-    { enabled: schedule?.data !== undefined, refetchOnWindowFocus: false }
-  );
-  const isHost = host.data?.id === sessionData?.user?.id;
+  const host = schedule.data?.host ?? null;
+  const isHost = host ? host.id === sessionData?.user?.id : false;
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
@@ -111,8 +109,8 @@ function Schedule() {
           )}
           <div className="my-4">{schedule?.data?.description}</div>
           <div className="z-10 mb-4 font-semibold">{`Hosted by: ${
-            host?.data?.firstName
-          } ${host?.data?.lastName || ""}`}</div>
+            host?.firstName
+          } ${host?.lastName || ""}`}</div>
 
           {events.length > 0 ? (
             <div className="relative">

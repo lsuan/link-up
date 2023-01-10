@@ -1,9 +1,19 @@
-import { useEffect } from "react";
-import { createTable } from "../../utils/availabilityTableUtils";
+import { useEffect, useState } from "react";
+import { JSONObject } from "superjson/dist/types";
+import {
+  createTable,
+  resetResponses,
+} from "../../utils/availabilityTableUtils";
 import { AvailabilityProps } from "./AvailabilitySection";
+
+export type AttendeeAvailability = {
+  availability: object;
+};
 
 function AvailabilityResponses({ schedule }: AvailabilityProps) {
   const { startDate, endDate, startTime, endTime } = schedule;
+  const { attendees } = schedule as { attendees: JSONObject };
+  const [isTableReady, setIsTableReady] = useState<boolean>(false);
 
   useEffect(() => {
     createTable(
@@ -13,7 +23,28 @@ function AvailabilityResponses({ schedule }: AvailabilityProps) {
       endTime,
       "availability-responses"
     );
+    setIsTableReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!isTableReady) {
+      return;
+    }
+    resetResponses();
+
+    for (const [user, data] of Object.entries(attendees)) {
+      const availability = (data as AttendeeAvailability)["availability"];
+      for (const [date, hours] of Object.entries(availability)) {
+        hours.forEach((hour: string) => {
+          document
+            .querySelector(
+              `#availability-responses .date-col[data-date="${date}"] .time-cell[data-time="${hour}"]`
+            )
+            ?.classList.add("bg-indigo-500");
+        });
+      }
+    }
+  }, [isTableReady, schedule]);
 
   return (
     <section>

@@ -6,11 +6,16 @@ import AvailabilityKey from "./AvailabilityKey";
 import AvailabilityResponses from "./AvailbilityResponses";
 
 export type AvailabilityProps = {
+  scheduleQuery?: any;
   schedule: Schedule;
   slug?: string;
 };
 
-function AvailabilitySection({ schedule, slug }: AvailabilityProps) {
+function AvailabilitySection({
+  scheduleQuery,
+  schedule,
+  slug,
+}: AvailabilityProps) {
   return (
     <div className="my-8 w-full bg-neutral-500 py-8 px-8">
       <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>

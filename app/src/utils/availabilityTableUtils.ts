@@ -1,5 +1,13 @@
 import { getFormattedHours } from "./formUtils";
 
+export const resetResponses = () => {
+  document
+    .querySelectorAll("#availability-responses .date-col .time-cell")
+    .forEach((cell) => {
+      cell.classList.remove("bg-indigo-500");
+    });
+};
+
 const getHourNumber = (time: string) => {
   const [hour, meridiem] = time.split(" ");
   const hourNumber = parseInt(hour?.split(":")[0] || "");
@@ -99,7 +107,7 @@ export const createTable = (
   endDate: Date,
   startTime: string,
   endTime: string,
-  tableId: string
+  tableId: "availability-responses" | "availability-input"
 ) => {
   let table = document.getElementById(tableId);
 
@@ -131,7 +139,7 @@ export const createTable = (
     date.setDate(date.getDate() + 1), colIndex++
   ) {
     const col = document.createElement("div");
-    col.classList.add("flex", "flex-col", "rounded-lg", "day-col");
+    col.classList.add("flex", "flex-col", "date-col");
     const dateData = date.toISOString().split("T")[0] as string;
     col.setAttribute("data-date", dateData);
 

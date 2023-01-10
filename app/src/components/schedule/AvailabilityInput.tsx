@@ -6,7 +6,7 @@ import { createTable } from "../../utils/availabilityTableUtils";
 import { trpc } from "../../utils/trpc";
 import { AvailabilityProps } from "./AvailabilitySection";
 
-function AvailabilityInput({ schedule }: AvailabilityProps) {
+function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
   const { startDate, endDate, startTime, endTime } = schedule;
   const [isTableReady, setIsTableReady] = useState<boolean>(false);
@@ -53,59 +53,65 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
     let isEditing = false;
     let currentAvailability = new Map<string, Set<string>>();
     let startCell: null | HTMLDivElement;
-    document.querySelectorAll(".time-cell").forEach((cell) => {
-      cell.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        isEditing = true;
-        const cellElement = e.target as HTMLDivElement;
-        setCellBackground(cellElement, currentAvailability);
-        startCell = cellElement;
-        setIsDisabled(false);
+    document
+      .querySelectorAll("#availability-input .time-cell")
+      .forEach((cell) => {
+        cell.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          isEditing = true;
+          const cellElement = e.target as HTMLDivElement;
+          setCellBackground(cellElement, currentAvailability);
+          startCell = cellElement;
+          setIsDisabled(false);
+        });
+
+        // TODO: revisit to implement square fill in functionality
+        cell.addEventListener("mouseover", (e) => {
+          e.preventDefault();
+          if (!isEditing || !startCell) {
+            return;
+          }
+          const cellElement = e.target as HTMLDivElement;
+          setCellBackground(cellElement, currentAvailability);
+          const startRow = parseInt(
+            startCell.getAttribute("data-row-index") || ""
+          );
+          const startCol = parseInt(
+            startCell.getAttribute("data-col-index") || ""
+          );
+          const endRow = parseInt(
+            startCell.getAttribute("data-row-index") || ""
+          );
+          const endCol = parseInt(
+            startCell.getAttribute("data-col-index") || ""
+          );
+
+          // FIXME: fix the implementation for setting neighboring cells
+          for (let i = startRow; i <= endRow; i++) {
+            const passedCell = document.querySelector(
+              `.time-cell[data-row-index='${i}'][data-col-index='${endCol}']`
+            ) as HTMLDivElement;
+            setCellBackground(passedCell, currentAvailability);
+          }
+
+          for (let i = startCol; i <= endCol; i++) {
+            const passedCell = document.querySelector(
+              `.time-cell[data-row-index='${endRow}'][data-col-index='${i}']`
+            ) as HTMLDivElement;
+            setCellBackground(passedCell, currentAvailability);
+          }
+        });
+
+        cell.addEventListener("mouseup", (e) => {
+          e.preventDefault();
+          isEditing = false;
+          const newMap = new Map<string, string[]>();
+          for (const [key, values] of currentAvailability) {
+            newMap.set(key, [...values]);
+          }
+          setAvailability(newMap);
+        });
       });
-
-      // TODO: revisit to implement square fill in functionality
-      cell.addEventListener("mouseover", (e) => {
-        e.preventDefault();
-        if (!isEditing || !startCell) {
-          return;
-        }
-        const cellElement = e.target as HTMLDivElement;
-        setCellBackground(cellElement, currentAvailability);
-        const startRow = parseInt(
-          startCell.getAttribute("data-row-index") || ""
-        );
-        const startCol = parseInt(
-          startCell.getAttribute("data-col-index") || ""
-        );
-        const endRow = parseInt(startCell.getAttribute("data-row-index") || "");
-        const endCol = parseInt(startCell.getAttribute("data-col-index") || "");
-
-        // FIXME: fix the implementation for setting neighboring cells
-        for (let i = startRow; i <= endRow; i++) {
-          const passedCell = document.querySelector(
-            `.time-cell[data-row-index='${i}'][data-col-index='${endCol}']`
-          ) as HTMLDivElement;
-          setCellBackground(passedCell, currentAvailability);
-        }
-
-        for (let i = startCol; i <= endCol; i++) {
-          const passedCell = document.querySelector(
-            `.time-cell[data-row-index='${endRow}'][data-col-index='${i}']`
-          ) as HTMLDivElement;
-          setCellBackground(passedCell, currentAvailability);
-        }
-      });
-
-      cell.addEventListener("mouseup", (e) => {
-        e.preventDefault();
-        isEditing = false;
-        const newMap = new Map<string, string[]>();
-        for (const [key, values] of currentAvailability) {
-          newMap.set(key, [...values]);
-        }
-        setAvailability(newMap);
-      });
-    });
   }, [isTableReady]);
 
   const save = async () => {
@@ -123,6 +129,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
     if (res) {
       setNoticeMessage("Availability has been saved!");
       setIsDisabled(true);
+      scheduleQuery.refetch();
     }
   };
 

@@ -1,4 +1,6 @@
+import { JSONArray, JSONObject } from "superjson/dist/types";
 import { z } from "zod";
+import { AttendeeAvailability } from "../../../components/schedule/AvailbilityResponses";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
@@ -42,6 +44,9 @@ export const scheduleRouter = router({
           },
           name: name,
         },
+        include: {
+          host: true,
+        },
       });
 
       return schedule;
@@ -59,19 +64,75 @@ export const scheduleRouter = router({
     return unstarted;
   }),
 
+  /** JSON DATA STRUCTURE
+   * { "user", "availability": {"date": []}}
+   */
+
   setAvailability: publicProcedure
     .input(z.object({ id: z.string(), attendee: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const jsonData = JSON.parse(input.attendee);
-      const dataToStore = JSON.parse(
-        `{"${jsonData["user"]}": {"availability": ${JSON.stringify(
-          jsonData["availability"]
-        )}}}`
-      );
-      const schedule = ctx.prisma.schedule.update({
+
+      const schedule = await ctx.prisma.schedule.findFirst({
+        where: {
+          id: input.id,
+          // attendees: {
+          //   path: `[*].user`,
+          //   string_contains: jsonData["user"],
+          // },
+        },
+      });
+      // console.log(scheduleWithPreviousUserAvailability);
+      let prevData = schedule?.attendees as JSONObject;
+      // console.log("prevData", prevData);
+      let dataToStore;
+      if (Object.keys(prevData).length > 0) {
+        // for (let [user, availability] of Object.entries(prevData)) {
+        //   if (user === input.id) {
+        //     availability = jsonData["availability"];
+        //   } else {
+        //     for (const [newUser, newAvailability] of Object.entries(jsonData)) {
+        //       const newData = JSON.stringify(newAvailability);
+        //       prevData = {
+        //         ...prevData,
+        //         newUser: {
+        //           availability: JSON.parse(newData),
+        //         },
+        //       };
+        //     }
+        //   }
+        // }
+        const found = Object.keys(prevData).find(
+          (entry) => entry === jsonData["user"]
+        );
+        if (found) {
+          dataToStore = JSON.parse(
+            `{"${jsonData["user"]}": {"availability": ${JSON.stringify(
+              jsonData["availability"]
+            )}}}`
+          );
+        } else {
+          const newData = JSON.stringify(jsonData["availability"]).substring(1); // gets rid of beginning curly brace
+          const prevDataString = JSON.stringify(jsonData);
+          dataToStore = JSON.parse(
+            prevDataString.substring(prevDataString.length - 1) + "," + newData
+          );
+        }
+      } else {
+        dataToStore = JSON.parse(
+          `{"${jsonData["user"]}": {"availability": ${JSON.stringify(
+            jsonData["availability"]
+          )}}}`
+        );
+      }
+      console.log(dataToStore);
+      const newSchedule = await ctx.prisma.schedule.update({
         data: { attendees: dataToStore },
         where: { id: input.id },
       });
-      return schedule;
+      console.log(newSchedule);
+      return newSchedule;
     }),
+
+  // getUserAvailability: publicProcedure.input(z.string()).query()
 });
