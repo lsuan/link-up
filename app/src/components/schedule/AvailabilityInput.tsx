@@ -64,7 +64,7 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   const save = async () => {
     const user = sessionData?.user?.id ?? (guestUser as string);
     const times = new Map<string, string[]>();
-    const name = userFullName
+    const name = userFullName.data
       ? {
           firstName: userFullName.data?.firstName,
           lastName: userFullName.data?.lastName,
