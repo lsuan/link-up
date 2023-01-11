@@ -13,6 +13,8 @@ export const resetResponses = () => {
     });
 };
 
+// OPTIMIZE: Reactify this file and availability grid implemention
+
 const getHourNumber = (time: string) => {
   const [hour, meridiem] = time.split(" ");
   const hourNumber = parseInt(hour?.split(":")[0] || "");

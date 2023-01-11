@@ -1,6 +1,9 @@
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { SubmitHandler } from "react-hook-form";
+import { z } from "zod";
 import { notice } from "../../pages/schedule/[slug]";
 import {
   UserAvailability,
@@ -8,7 +11,14 @@ import {
   fillTable,
 } from "../../utils/availabilityTableUtils";
 import { trpc } from "../../utils/trpc";
+import { Form } from "../form/Form";
 import { AvailabilityProps } from "./AvailabilitySection";
+
+type AnonAvailabilityInputs = {
+  name: string;
+};
+
+const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
 
 function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
@@ -134,7 +144,7 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   }, [isTableReady]);
 
   const save = async () => {
-    const user = sessionData?.user?.id || (guestUser as string);
+    const user = sessionData?.user?.id ?? (guestUser as string);
     const times = new Map<string, string[]>();
     document
       .querySelectorAll("#availability-input .date-col")
@@ -167,23 +177,55 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
     }
   };
 
+  const handleGuestUserSubmit: SubmitHandler<AnonAvailabilityInputs> = (
+    data
+  ) => {
+    setGuestUser(data.name);
+  };
+
   // TODO: add an input for non-logged-in users
   return (
     <section>
-      <div className="horizontal-scrollbar relative mt-4 mb-6 grid place-items-center overflow-x-scroll pb-4">
-        <div
-          className="border-grey-500 flex w-fit pl-1"
-          id="availability-input"
-        ></div>
-      </div>
-      <button
-        type="button"
-        onClick={() => save()}
-        disabled={isDisabled}
-        className="mx-auto w-full rounded-lg bg-neutral-500 px-4 py-2 transition-colors hover:bg-neutral-300 hover:text-black disabled:bg-neutral-700 disabled:text-neutral-500"
-      >
-        Save Availability
-      </button>
+      {!sessionData?.user && !guestUser && (
+        <Form<AnonAvailabilityInputs, typeof AnonAvailabilitySchema>
+          schema={AnonAvailabilitySchema}
+          onSubmit={handleGuestUserSubmit}
+          className="mb-8 flex flex-col gap-2"
+        >
+          <p className="my-2">
+            <span className="mr-2">Already have an account?</span>
+            <span>
+              <Link
+                className="text-blue-500 transition-colors hover:text-blue-300"
+                href="/login"
+              >
+                Log In
+              </Link>
+            </span>
+          </p>
+          <p className="py-2 text-center text-xl font-semibold">OR</p>
+          <Form.Input type="text" name="name" displayName="Name" />
+          <Form.Button type="submit" name="Continue" />
+        </Form>
+      )}
+      {(guestUser || sessionData?.user) && (
+        <>
+          <div className="horizontal-scrollbar relative mt-4 mb-6 grid place-items-center overflow-x-scroll pb-4">
+            <div
+              className="border-grey-500 flex w-fit pl-1"
+              id="availability-input"
+            ></div>
+          </div>
+          <button
+            type="button"
+            onClick={() => save()}
+            disabled={isDisabled}
+            className="mx-auto w-full rounded-lg bg-neutral-500 px-4 py-2 transition-colors hover:bg-neutral-300 hover:text-black disabled:bg-neutral-700 disabled:text-neutral-500"
+          >
+            Save Availability
+          </button>
+        </>
+      )}
     </section>
   );
 }
