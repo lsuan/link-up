@@ -21,7 +21,7 @@ type AnonAvailabilityInputs = {
 const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
 
 function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
-  const { data: sessionData } = useSession();
+  const { status, data: sessionData } = useSession();
   const { id, startDate, endDate, startTime, endTime } = schedule;
   const [isTableReady, setIsTableReady] = useState<boolean>(false);
   const setScheduleAvailability = trpc.schedule.setAvailability.useMutation();
@@ -34,7 +34,9 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
       user: sessionData?.user?.id ?? guestUser,
     },
     {
-      enabled: sessionData?.user !== undefined,
+      enabled:
+        (status === "authenticated" && sessionData.user !== undefined) ||
+        (status === "unauthenticated" && guestUser !== ""),
       refetchOnWindowFocus: false,
       onSuccess: (data) => onSuccess(data),
     }
@@ -51,10 +53,20 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
     }
   };
 
+  // OPTIMIZE: might be able to get rid of this dupe code after reactifying code
   useEffect(() => {
-    createTable(startDate, endDate, startTime, endTime, "availability-input");
-    setIsTableReady(true);
+    if (status === "authenticated" && sessionData?.user) {
+      createTable(startDate, endDate, startTime, endTime, "availability-input");
+      setIsTableReady(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (guestUser !== "") {
+      createTable(startDate, endDate, startTime, endTime, "availability-input");
+      setIsTableReady(true);
+    }
+  }, [guestUser]);
 
   useEffect(() => {
     const setCellBackground = (
@@ -183,7 +195,6 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
     setGuestUser(data.name);
   };
 
-  // TODO: add an input for non-logged-in users
   return (
     <section>
       {!sessionData?.user && !guestUser && (

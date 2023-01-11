@@ -131,6 +131,8 @@ export const scheduleRouter = router({
       });
 
       const convertedAvailability = schedule?.attendees as UserAvailability[];
-      return convertedAvailability;
+      return convertedAvailability.filter(
+        (userAvailability) => userAvailability.user === input.user
+      );
     }),
 });
