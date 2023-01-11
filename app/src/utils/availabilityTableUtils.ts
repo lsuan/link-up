@@ -2,6 +2,12 @@ import { getFormattedHours } from "./formUtils";
 
 export type UserAvailability = {
   user: string;
+  name:
+    | {
+        firstName: string;
+        lastName: string | null;
+      }
+    | string;
   availability: object;
 };
 
@@ -15,7 +21,7 @@ export const resetResponses = () => {
 
 // OPTIMIZE: Reactify this file and availability grid implemention
 
-const getHourNumber = (time: string) => {
+export const getHourNumber = (time: string) => {
   const [hour, meridiem] = time.split(" ");
   const hourNumber = parseInt(hour?.split(":")[0] || "");
 
@@ -28,6 +34,32 @@ const getHourNumber = (time: string) => {
   } else {
     return 0;
   }
+};
+
+export const categorizeUsers = (attendees: UserAvailability[]) => {
+  const categorizedUsers = new Map<string, string[]>();
+  attendees.forEach((attendee) => {
+    let name: string;
+    if (typeof attendee.name === "string") {
+      name = attendee.name;
+    } else {
+      name = attendee.name.firstName;
+    }
+
+    for (const [date, times] of Object.entries(attendee.availability)) {
+      times.forEach((time: string) => {
+        const timeKey = `${date}:${time}`;
+        const users = categorizedUsers.get(timeKey);
+        if (users) {
+          categorizedUsers.set(timeKey, [...users, name]);
+        } else {
+          categorizedUsers.set(timeKey, [name]);
+        }
+      });
+    }
+  });
+
+  return categorizedUsers;
 };
 
 const createDateLabels = (startDate: Date, endDate: Date) => {
@@ -159,13 +191,7 @@ export const createTable = (
       cell.setAttribute("data-time", `${hour}-${hour + 1}`);
       cell.setAttribute("data-row-index", rowIndex.toString());
       cell.setAttribute("data-col-index", colIndex.toString());
-      cell.classList.add(
-        "time-cell",
-        "h-8",
-        "hover:cursor-pointer",
-        "w-20",
-        "transition-colors"
-      );
+      cell.classList.add("time-cell", "h-8", "w-20", "transition-colors");
       if (date < new Date(dateBeforeEnd)) {
         cell.classList.add("border-r");
       }
@@ -184,14 +210,13 @@ export const fillTable = (
   tableId: "availability-responses" | "availability-input"
 ) => {
   attendees.forEach((attendee) => {
+    console.log(attendee);
     for (const [date, hours] of Object.entries(attendee.availability)) {
-      console.log(date, hours);
       hours.forEach((hour: string) => {
-        document
-          .querySelector(
-            `#${tableId} .date-col[data-date="${date}"] .time-cell[data-time="${hour}"]`
-          )
-          ?.classList.add("bg-indigo-500");
+        const cell = document.querySelector(
+          `#${tableId} .date-col[data-date="${date}"] .time-cell[data-time="${hour}"]`
+        );
+        cell?.classList.add("bg-indigo-500", "hover:cursor-pointer");
       });
     }
   });

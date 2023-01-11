@@ -75,4 +75,18 @@ export const userRouter = router({
       });
       return { user, success: { message: "Changes have been saved!" } };
     }),
+
+  getUserFullName: publicProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const user = await ctx.prisma.user.findFirst({
+        where: {
+          id: input,
+        },
+      });
+
+      return user
+        ? { firstName: user.firstName, lastName: user.lastName }
+        : null;
+    }),
 });

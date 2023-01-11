@@ -9,6 +9,7 @@ export type AvailabilityProps = {
   scheduleQuery?: any;
   schedule: Schedule;
   slug?: string;
+  mode?: "read" | "write";
 };
 
 function AvailabilitySection({

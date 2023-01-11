@@ -1,43 +1,19 @@
-import { useEffect, useState } from "react";
-import {
-  UserAvailability,
-  createTable,
-  fillTable,
-  resetResponses,
-} from "../../utils/availabilityTableUtils";
+import { useAtom } from "jotai";
+import AvailabilityGrid, { hoverInfo } from "./AvailabilityGrid";
+import AvailabilityGridWrite from "./AvailabilityGridWrite";
 import { AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityResponses({ schedule }: AvailabilityProps) {
-  const { startDate, endDate, startTime, endTime, attendees } = schedule;
-  const [isTableReady, setIsTableReady] = useState<boolean>(false);
-
-  useEffect(() => {
-    createTable(
-      startDate,
-      endDate,
-      startTime,
-      endTime,
-      "availability-responses"
-    );
-    setIsTableReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isTableReady) {
-      return;
-    }
-    resetResponses();
-    fillTable(attendees as UserAvailability[], "availability-responses");
-  }, [isTableReady, schedule]);
+  const [hoverInfoText] = useAtom(hoverInfo);
 
   return (
     <section>
-      <div className="horizontal-scrollbar availability-table relative my-4 grid place-items-center overflow-x-scroll pb-4">
-        <div
-          className="border-grey-500 flex w-fit pl-1"
-          id="availability-responses"
-        ></div>
-      </div>
+      {hoverInfoText.length !== 0 && (
+        <div className=" mt-4 rounded-lg bg-neutral-700 p-2 text-xs">
+          Available: {hoverInfoText.join(", ")}
+        </div>
+      )}
+      <AvailabilityGrid schedule={schedule} mode="read" />
     </section>
   );
 }

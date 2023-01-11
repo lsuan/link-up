@@ -63,10 +63,10 @@ export const scheduleRouter = router({
     return unstarted;
   }),
 
-  /** JSON DATA STRUCTURE
+  /*
+   * JSON DATA STRUCTURE
    * [ {user: "user", availability: {"date": []}} ]
    */
-
   setAvailability: publicProcedure
     .input(z.object({ id: z.string(), attendee: z.string() }))
     .mutation(async ({ input, ctx }) => {
@@ -85,30 +85,6 @@ export const scheduleRouter = router({
           (entry) => entry["user"] !== jsonData["user"]
         );
         dataToStore = otherData.concat([jsonData]);
-
-        // if (found) {
-        //   dataToStore = [jsonData];
-        // } else {
-        //   dataToStore = prevData.concat([jsonData]);
-        // }
-        // const otherData =
-        //   prevData.filter((entry) => entry["user"] !== jsonData["user"]) ?? [];
-        // const found = prevData.filter(
-        //   (entry) => entry["user"] === jsonData["user"]
-        // );
-        // let newData = [jsonData];
-        // if (found) {
-        //   console.log("existlksjdf");
-        //   const existingData = found[0];
-        //   const newObject = jsonData.availability;
-        //   const existingAvailability = existingData?.availability ?? {};
-        //   for (const [date, hour] of Object.entries(existingAvailability)) {
-        //     if (!Object.keys(newObject).includes(date)) {
-        //       newObject[date] = hour;
-        //     }
-        //   }
-        // }
-        // dataToStore = otherData.concat(newData);
       } else {
         dataToStore = [jsonData];
       }
@@ -120,6 +96,10 @@ export const scheduleRouter = router({
       return newSchedule;
     }),
 
+  /*
+   * this procedure gets the availability for only user
+   * used for filling in the response table if they wish to edit their times
+   * */
   getUserAvailability: publicProcedure
     .input(z.object({ id: z.string(), user: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -130,7 +110,16 @@ export const scheduleRouter = router({
         },
       });
 
-      const convertedAvailability = schedule?.attendees as UserAvailability[];
+      const user = await ctx.prisma.user.findFirst({
+        where: {
+          id: input.user,
+        },
+      });
+      const userFullName = user
+        ? { firstName: user.firstName, lastName: user.lastName }
+        : input.user;
+      const convertedAvailability =
+        (schedule?.attendees as UserAvailability[]) ?? [];
       return convertedAvailability.filter(
         (userAvailability) => userAvailability.user === input.user
       );
