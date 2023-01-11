@@ -88,7 +88,6 @@ export const scheduleRouter = router({
       } else {
         dataToStore = [jsonData];
       }
-      console.log(dataToStore);
       const newSchedule = await ctx.prisma.schedule.update({
         data: { attendees: dataToStore },
         where: { id: input.id },

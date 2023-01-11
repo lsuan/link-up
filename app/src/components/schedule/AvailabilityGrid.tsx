@@ -16,8 +16,6 @@ function AvailabilityGrid({
   mode,
 }: AvailabilityProps) {
   const { startDate, endDate, startTime, endTime, attendees } = schedule;
-  console.log("sfsf");
-  console.log("ihb");
 
   const getAllDates = () => {
     let dates = [];

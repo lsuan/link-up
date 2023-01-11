@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { BaseSyntheticEvent, useState } from "react";
+import { notice } from "../../pages/schedule/[slug]";
 import { disabled, selected } from "./AvailabilityInput";
 
 function AvailabilityGridWrite({
@@ -12,6 +13,7 @@ function AvailabilityGridWrite({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [, setIsDisabled] = useAtom(disabled);
   const [selectedCells, setSelectedCells] = useAtom(selected);
+  const [, setNoticeMessage] = useAtom(notice);
 
   const saveCell = (cell: HTMLDivElement, timeKey: string) => {
     console.log(timeKey);
@@ -19,7 +21,7 @@ function AvailabilityGridWrite({
       cell.classList.remove("bg-indigo-500");
       const foundIndex = selectedCells.findIndex((key) => key === timeKey);
       const prevElements = selectedCells.slice(0, foundIndex);
-      const rest = selectedCells.slice(foundIndex);
+      const rest = selectedCells.slice(foundIndex + 1);
       setSelectedCells([...prevElements, ...rest]);
     } else {
       cell.classList.add("bg-indigo-500");
@@ -62,6 +64,7 @@ function AvailabilityGridWrite({
                   onMouseDown={(e) => {
                     setIsEditing(true);
                     setIsDisabled(false);
+                    setNoticeMessage("");
                     saveCell(
                       e.target as HTMLDivElement,
                       `${date.toISOString().split("T")[0]}:${hour}-${hour + 1}`

@@ -58,7 +58,7 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
         oldAvailability.push(`${date}:${time}`);
       });
     }
-    setSelectedCells(oldAvailability);
+    setSelectedCells([...oldAvailability]);
   };
 
   const save = async () => {
@@ -78,13 +78,11 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
         ? times.set(date, [...prevTimes, time])
         : times.set(date, [time]);
     });
-    console.log(times);
     const attendee = {
       user: user,
       name: name,
       availability: Object.fromEntries(times),
     };
-    console.log(attendee);
 
     const res = await setScheduleAvailability.mutateAsync({
       id: schedule.id,

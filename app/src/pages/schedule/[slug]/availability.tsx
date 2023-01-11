@@ -10,7 +10,6 @@ function Availability() {
   const router = useRouter();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
-  console.log(name, scheduleIdPart);
   const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
     {
       name: name,
