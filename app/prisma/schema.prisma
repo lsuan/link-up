@@ -85,4 +85,23 @@ model Schedule {
   userId         String
   host           User     @relation(fields: [userId], references: [id])
   createdAt      DateTime @db.Timestamp(0) @default(now())
+  events         Event[]
+  attendees      Json? 
+  // {
+  //   "user": {
+  //     "day": ["time"]
+  //   }
+  // }
+}
+
+model Event {
+  id          String @id @default(cuid())
+  name        String
+  date        DateTime
+  startTime   String
+  endTime     String
+  description String?
+  location    String?
+  scheduleId  String
+  schedule    Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 }

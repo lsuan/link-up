@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { parseDeepErrors } from "../../utils/formHelpers";
+import { parseDeepErrors } from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
 
 type GenericOnSubmit = (
@@ -162,7 +162,7 @@ Form.Button = function Button({
   return (
     <button
       type={type}
-      className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-black transition-colors hover:bg-blue-300"
+      className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-black transition-colors hover:bg-blue-300"
     >
       {name}
       {isSubmitting && (

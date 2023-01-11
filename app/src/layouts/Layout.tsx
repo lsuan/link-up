@@ -29,7 +29,6 @@ function Layout({ children }: any) {
             ) : (
               <SignedOutNavMenu />
             ))}
-
           {children}
         </>
       </main>

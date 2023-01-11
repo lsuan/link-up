@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { forwardRef } from "react";
-import { MONTHS } from "../../utils/formHelpers";
+import { MONTHS } from "../../utils/formUtils";
 
 export const datePickerOpen = atom(false);
 

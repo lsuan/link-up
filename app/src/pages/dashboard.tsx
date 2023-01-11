@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 import EventCard from "../components/dashboard/EventCard";
 import Pill from "../components/dashboard/Pill";
+import UnstartedCard from "../components/dashboard/UnstartedCard";
+import { trpc } from "../utils/trpc";
 
 type Event = {
   id: string;
@@ -16,13 +18,6 @@ type Event = {
   location?: string;
   description?: string;
 };
-
-const unstarted: Event[] = [
-  {
-    id: "4",
-    scheduleName: "Project Live",
-  },
-];
 
 const upcoming: Event[] = [
   {
@@ -62,6 +57,7 @@ const upcoming: Event[] = [
 function Dashboard() {
   const { data } = useSession();
   const [active, setActive] = useState<string>("upcoming");
+  const unstarted = trpc.schedule.getUnstartedSchedules.useQuery();
 
   return (
     <section className="min-h-screen px-8">
@@ -87,7 +83,7 @@ function Dashboard() {
           name={"unstarted"}
           active={active}
           setActive={setActive}
-          amount={unstarted.length}
+          amount={unstarted.data?.length || 0}
         />
       </div>
       {active === "upcoming" ? (
@@ -98,8 +94,15 @@ function Dashboard() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {unstarted.map((event) => {
-            return <EventCard key={event.id} {...event} />;
+          {unstarted.data?.map((schedule) => {
+            return (
+              <UnstartedCard
+                key={schedule.id}
+                id={schedule.id}
+                name={schedule.name}
+                description={schedule.description}
+              />
+            );
           })}
         </div>
       )}

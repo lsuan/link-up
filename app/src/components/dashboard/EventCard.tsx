@@ -8,21 +8,25 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { createSlug } from "../../utils/scheduleSlugUtils";
 
 type Event = {
+  // scheduleId: string;
   scheduleName?: string;
   name?: string;
   date?: Date;
   start?: number;
   end?: number;
   location?: string;
-  description?: string;
+  description?: string | null;
   className?: string;
 };
 
 export const addToCalendarModal = atom(false);
 
 function EventCard({
+  // scheduleId,
   scheduleName,
   name,
   date,
@@ -33,6 +37,10 @@ function EventCard({
   className,
 }: Event) {
   const [, setIsAddToCalendarModalShown] = useAtom(addToCalendarModal);
+  // const slug = createSlug(scheduleName || "", scheduleId);
+  const router = useRouter();
+  console.log(router.pathname);
+
   const convertDate = (date: Date | undefined) => {
     return date
       ? new Intl.DateTimeFormat("en-US", {
@@ -92,14 +100,17 @@ function EventCard({
         </li>
         {description && (
           <li className="flex items-start gap-2">
-            <FontAwesomeIcon className="mt-[3px]" icon={faNoteSticky} />
+            <FontAwesomeIcon
+              className="mt-[3px] w-[14px]"
+              icon={faNoteSticky}
+            />
             <p className={scheduleName ? "line-clamp-2" : ""}>{description}</p>
           </li>
         )}
       </ul>
       {scheduleName && (
         <Link
-          href={"/schedule/schedule"}
+          href={`/schedule`}
           className="group w-full rounded-lg bg-neutral-500 p-2 text-center text-white transition-all hover:bg-neutral-300 hover:text-black"
         >
           View

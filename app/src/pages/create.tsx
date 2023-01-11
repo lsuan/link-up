@@ -14,7 +14,8 @@ import {
 import { Form } from "../components/form/Form";
 import BackArrow from "../components/shared/BackArrow";
 import ModalBackground from "../components/shared/ModalBackground";
-import { getTimeOptions, MINUTES } from "../utils/formHelpers";
+import { getTimeOptions, MINUTES } from "../utils/formUtils";
+import { createSlug } from "../utils/scheduleSlugUtils";
 import { trpc } from "../utils/trpc";
 import { notice } from "./schedule/[slug]";
 
@@ -105,9 +106,7 @@ function Create() {
 
     if (res) {
       const { name, id } = res.schedule;
-      const joinedName = name.toLowerCase().split(" ").join("-");
-      const lastOfId = res.schedule.id.substring(id.length - 8);
-      const slug = `${joinedName}-${lastOfId}`;
+      const slug = createSlug(name, id);
       setNoticeMessage("Your schedule has successfully been created!");
       router.push(`schedule/${slug}`);
     }

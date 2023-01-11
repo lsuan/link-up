@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import EventCard, {
   addToCalendarModal,
 } from "../../../components/dashboard/EventCard";
@@ -14,6 +13,7 @@ import Share from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import ModalBackground from "../../../components/shared/ModalBackground";
+import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
 type Event = {
@@ -58,34 +58,21 @@ function Schedule() {
   // users can still browse this page even if they are not logged in
   const { data: sessionData } = useSession();
   const { slug } = router.query as { slug: string };
-  const parsed = slug?.split("-");
-  const scheduleIdPart = parsed?.pop() || ("" as string);
-  const name = parsed?.join(" ") || "";
-  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery({
-    name: name,
-    id: scheduleIdPart,
-  });
-  const host = trpc.user.getUser.useQuery({ id: schedule?.data?.userId || "" });
-  const isHost = host.data?.id === sessionData?.user?.id;
-
+  const { name, scheduleIdPart } = parseSlug(slug);
+  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
+    {
+      name: name,
+      id: scheduleIdPart,
+    },
+    { enabled: router.isReady, refetchOnWindowFocus: false }
+  );
+  const host = schedule.data?.host ?? null;
+  const isHost = host ? host.id === sessionData?.user?.id : false;
   const eventSectionWidth = events.length * 256 + 16 * events.length;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
-  const [noticeMessage, setNoticeMessage] = useAtom(notice);
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
     useAtom(addToCalendarModal);
-
-  useEffect(() => {
-    if (noticeMessage !== "") {
-      const interval = setInterval(() => {
-        setNoticeMessage("");
-      }, 3000);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [noticeMessage]);
 
   return (
     <>
@@ -98,7 +85,7 @@ function Schedule() {
         setIsModalOpen={setIsAddToCalendarModalShown}
       />
       <section>
-        {noticeMessage !== "" && <SuccessNotice />}
+        <SuccessNotice />
         <div className="px-8">
           <BackArrow href="/dashboard" page="Dashboard" />
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
@@ -112,17 +99,17 @@ function Schedule() {
               Share
             </button>
           </header>
-          <p>
-            {schedule?.data?.deadline && (
-              <span className="underline">
-                {schedule?.data?.deadline.toLocaleDateString()}
-              </span>
-            )}
-          </p>
+
+          {schedule?.data?.deadline && (
+            <p>
+              <span className="underline">Deadline to Fill By</span>
+              <span>{`: ${schedule?.data?.deadline.toLocaleDateString()}`}</span>
+            </p>
+          )}
           <div className="my-4">{schedule?.data?.description}</div>
           <div className="z-10 mb-4 font-semibold">{`Hosted by: ${
-            host?.data?.firstName
-          } ${host?.data?.lastName || ""}`}</div>
+            host?.firstName
+          } ${host?.lastName || ""}`}</div>
 
           {events.length > 0 ? (
             <div className="relative">
@@ -151,8 +138,12 @@ function Schedule() {
           )}
         </div>
 
-        <AvailabilitySection />
-        <PublishSection />
+        {schedule.data && (
+          <>
+            <AvailabilitySection schedule={schedule.data} slug={slug} />
+            <PublishSection />
+          </>
+        )}
       </section>
     </>
   );
