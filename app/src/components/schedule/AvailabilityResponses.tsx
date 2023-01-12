@@ -1,4 +1,5 @@
 import { atom, useAtom } from "jotai";
+import { memo } from "react";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityKey from "./AvailabilityKey";
 import { AvailabilityProps } from "./AvailabilitySection";
@@ -12,7 +13,9 @@ type AvailabilityStatus =
 
 export const hoverInfo = atom<AvailabilityStatus>(undefined);
 
-function AvailabilityResponses({ schedule }: AvailabilityProps) {
+const AvailabilityResponses = memo(function AvailabilityResponses({
+  schedule,
+}: AvailabilityProps) {
   const [hoverInfoText] = useAtom(hoverInfo);
 
   return (
@@ -27,5 +30,5 @@ function AvailabilityResponses({ schedule }: AvailabilityProps) {
       <AvailabilityGrid schedule={schedule} mode="read" />
     </section>
   );
-}
+});
 export default AvailabilityResponses;

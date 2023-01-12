@@ -1,13 +1,8 @@
-import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
-import {
-  categorizeUsers,
-  setColors,
-  UserAvailability,
-} from "../../utils/availabilityTableUtils";
-import { hoverInfo } from "./AvailbilityResponses";
+import { useEffect, useState, memo } from "react";
+import { UserAvailability } from "../../utils/availabilityTableUtils";
+import GridReadCell from "./GridReadCell";
 
-function AvailabilityGridRead({
+const AvailabilityGridRead = memo(function AvailabilityGridRead({
   dates,
   hours,
   attendees,
@@ -16,53 +11,25 @@ function AvailabilityGridRead({
   hours: number[];
   attendees: UserAvailability[];
 }) {
-  const [hoverInfoText, setHoverInfoText] = useAtom(hoverInfo);
   const [allUsers, setAllUsers] = useState<string[]>([]);
 
   useEffect(() => {
-    if (attendees.length > 0) {
-      const users: string[] = [];
-      attendees.forEach((attendee) => {
-        const name = attendee.name;
-
-        typeof name === "string"
-          ? users.push(name)
-          : users.push(
-              `${name.firstName}${name.lastName ? ` ${name.lastName}` : ""}`
-            );
-      });
-      setAllUsers([...users]);
+    if (!attendees) {
+      return;
     }
-  }, [attendees]);
 
-  const categorizedUsers = categorizeUsers(attendees as UserAvailability[]);
+    const users: string[] = [];
+    attendees.forEach((attendee) => {
+      const name = attendee.name;
 
-  const getUsers = (date: Date, time: string) => {
-    const formattedDate = date.toISOString().split("T")[0];
-    const timeKey = `${formattedDate}:${time}`;
-    return categorizedUsers.get(timeKey);
-  };
-  const isUserAvailable = (date: Date, time: string) => {
-    return getUsers(date, time) !== undefined;
-  };
-
-  const getUsersByTime = (date: Date, time: string) => {
-    const formattedDate = date.toISOString().split("T")[0];
-    const timeKey = `${formattedDate}:${time}`;
-    const users = categorizedUsers.get(timeKey) ?? [];
-    const unavailableUsers = allUsers.filter((user) => {
-      return !users?.includes(user);
+      typeof name === "string"
+        ? users.push(name)
+        : users.push(
+            `${name.firstName}${name.lastName ? ` ${name.lastName}` : ""}`
+          );
     });
-    const availabilityStatus = {
-      available: users,
-      unavailable: unavailableUsers,
-    };
-    setHoverInfoText(
-      availabilityStatus?.available.length !== 0
-        ? availabilityStatus
-        : undefined
-    );
-  };
+    setAllUsers([...users]);
+  }, [attendees]);
 
   return (
     <div className="flex overflow-hidden rounded-lg border">
@@ -75,24 +42,16 @@ function AvailabilityGridRead({
           >
             {hours.map((hour, hourIndex) => {
               return (
-                <div
+                <GridReadCell
                   key={`${hour}-${hour + 1}`}
-                  date-time={`${hour}-${hour + 1}`}
-                  className={`h-8 w-20 transition-all ${
-                    dateIndex !== dates.length - 1 ? "border-r" : ""
-                  } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
-                    isUserAvailable(date, `${hour}-${hour + 1}`)
-                      ? `cursor-pointer ${setColors(
-                          getUsers(date, `${hour}-${hour + 1}`)?.length ?? 0
-                        )}`
-                      : ""
-                  }`}
-                  onMouseOver={() => {
-                    isUserAvailable(date, `${hour}-${hour + 1}`)
-                      ? getUsersByTime(date, `${hour}-${hour + 1}`)
-                      : null;
-                  }}
-                  onMouseLeave={() => setHoverInfoText(undefined)}
+                  attendees={attendees}
+                  allUsers={allUsers}
+                  dates={dates}
+                  date={date}
+                  dateIndex={dateIndex}
+                  hours={hours}
+                  hour={hour}
+                  hourIndex={hourIndex}
                 />
               );
             })}
@@ -101,6 +60,6 @@ function AvailabilityGridRead({
       })}
     </div>
   );
-}
+});
 
 export default AvailabilityGridRead;

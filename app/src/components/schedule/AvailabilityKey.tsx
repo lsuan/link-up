@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
 import {
+  categorizeUsers,
+  getMostUsers,
   setColors,
   UserAvailability,
 } from "../../utils/availabilityTableUtils";
 import { AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityKey({ schedule }: AvailabilityProps) {
-  const allAvailability = schedule.attendees as UserAvailability[];
-  const total = allAvailability.length;
+  const allAvailability = schedule?.attendees as UserAvailability[];
+  const total = allAvailability?.length;
   const [cellColors, setCellColors] = useState<string[]>([]);
+  const categorizedUsers = categorizeUsers(allAvailability);
+  const mostUsers = getMostUsers(categorizedUsers) ?? 0;
 
   useEffect(() => {
-    const colors = setColors(total);
-    setCellColors(colors);
+    if (allAvailability && allAvailability.length > 0) {
+      const colors = setColors(mostUsers);
+      setCellColors(colors);
+    }
   }, [allAvailability]);
 
   return (
@@ -27,8 +33,8 @@ function AvailabilityKey({ schedule }: AvailabilityProps) {
           >
             {index === 0
               ? `1/${total}`
-              : index === total - 1
-              ? `${total}/${total}`
+              : index === mostUsers - 1
+              ? `${mostUsers}/${total}`
               : ""}
           </div>
         );

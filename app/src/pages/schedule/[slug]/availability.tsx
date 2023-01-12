@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import AvailabilityInput from "../../../components/schedule/AvailabilityInput";
-import AvailabilityResponses from "../../../components/schedule/AvailbilityResponses";
+import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
