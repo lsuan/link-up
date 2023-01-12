@@ -1,4 +1,3 @@
-import { atom } from "jotai";
 import {
   getHourNumber,
   UserAvailability,
@@ -7,8 +6,6 @@ import { getFormattedHours } from "../../utils/formUtils";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 import { AvailabilityProps } from "./AvailabilitySection";
-
-export const hoverInfo = atom<string[]>([]);
 
 function AvailabilityGrid({
   schedule,
@@ -82,12 +79,7 @@ function AvailabilityGrid({
               attendees={attendees as UserAvailability[]}
             />
           ) : (
-            <AvailabilityGridWrite
-              dates={dates}
-              hours={hours}
-              schedule={schedule}
-              scheduleQuery={scheduleQuery}
-            />
+            <AvailabilityGridWrite dates={dates} hours={hours} />
           )}
         </div>
       </div>

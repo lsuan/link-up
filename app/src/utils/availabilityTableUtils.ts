@@ -49,3 +49,34 @@ export const categorizeUsers = (attendees: UserAvailability[]) => {
 
   return categorizedUsers;
 };
+
+// TODO: revisit when implementing dark / light mode
+export const setColors = (total: number) => {
+  const cellColors: string[] = [];
+
+  // want to go from 900 -> 700 -> 500 -> 300 -> 100
+  if (total === 1) {
+    cellColors.push("bg-indigo-900");
+  } else if (total === 2) {
+    cellColors.push("bg-indigo-900", "bg-indigo-100");
+  } else if (total === 3) {
+    cellColors.push("bg-indigo-900", "bg-indigo-700", "bg-indigo-500");
+  } else if (total === 4) {
+    cellColors.push(
+      "bg-indigo-900",
+      "bg-indigo-700",
+      "bg-indigo-300",
+      "bg-indigo-100"
+    );
+  } else {
+    cellColors.push(
+      "bg-indigo-900",
+      "bg-indigo-700",
+      "bg-indigo-500",
+      "bg-indigo-300",
+      "bg-indigo-100"
+    );
+  }
+
+  return cellColors;
+};

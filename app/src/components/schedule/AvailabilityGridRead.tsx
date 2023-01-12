@@ -1,10 +1,11 @@
 import { useAtom } from "jotai";
-import { date } from "zod";
+import { useEffect, useState } from "react";
 import {
   categorizeUsers,
+  setColors,
   UserAvailability,
 } from "../../utils/availabilityTableUtils";
-import { hoverInfo } from "./AvailabilityGrid";
+import { hoverInfo } from "./AvailbilityResponses";
 
 function AvailabilityGridRead({
   dates,
@@ -16,20 +17,53 @@ function AvailabilityGridRead({
   attendees: UserAvailability[];
 }) {
   const [hoverInfoText, setHoverInfoText] = useAtom(hoverInfo);
+  const [allUsers, setAllUsers] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (attendees.length > 0) {
+      const users: string[] = [];
+      attendees.forEach((attendee) => {
+        const name = attendee.name;
+
+        typeof name === "string"
+          ? users.push(name)
+          : users.push(
+              `${name.firstName}${name.lastName ? ` ${name.lastName}` : ""}`
+            );
+      });
+      setAllUsers([...users]);
+    }
+  }, [attendees]);
 
   const categorizedUsers = categorizeUsers(attendees as UserAvailability[]);
-  const isUserAvailable = (date: Date, time: string) => {
+
+  const getUsers = (date: Date, time: string) => {
     const formattedDate = date.toISOString().split("T")[0];
     const timeKey = `${formattedDate}:${time}`;
-    return categorizedUsers.get(timeKey) !== undefined;
+    return categorizedUsers.get(timeKey);
+  };
+  const isUserAvailable = (date: Date, time: string) => {
+    return getUsers(date, time) !== undefined;
   };
 
   const getUsersByTime = (date: Date, time: string) => {
     const formattedDate = date.toISOString().split("T")[0];
     const timeKey = `${formattedDate}:${time}`;
-    const users = categorizedUsers.get(timeKey);
-    setHoverInfoText(users ?? []);
+    const users = categorizedUsers.get(timeKey) ?? [];
+    const unavailableUsers = allUsers.filter((user) => {
+      return !users?.includes(user);
+    });
+    const availabilityStatus = {
+      available: users,
+      unavailable: unavailableUsers,
+    };
+    setHoverInfoText(
+      availabilityStatus?.available.length !== 0
+        ? availabilityStatus
+        : undefined
+    );
   };
+
   return (
     <div className="flex overflow-hidden rounded-lg border">
       {dates.map((date: Date, dateIndex) => {
@@ -48,7 +82,9 @@ function AvailabilityGridRead({
                     dateIndex !== dates.length - 1 ? "border-r" : ""
                   } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
                     isUserAvailable(date, `${hour}-${hour + 1}`)
-                      ? "cursor-pointer bg-indigo-500"
+                      ? `cursor-pointer ${setColors(
+                          getUsers(date, `${hour}-${hour + 1}`)?.length ?? 0
+                        )}`
                       : ""
                   }`}
                   onMouseOver={() => {
@@ -56,9 +92,7 @@ function AvailabilityGridRead({
                       ? getUsersByTime(date, `${hour}-${hour + 1}`)
                       : null;
                   }}
-                  onMouseLeave={() => {
-                    hoverInfoText.length !== 0 ? setHoverInfoText([]) : null;
-                  }}
+                  onMouseLeave={() => setHoverInfoText(undefined)}
                 />
               );
             })}
