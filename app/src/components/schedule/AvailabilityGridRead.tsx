@@ -1,12 +1,8 @@
-import { useAtom } from "jotai";
-import { date } from "zod";
-import {
-  categorizeUsers,
-  UserAvailability,
-} from "../../utils/availabilityTableUtils";
-import { hoverInfo } from "./AvailabilityGrid";
+import { useEffect, useState, memo } from "react";
+import { UserAvailability } from "../../utils/availabilityTableUtils";
+import GridReadCell from "./GridReadCell";
 
-function AvailabilityGridRead({
+const AvailabilityGridRead = memo(function AvailabilityGridRead({
   dates,
   hours,
   attendees,
@@ -15,21 +11,26 @@ function AvailabilityGridRead({
   hours: number[];
   attendees: UserAvailability[];
 }) {
-  const [hoverInfoText, setHoverInfoText] = useAtom(hoverInfo);
+  const [allUsers, setAllUsers] = useState<string[]>([]);
 
-  const categorizedUsers = categorizeUsers(attendees as UserAvailability[]);
-  const isUserAvailable = (date: Date, time: string) => {
-    const formattedDate = date.toISOString().split("T")[0];
-    const timeKey = `${formattedDate}:${time}`;
-    return categorizedUsers.get(timeKey) !== undefined;
-  };
+  useEffect(() => {
+    if (!attendees) {
+      return;
+    }
 
-  const getUsersByTime = (date: Date, time: string) => {
-    const formattedDate = date.toISOString().split("T")[0];
-    const timeKey = `${formattedDate}:${time}`;
-    const users = categorizedUsers.get(timeKey);
-    setHoverInfoText(users ?? []);
-  };
+    const users: string[] = [];
+    attendees.forEach((attendee) => {
+      const name = attendee.name;
+
+      typeof name === "string"
+        ? users.push(name)
+        : users.push(
+            `${name.firstName}${name.lastName ? ` ${name.lastName}` : ""}`
+          );
+    });
+    setAllUsers([...users]);
+  }, [attendees]);
+
   return (
     <div className="flex overflow-hidden rounded-lg border">
       {dates.map((date: Date, dateIndex) => {
@@ -41,24 +42,16 @@ function AvailabilityGridRead({
           >
             {hours.map((hour, hourIndex) => {
               return (
-                <div
+                <GridReadCell
                   key={`${hour}-${hour + 1}`}
-                  date-time={`${hour}-${hour + 1}`}
-                  className={`h-8 w-20 transition-all ${
-                    dateIndex !== dates.length - 1 ? "border-r" : ""
-                  } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
-                    isUserAvailable(date, `${hour}-${hour + 1}`)
-                      ? "cursor-pointer bg-indigo-500"
-                      : ""
-                  }`}
-                  onMouseOver={() => {
-                    isUserAvailable(date, `${hour}-${hour + 1}`)
-                      ? getUsersByTime(date, `${hour}-${hour + 1}`)
-                      : null;
-                  }}
-                  onMouseLeave={() => {
-                    hoverInfoText.length !== 0 ? setHoverInfoText([]) : null;
-                  }}
+                  attendees={attendees}
+                  allUsers={allUsers}
+                  dates={dates}
+                  date={date}
+                  dateIndex={dateIndex}
+                  hours={hours}
+                  hour={hour}
+                  hourIndex={hourIndex}
                 />
               );
             })}
@@ -67,6 +60,6 @@ function AvailabilityGridRead({
       })}
     </div>
   );
-}
+});
 
 export default AvailabilityGridRead;

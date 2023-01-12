@@ -16,7 +16,6 @@ function AvailabilityGridWrite({
   const [, setNoticeMessage] = useAtom(notice);
 
   const saveCell = (cell: HTMLDivElement, timeKey: string) => {
-    console.log(timeKey);
     if (cell.classList.contains("bg-indigo-500")) {
       cell.classList.remove("bg-indigo-500");
       const foundIndex = selectedCells.findIndex((key) => key === timeKey);
@@ -52,7 +51,7 @@ function AvailabilityGridWrite({
                 <div
                   key={`${hour}-${hour + 1}`}
                   date-time={`${hour}-${hour + 1}`}
-                  className={`h-8 w-20 cursor-pointer transition-all ${
+                  className={`h-10 w-20 cursor-pointer transition-all ${
                     dateIndex !== dates.length - 1 ? "border-r" : ""
                   } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
                     selectedCells.includes(

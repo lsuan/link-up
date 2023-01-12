@@ -80,7 +80,7 @@ export const scheduleRouter = router({
       let prevData = schedule?.attendees as UserAvailability[];
       let dataToStore;
 
-      if (prevData.length > 0) {
+      if (prevData?.length > 0) {
         const otherData = prevData.filter(
           (entry) => entry["user"] !== jsonData["user"]
         );
