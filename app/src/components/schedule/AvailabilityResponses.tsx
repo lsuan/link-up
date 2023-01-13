@@ -23,8 +23,14 @@ const AvailabilityResponses = memo(function AvailabilityResponses({
       <AvailabilityKey schedule={schedule} />
       {hoverInfoText && hoverInfoText.available.length !== 0 && (
         <div className=" mt-4 rounded-lg bg-neutral-700 p-2 text-xs">
-          <p>{`Available: ${hoverInfoText?.available.join(", ")}`}</p>
-          <p>{`Unavailable: ${hoverInfoText?.unavailable.join(", ")}`}</p>
+          <p>{`Available (${
+            hoverInfoText?.available.length
+          }): ${hoverInfoText?.available.join(", ")}`}</p>
+          {hoverInfoText.unavailable.length > 0 && (
+            <p>{`Unavailable (${
+              hoverInfoText?.unavailable.length
+            }): ${hoverInfoText?.unavailable.join(", ")}`}</p>
+          )}
         </div>
       )}
       <AvailabilityGrid schedule={schedule} mode="read" />

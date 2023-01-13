@@ -1,5 +1,6 @@
 import {
   categorizeUsers,
+  getLeastUsers,
   getMostUsers,
   setColors,
   UserAvailability,
@@ -12,7 +13,8 @@ function AvailabilityKey({ schedule }: AvailabilityProps) {
 
   // const [cellColors, setCellColors] = useState<string[]>([]);
   const categorizedUsers = categorizeUsers(allAvailability);
-  const mostUsers = getMostUsers(categorizedUsers) ?? 0;
+  const mostUsers = getMostUsers(categorizedUsers);
+  const leastUsers = getLeastUsers(categorizedUsers, total);
   const cellColors = setColors(mostUsers);
 
   // useEffect(() => {
@@ -33,12 +35,12 @@ function AvailabilityKey({ schedule }: AvailabilityProps) {
               <div
                 key={index}
                 className={`w-full ${color} py-1${
-                  index === total - 1 ? " text-black" : ""
+                  index === total ? " text-black" : ""
                 }`}
               >
                 {index === 0
-                  ? `1/${total}`
-                  : index === mostUsers - 1
+                  ? `${leastUsers}/${total}`
+                  : index === cellColors.length - 1
                   ? `${mostUsers}/${total}`
                   : ""}
               </div>

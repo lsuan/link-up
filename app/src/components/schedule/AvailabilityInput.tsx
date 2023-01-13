@@ -46,7 +46,6 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
     const userAvailability = attendees.filter(
       (attendee) => attendee.user === sessionData?.user?.id ?? guestUser
     )[0];
-    console.log(userAvailability);
     const oldAvailability: string[] = [];
     const daysOnly: string[] = [];
     for (const [date, hours] of Object.entries(

@@ -85,9 +85,9 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
       date-time={`${hour}-${hour + 0.5}`}
       className={`h-10 w-20 transition-all ${
         dateIndex !== dates.length - 1 ? "border-r" : ""
-      } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
-        users ? `cursor-pointer ${cellColor}` : ""
-      }
+      } ${
+        hourIndex !== hours.length - 1 ? "border-b border-b-neutral-100" : ""
+      } ${users ? `cursor-pointer ${cellColor}` : ""}
 `}
       onMouseOver={() =>
         users ? setUsersByTime(date, `${hour}-${hour + 0.5}`) : null

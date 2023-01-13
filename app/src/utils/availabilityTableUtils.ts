@@ -65,18 +65,29 @@ export const getMostUsers = (
   return max;
 };
 
+export const getLeastUsers = (
+  categorizedUsers: Map<string, string[]> | undefined,
+  totalUsers: number
+) => {
+  let min = totalUsers;
+  categorizedUsers?.forEach((users, _timeKey) => {
+    if (users.length < min) {
+      min = users.length;
+    }
+  });
+  return min;
+};
+
 // TODO: revisit when implementing dark / light mode
 // FIXME: incorrect when most users is 1
 export const setColors = (mostUsers: number) => {
   const cellColors: string[] = [];
 
   if (mostUsers === 1) {
-    cellColors.push("bg-neutral-300");
-  } else if (mostUsers === 2) {
     cellColors.push("bg-neutral-900", "bg-neutral-300");
+  } else if (mostUsers === 2) {
+    cellColors.push("bg-neutral-900", "bg-indigo-500", "bg-neutral-300");
   } else if (mostUsers === 3) {
-    cellColors.push("bg-neutral-900", "bg-indigo-700", "bg-indigo-500");
-  } else if (mostUsers === 4) {
     cellColors.push(
       "bg-neutral-900",
       "bg-indigo-700",
@@ -104,18 +115,18 @@ export const getCellColor = (
   const ratio = numberOfUsers / mostUsers;
 
   if (mostUsers < 5) {
-    return colors[numberOfUsers - 1];
+    return colors[numberOfUsers];
   }
 
   // need to check if ratio is in the range for the appropriate color
   // ranges go up by 20% since 1/5 === 20%
-  if (ratio <= 1) {
+  if (ratio === 1) {
     return colors[4];
-  } else if (ratio <= 0.8) {
+  } else if (ratio > 0.6 && ratio <= 0.8) {
     return colors[3];
-  } else if (ratio <= 0.6) {
+  } else if (ratio > 0.4 && ratio <= 0.6) {
     return colors[2];
-  } else if (ratio <= 0.4) {
+  } else if (ratio > 0.2 && ratio <= 0.4) {
     return colors[1];
   } else if (ratio <= 0.2) {
     return colors[0];
