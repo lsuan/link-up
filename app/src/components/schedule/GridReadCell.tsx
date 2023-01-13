@@ -70,7 +70,7 @@ const GridReadCell = memo(function GridReadCell({
   };
 
   const users = useMemo(
-    () => getUsers(date, `${hour}-${hour + 1}`)?.length,
+    () => getUsers(date, `${hour}-${hour + 0.5}`)?.length,
     [date, hour]
   );
   const colors = useMemo(() => setColors(mostUsers), [mostUsers]);
@@ -82,7 +82,7 @@ const GridReadCell = memo(function GridReadCell({
 
   return (
     <div
-      date-time={`${hour}-${hour + 1}`}
+      date-time={`${hour}-${hour + 0.5}`}
       className={`h-10 w-20 transition-all ${
         dateIndex !== dates.length - 1 ? "border-r" : ""
       } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
@@ -90,7 +90,7 @@ const GridReadCell = memo(function GridReadCell({
       }
 `}
       onMouseOver={() =>
-        users ? setUsersByTime(date, `${hour}-${hour + 1}`) : null
+        users ? setUsersByTime(date, `${hour}-${hour + 0.5}`) : null
       }
       onMouseLeave={() => setHoverInfoText(undefined)}
     />

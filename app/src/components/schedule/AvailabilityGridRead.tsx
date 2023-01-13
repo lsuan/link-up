@@ -43,7 +43,7 @@ const AvailabilityGridRead = memo(function AvailabilityGridRead({
             {hours.map((hour, hourIndex) => {
               return (
                 <GridReadCell
-                  key={`${hour}-${hour + 1}`}
+                  key={`${hour}-${hour + 0.5}`}
                   attendees={attendees}
                   allUsers={allUsers}
                   dates={dates}

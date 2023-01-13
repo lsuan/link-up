@@ -7,11 +7,7 @@ import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 import { AvailabilityProps } from "./AvailabilitySection";
 
-function AvailabilityGrid({
-  schedule,
-  scheduleQuery,
-  mode,
-}: AvailabilityProps) {
+function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
   const { startDate, endDate, startTime, endTime, attendees } = schedule;
 
   const getAllDates = () => {
@@ -28,12 +24,24 @@ function AvailabilityGrid({
 
   const startHour = getHourNumber(startTime),
     endHour = getHourNumber(endTime);
-  const hours = [...Array(endHour - startHour + 1).keys()].map(
-    (i) => i + startHour
-  );
+
+  const getAllHours = () => {
+    const hours = [...Array(endHour - startHour + 1).keys()].map(
+      (i) => i + startHour
+    );
+    let timeSlots: number[] = [];
+    hours.slice(0, hours.length - 1).forEach((hour) => {
+      timeSlots.push(hour, hour + 0.5);
+    });
+    timeSlots.push(hours[hours.length - 1]!);
+    return timeSlots;
+  };
+
+  const hours = getAllHours();
   const getAllFormattedHours = () => {
     const allHours = hours;
-    return getFormattedHours(allHours, "short");
+
+    return getFormattedHours(hours, "long");
   };
 
   const dates = getAllDates(),
@@ -60,12 +68,16 @@ function AvailabilityGrid({
           })}
         </div>
         <div className="border-grey-500 flex w-fit pl-1">
-          <div className="sticky left-0 flex w-12 flex-col items-center justify-between gap-3 bg-inherit px-2">
-            {formattedHours.map((hour) => {
+          <div className="sticky left-0 -mt-2 flex flex-col bg-inherit px-2">
+            {formattedHours.map((hour, index) => {
               return (
                 <label
                   key={hour}
-                  className="pointer-events-none flex w-max items-start justify-center text-xs font-semibold"
+                  className={`pointer-events-none mx-auto w-max text-xs font-semibold ${
+                    index < hours.length - 1
+                      ? "h-10"
+                      : "absolute -bottom-2 left-1/2 -translate-x-1/2"
+                  }`}
                 >
                   {hour}
                 </label>
@@ -75,11 +87,14 @@ function AvailabilityGrid({
           {mode === "read" ? (
             <AvailabilityGridRead
               dates={dates}
-              hours={hours}
+              hours={hours.slice(0, hours.length - 1)}
               attendees={attendees as UserAvailability[]}
             />
           ) : (
-            <AvailabilityGridWrite dates={dates} hours={hours} />
+            <AvailabilityGridWrite
+              dates={dates}
+              hours={hours.slice(0, hours.length - 1)}
+            />
           )}
         </div>
       </div>

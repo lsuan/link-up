@@ -43,14 +43,22 @@ export const getTimeOptions = () => {
 export const getFormattedHours = (hours: number[], style: "long" | "short") => {
   const formattedHours = hours.map((hour) => {
     let format;
-    if (hour > 12 && hour < 24) {
-      format = `${hour - 12}x PM`;
-    } else if (hour == 12) {
+    if (hour >= 13 && hour < 24) {
+      format = `${
+        !Number.isInteger(hour) ? `${hour - 12.5}:30 PM` : `${hour - 12}x PM`
+      }`;
+    } else if (hour === 12) {
       format = "12x PM";
-    } else if (hour == 0 || hour == 24) {
+    } else if (hour === 12.5) {
+      format = "12:30 PM";
+    } else if (hour === 0.5) {
+      format = "12:30 AM";
+    } else if (hour === 0 || hour === 24) {
       format = "12x AM";
     } else {
-      format = `${hour}x AM`;
+      format = `${
+        !Number.isInteger(hour) ? `${hour - 0.5}:30 AM` : `${hour}x AM`
+      }`;
     }
     return style === "long"
       ? format.replace("x", ":00")

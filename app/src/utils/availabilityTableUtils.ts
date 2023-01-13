@@ -66,11 +66,12 @@ export const getMostUsers = (
 };
 
 // TODO: revisit when implementing dark / light mode
+// FIXME: incorrect when most users is 1
 export const setColors = (mostUsers: number) => {
   const cellColors: string[] = [];
 
   if (mostUsers === 1) {
-    cellColors.push("bg-neutral-900");
+    cellColors.push("bg-neutral-300");
   } else if (mostUsers === 2) {
     cellColors.push("bg-neutral-900", "bg-neutral-300");
   } else if (mostUsers === 3) {
@@ -103,7 +104,7 @@ export const getCellColor = (
   const ratio = numberOfUsers / mostUsers;
 
   if (mostUsers < 5) {
-    return colors[numberOfUsers];
+    return colors[numberOfUsers - 1];
   }
 
   // need to check if ratio is in the range for the appropriate color
