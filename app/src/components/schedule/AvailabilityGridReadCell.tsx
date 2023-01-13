@@ -9,7 +9,7 @@ import {
 } from "../../utils/availabilityTableUtils";
 import { hoverInfo } from "./AvailabilityResponses";
 
-const GridReadCell = memo(function GridReadCell({
+const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
   attendees,
   allUsers,
   dates,
@@ -97,4 +97,4 @@ const GridReadCell = memo(function GridReadCell({
   );
 });
 
-export default GridReadCell;
+export default AvailabilityGridReadCell;

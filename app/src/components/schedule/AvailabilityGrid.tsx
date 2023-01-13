@@ -49,14 +49,14 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
 
   return (
     <>
-      <div className="horizontal-scrollbar relative mt-4 mb-6 grid place-items-center overflow-x-scroll pb-4">
-        <div className="sticky top-0 flex w-fit justify-center">
+      <div className="horizontal-scrollbar relative my-4 grid place-items-center overflow-x-scroll pb-4">
+        <div className="sticky top-0 flex w-full justify-evenly">
           <div className="w-12 px-2" />
           {dates.map((date: Date) => {
             return (
               <label
                 key={date.toDateString()}
-                className="pointer-events-none w-20 select-none pb-2 text-center text-xs font-semibold"
+                className="pointer-events-none select-none pb-2 text-center text-xs font-semibold"
               >
                 {new Intl.DateTimeFormat("en-us", {
                   weekday: "short",
@@ -68,7 +68,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
           })}
         </div>
         <div className="border-grey-500 flex w-fit pl-1">
-          <div className="sticky left-0 -mt-2 flex flex-col bg-inherit px-2">
+          <div className="sticky left-0 -mt-2 flex flex-col bg-inherit pr-2">
             {formattedHours.map((hour, index) => {
               return (
                 <label
@@ -76,7 +76,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
                   className={`pointer-events-none mx-auto w-max text-xs font-semibold ${
                     index < hours.length - 1
                       ? "h-10"
-                      : "absolute -bottom-2 left-1/2 -translate-x-1/2"
+                      : "absolute -bottom-2 left-1"
                   }`}
                 >
                   {hour}

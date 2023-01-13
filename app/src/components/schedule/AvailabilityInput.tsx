@@ -9,6 +9,7 @@ import { UserAvailability } from "../../utils/availabilityTableUtils";
 import { trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
+import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
 import { AvailabilityProps } from "./AvailabilitySection";
 
 type AnonAvailabilityInputs = {
@@ -17,39 +18,37 @@ type AnonAvailabilityInputs = {
 
 const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
 
+export const disabled = atom<boolean>(true);
 export const selected = atom<string[]>([]);
-export const disabled = atom<boolean>(false);
 
-// FIXME: removing selected cell on edit isn't working correcty
 function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   const { status, data: sessionData } = useSession();
-  const { id } = schedule;
+  const { startDate, endDate } = schedule;
+  const attendees = schedule.attendees as UserAvailability[];
   const setScheduleAvailability = trpc.schedule.setAvailability.useMutation();
   const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [selectedCells, setSelectedCells] = useAtom(selected);
+  // might not need this copy, need to double check expected functionality
+  // const [selectedCellsCopy, setSelectedCellsCopy] = useState<string[]>([]);
   const [isDisabled, setIsDisabled] = useAtom(disabled);
+
   const userFullName = trpc.user.getUserFullName.useQuery(
     sessionData?.user?.id as string,
-    { enabled: sessionData?.user !== undefined, refetchOnWindowFocus: false }
-  );
-  const userAvailability = trpc.schedule.getUserAvailability.useQuery(
     {
-      id,
-      user: sessionData?.user?.id ?? guestUser,
-    },
-    {
-      enabled:
-        (status === "authenticated" && sessionData.user !== undefined) ||
-        (status === "unauthenticated" && guestUser !== ""),
+      enabled: sessionData?.user !== undefined,
       refetchOnWindowFocus: false,
-      onSuccess: (data) => onSuccess(data),
+      onSuccess: () => onSuccess(),
     }
   );
 
-  const onSuccess = (data: UserAvailability[]) => {
-    const userAvailability = data[0];
+  const onSuccess = () => {
+    const userAvailability = attendees.filter(
+      (attendee) => attendee.user === sessionData?.user?.id ?? guestUser
+    )[0];
+    console.log(userAvailability);
     const oldAvailability: string[] = [];
+    const daysOnly: string[] = [];
     for (const [date, hours] of Object.entries(
       userAvailability?.availability ?? {}
     )) {
@@ -57,8 +56,10 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
       times.forEach((time) => {
         oldAvailability.push(`${date}:${time}`);
       });
+      daysOnly.push(date);
     }
     setSelectedCells([...oldAvailability]);
+    // setSelectedCellsCopy([...oldAvailability]);
   };
 
   const save = async () => {
@@ -132,6 +133,12 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
             scheduleQuery={scheduleQuery}
             mode="write"
           />
+          {selectedCells.length > 0 && (
+            <AvailabilityGridWriteApplyCheckbox
+              startDate={startDate}
+              endDate={endDate}
+            />
+          )}
           <button
             type="button"
             className="w-full cursor-pointer rounded-lg bg-neutral-500 p-2 text-center transition-all hover:bg-neutral-300 hover:text-black disabled:cursor-default disabled:bg-neutral-700 disabled:text-neutral-300"
