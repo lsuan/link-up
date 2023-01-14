@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserAvailability } from "../../../utils/availabilityTableUtils";
+import { UserAvailability } from "../../../utils/availabilityUtils";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
@@ -45,6 +45,7 @@ export const scheduleRouter = router({
         },
         include: {
           host: true,
+          events: true,
         },
       });
 

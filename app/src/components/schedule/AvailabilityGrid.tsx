@@ -1,7 +1,4 @@
-import {
-  getHourNumber,
-  UserAvailability,
-} from "../../utils/availabilityTableUtils";
+import { getHourNumber, UserAvailability } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";

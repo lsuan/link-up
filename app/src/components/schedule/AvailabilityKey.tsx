@@ -4,7 +4,7 @@ import {
   getMostUsers,
   setColors,
   UserAvailability,
-} from "../../utils/availabilityTableUtils";
+} from "../../utils/availabilityUtils";
 import { AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityKey({ schedule }: AvailabilityProps) {
@@ -35,7 +35,7 @@ function AvailabilityKey({ schedule }: AvailabilityProps) {
               <div
                 key={index}
                 className={`w-full ${color} py-1${
-                  index === total ? " text-black" : ""
+                  index === cellColors.length - 1 ? " text-black" : ""
                 }`}
               >
                 {index === 0

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { notice } from "../../pages/schedule/[slug]";
-import { UserAvailability } from "../../utils/availabilityTableUtils";
+import { UserAvailability } from "../../utils/availabilityUtils";
 import { trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";

@@ -6,7 +6,7 @@ import {
   getMostUsers,
   setColors,
   UserAvailability,
-} from "../../utils/availabilityTableUtils";
+} from "../../utils/availabilityUtils";
 import { hoverInfo } from "./AvailabilityResponses";
 
 const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({

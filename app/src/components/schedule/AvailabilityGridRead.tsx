@@ -1,5 +1,5 @@
 import { useEffect, useState, memo } from "react";
-import { UserAvailability } from "../../utils/availabilityTableUtils";
+import { UserAvailability } from "../../utils/availabilityUtils";
 import AvailabilityGridReadCell from "./AvailabilityGridReadCell";
 
 const AvailabilityGridRead = memo(function AvailabilityGridRead({

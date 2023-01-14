@@ -27,28 +27,7 @@ type Event = {
   description?: string;
 };
 
-const events: Event[] = [
-  {
-    id: "2",
-    name: "User Testing Responses!",
-    date: new Date("1/4/2022"),
-    start: 1673128800,
-    end: 1673139600,
-    location: "Zoom Link",
-    description:
-      "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
-  },
-  {
-    id: "3",
-    name: "General",
-    date: new Date("1/11/2022"),
-    start: 1673736000,
-    end: 1673744400,
-    location: "Zoom Link",
-    description: "Have revisions to design done.",
-  },
-];
-
+const events: Event[] = [];
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
@@ -87,7 +66,9 @@ function Schedule() {
       <section>
         <SuccessNotice />
         <div className="px-8">
-          <BackArrow href="/dashboard" page="Dashboard" />
+          {sessionData?.user && (
+            <BackArrow href="/dashboard" page="Dashboard" />
+          )}
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
             <h1 className="text-3xl font-semibold">{schedule?.data?.name}</h1>
             {isShareModalShown && <Share />}
@@ -126,7 +107,7 @@ function Schedule() {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : schedule.data?.attendees === undefined ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...
@@ -135,13 +116,14 @@ function Schedule() {
                 Click the Share button at the top to share this event to others!
               </div>
             </div>
+          ) : (
+            <PublishSection slug={slug} />
           )}
         </div>
 
         {schedule.data && (
           <>
             <AvailabilitySection schedule={schedule.data} slug={slug} />
-            <PublishSection />
           </>
         )}
       </section>

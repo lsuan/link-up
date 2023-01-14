@@ -122,13 +122,51 @@ export const getCellColor = (
   // ranges go up by 20% since 1/5 === 20%
   if (ratio === 1) {
     return colors[4];
-  } else if (ratio > 0.6 && ratio <= 0.8) {
+  } else if (ratio > 0.75 && ratio < 1) {
     return colors[3];
-  } else if (ratio > 0.4 && ratio <= 0.6) {
+  } else if (ratio > 0.5 && ratio <= 0.75) {
     return colors[2];
-  } else if (ratio > 0.2 && ratio <= 0.4) {
+  } else if (ratio > 0.25 && ratio <= 0.5) {
     return colors[1];
-  } else if (ratio <= 0.2) {
+  } else if (ratio <= 0.25) {
     return colors[0];
   }
+};
+
+/** Returns a sorted map of the availability */
+export const getBestTimes = (
+  categorizedUsers: Map<string, string[]> | undefined,
+  leastUsers: number,
+  mostUsers: number
+) => {
+  if (!categorizedUsers) {
+    return;
+  }
+
+  let categorizedEntries = Array.from(categorizedUsers);
+  // filtering out the entries with least users to save memory usage
+  if (leastUsers !== mostUsers) {
+    categorizedEntries = categorizedEntries.filter(
+      (entry) => entry[1].length > leastUsers
+    );
+  }
+  categorizedEntries.sort((a, b) => {
+    return b[1].length - a[1].length;
+  });
+  const bestTimes = new Map(categorizedEntries);
+  return bestTimes;
+};
+
+/** Returns an array with a collection of all times from the best day*/
+export const getEventTimes = (bestTimes: Map<string, string[]>) => {
+  if (!bestTimes) {
+    return;
+  }
+
+  const times = [...bestTimes.keys()];
+  if (!times) {
+    return;
+  }
+  const sameDate = times.filter((time) => time.split(":")[0]);
+  return sameDate;
 };
