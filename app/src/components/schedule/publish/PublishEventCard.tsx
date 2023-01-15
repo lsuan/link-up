@@ -5,24 +5,25 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Event } from "@prisma/client";
 import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 
 function PublishEventCard({
   index,
-  isEditing,
-  setIsEditing,
-  event,
+  events,
+  setEvents,
+  deleteEvent,
 }: {
   index: number;
-  isEditing: boolean[];
-  setIsEditing: (state: boolean[]) => void;
-  event: InitialEventInfo | Event;
+  events: InitialEventInfo[];
+  setEvents: (events: InitialEventInfo[]) => void;
+  deleteEvent: (index: number) => void;
 }) {
+  const event = events[index] as InitialEventInfo;
   const setCardEditState = () => {
-    const prevCards = isEditing.slice(0, index);
-    const rest = isEditing.slice(index + 1);
-    setIsEditing([...prevCards, true, ...rest]);
+    const eventData: InitialEventInfo = { ...event, isEditing: true };
+    const prevEvents = events.slice();
+    prevEvents[index] = eventData;
+    setEvents([...prevEvents]);
   };
   return (
     <section className="w-full rounded-lg bg-neutral-500 p-6">
@@ -36,7 +37,10 @@ function PublishEventCard({
           }).format(event.date)}
         </p>
         <div className="absolute right-0 top-0 flex gap-2">
-          <button className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700">
+          <button
+            className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => deleteEvent(index)}
+          >
             <FontAwesomeIcon icon={faTrash} />
           </button>
           <button
@@ -62,13 +66,17 @@ function PublishEventCard({
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
           <p className="text-neutral-300">
-            {event.location ?? "Add a location..."}
+            {event.location || event.location === ""
+              ? "Add a location..."
+              : event.location}
           </p>
         </li>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faNoteSticky} />
           <p className="text-neutral-300">
-            {event.description ?? "Add a description..."}
+            {event.description || event.description === ""
+              ? "Add a location..."
+              : event.description}
           </p>
         </li>
       </ul>

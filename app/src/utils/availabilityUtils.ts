@@ -146,23 +146,23 @@ export const parseRange = (range: string) => {
 };
 
 /** Gets the blocked time range from a given event */
-export const getSavedTimes = (events: Event[]) => {
-  const times: string[] = [];
-  events.forEach((event) => {
-    for (
-      let i = getTimeFromString(event.startTime);
-      i < getTimeFromString(event.endTime);
-      i += 0.5
-    ) {
-      times.push(`${event.date.toISOString().split("T")[0]}:${i}-${i + 0.5}`);
-    }
-  });
-  return times;
-};
+// export const getSavedTimes = (events: Event[]) => {
+//   const times: string[] = [];
+//   events.forEach((event) => {
+//     for (
+//       let i = getTimeFromString(event.startTime);
+//       i < getTimeFromString(event.endTime);
+//       i += 0.5
+//     ) {
+//       times.push(`${event.date.toISOString().split("T")[0]}:${i}-${i + 0.5}`);
+//     }
+//   });
+//   return times;
+// };
 
 /** Returns a sorted map of the availability */
 export const getBestTimes = (
-  reserved: string[], // ["date:start-end", ...]
+  // reserved: string[], // ["date:start-end", ...]
   categorizedUsers: Map<string, string[]> | undefined,
   leastUsers: number,
   mostUsers: number
@@ -175,12 +175,12 @@ export const getBestTimes = (
   // filtering out the entries with least users + already reserved times to save memory usage
   if (leastUsers !== mostUsers) {
     categorizedEntries = categorizedEntries.filter(
-      (entry) => entry[1].length > leastUsers && !reserved.includes(entry[0])
-    );
+      (entry) => entry[1].length > leastUsers
+    ); //&& !reserved.includes(entry[0])
   } else {
     categorizedEntries = categorizedEntries.filter(
-      (entry) => entry[1].length > 0 && !reserved.includes(entry[0])
-    );
+      (entry) => entry[1].length > 0
+    ); // && !reserved.includes(entry[0])
   }
   categorizedEntries.sort((a, b) => {
     return b[1].length - a[1].length;

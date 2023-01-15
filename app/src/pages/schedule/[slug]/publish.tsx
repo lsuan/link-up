@@ -1,6 +1,6 @@
 import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Event } from "@prisma/client";
+import { Event, Schedule } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -9,16 +9,13 @@ import { notice } from ".";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
-import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import {
   categorizeUsers,
   getBestTimes,
   getLeastUsers,
   getMostUsers,
-  getSavedTimes,
   getTimeBlock,
-  parseRange,
   UserAvailability,
 } from "../../../utils/availabilityUtils";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
@@ -26,11 +23,12 @@ import { trpc } from "../../../utils/trpc";
 
 export type InitialEventInfo = {
   name: string;
-  date: Date;
+  date: Date | null;
   startTime: string;
   endTime: string;
   location?: string;
   description?: string;
+  isEditing: boolean;
 };
 function Publish() {
   const { data: sessionData } = useSession();
@@ -45,41 +43,28 @@ function Publish() {
     {
       enabled: sessionData?.user !== undefined,
       refetchOnWindowFocus: false,
-      onSuccess: (data) => initializeEvents(data?.events ?? []),
+      onSuccess: (data) => initializeEvents(data),
     }
   );
-  const attendees = schedule.data?.attendees as UserAvailability[];
   const [, setNoticeMessage] = useAtom(notice);
   const [isEditing, setIsEditing] = useState<boolean[]>([false]);
-  const [events, setEvents] = useState<Array<InitialEventInfo | Event>>([]);
+  const [events, setEvents] = useState<InitialEventInfo[]>([]);
   console.log(events);
-
-  const initializeEvents = (createdEvents: Event[]) => {
-    const scheduleEvents: Array<Event> = [...createdEvents];
-    const savedTimes = getSavedTimes(scheduleEvents);
+  const initializeEvents = (data: Schedule | null) => {
+    // const savedTimes = getSavedTimes(scheduleEvents);
+    const attendees = data?.attendees as UserAvailability[];
     const categorizedUsers = categorizeUsers(attendees);
     const leastUsers = getLeastUsers(categorizedUsers, attendees?.length ?? 0);
     const mostUsers = getMostUsers(categorizedUsers);
-    const bestTimes = getBestTimes(
-      savedTimes,
-      categorizedUsers,
-      leastUsers,
-      mostUsers
-    );
+    const bestTimes = getBestTimes(categorizedUsers, leastUsers, mostUsers);
 
-    if (!schedule.data || !bestTimes) {
+    if (!data || !bestTimes) {
       return;
     }
 
-    const initEvents: Array<InitialEventInfo | Event> = [...scheduleEvents];
-    for (
-      let i = 0;
-      i < schedule.data?.numberOfEvents - initEvents.length;
-      i++
-    ) {
-      const length = parseInt(
-        schedule.data.lengthOfEvents.split(" ")[0] as string
-      );
+    const initEvents: InitialEventInfo[] = [];
+    for (let i = 0; i < data.numberOfEvents - initEvents.length; i++) {
+      const length = parseInt(data.lengthOfEvents.split(" ")[0] as string);
       const [date, startTime, endTime] = getTimeBlock(bestTimes, length) as [
         date: string,
         startTime: string,
@@ -91,6 +76,7 @@ function Publish() {
         date: new Date(`${date}T00:00:00`),
         startTime,
         endTime,
+        isEditing: false,
       });
     }
     setEvents([...initEvents]);
@@ -102,14 +88,27 @@ function Publish() {
   };
 
   // TODO: implement deleting + adding an event
-  const deleteEvent = (index: number) => {};
+  const deleteEvent = (index: number) => {
+    const newEvents = events.filter((_event, i) => {
+      i === index;
+    });
+    setEvents([...newEvents]);
+  };
 
-  const addEvent = () => {};
+  const addEvent = () => {
+    const newEvent: InitialEventInfo = {
+      name: "New Event",
+      date: null,
+      startTime: schedule.data?.startTime as string,
+      endTime: schedule.data?.endTime as string,
+      isEditing: true,
+    };
+    setEvents([...events, newEvent]);
+  };
 
   // FIXME: events are not properly set on load
   return (
     <>
-      <SuccessNotice />
       <section className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <h1 className="mb-12 text-3xl font-semibold">Publish Event(s)</h1>
@@ -129,20 +128,19 @@ function Publish() {
               {events.map((event, index) => {
                 return (
                   <div key={index} className="w-full">
-                    {isEditing[index] ? (
+                    {events[index]?.isEditing ? (
                       <EditEventCard
-                        event={event}
                         index={index}
-                        isEditing={isEditing}
-                        setIsEditing={setIsEditing}
-                        scheduleId={schedule.data?.id as string}
+                        events={events}
+                        setEvents={setEvents}
+                        deleteEvent={deleteEvent}
                       />
                     ) : (
                       <PublishEventCard
                         index={index}
-                        isEditing={isEditing}
-                        setIsEditing={setIsEditing}
-                        event={event}
+                        events={events}
+                        setEvents={setEvents}
+                        deleteEvent={deleteEvent}
                       />
                     )}
                   </div>

@@ -1,12 +1,9 @@
-import { Event } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
-import { notice } from "../../../pages/schedule/[slug]";
 import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { getTimeFromString, getTimeOptions } from "../../../utils/formUtils";
-import { trpc } from "../../../utils/trpc";
 import {
   CalendarContainer,
   CalendarHeader,
@@ -45,28 +42,19 @@ type EditEventInputs = {
 };
 
 function EditEventCard({
-  event,
   index,
-  isEditing,
-  setIsEditing,
-  scheduleId,
+  events,
+  setEvents,
+  deleteEvent,
 }: {
-  event: InitialEventInfo | Event;
   index: number;
-  isEditing: boolean[];
-  setIsEditing: (state: boolean[]) => void;
-  scheduleId: string;
+  events: InitialEventInfo[];
+  setEvents: (events: InitialEventInfo[]) => void;
+  deleteEvent: (index: number) => void;
 }) {
+  const event = events[index] as InitialEventInfo;
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [eventDate, setEventDate] = useState<Date | null>(event.date);
-  const createEvent = trpc.event.createEvent.useMutation();
-  const [, setNoticeMessage] = useAtom(notice);
-
-  const setCardEditState = () => {
-    const prevCards = isEditing.slice(0, index);
-    const rest = isEditing.slice(index + 1);
-    setIsEditing([...prevCards, false, ...rest]);
-  };
 
   const handleEventEdit = async (data: EditEventInputs) => {
     const eventData: InitialEventInfo = {
@@ -76,16 +64,12 @@ function EditEventCard({
       endTime: data.times.endTime,
       description: data.description,
       location: data.location,
+      isEditing: false,
     };
-    const newEvent = await createEvent.mutateAsync({
-      ...eventData,
-      scheduleId,
-    });
 
-    if (newEvent) {
-      setCardEditState();
-      setNoticeMessage("Event successfully updated.");
-    }
+    const prevEvents = events.slice(0, index);
+    const rest = events.slice(index + 1);
+    setEvents([...prevEvents, eventData, ...rest]);
   };
 
   return (
@@ -148,7 +132,11 @@ function EditEventCard({
             type="text"
           />
           <div className="flex justify-end gap-2">
-            <Form.Button type="button" name="Delete" />
+            <Form.Button
+              type="button"
+              name="Delete"
+              onClick={() => deleteEvent(index)}
+            />
             <Form.Button type="submit" name="Save" />
           </div>
         </Form>
