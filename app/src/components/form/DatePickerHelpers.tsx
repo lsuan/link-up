@@ -17,12 +17,12 @@ export const CustomDatePicker = forwardRef(
       value,
       onClick,
       label,
-      required,
+      star,
     }: {
       value?: string;
       onClick?: () => void;
       label: string;
-      required?: boolean;
+      star?: boolean;
     },
     ref: any
   ) => (
@@ -38,16 +38,14 @@ export const CustomDatePicker = forwardRef(
           {value ? (
             value
           ) : (
-            <span className={`text-neutral-500 ${required}`}>
-              Select a date...
-            </span>
+            <>
+              <span className={`text-neutral-500`}>Select a date...</span>
+            </>
           )}
         </button>
-        <label
-          className={`absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all ${required}`}
-        >
+        <label className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all">
           {label}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {star && <span className="ml-1 text-red-500">*</span>}
         </label>
       </div>
     </div>

@@ -4,8 +4,9 @@ import { Event, Schedule } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { notice } from ".";
+import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMessage";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
@@ -29,6 +30,7 @@ export type InitialEventInfo = {
   location?: string;
   description?: string;
   isEditing: boolean;
+  className?: string;
 };
 function Publish() {
   const { data: sessionData } = useSession();
@@ -47,9 +49,32 @@ function Publish() {
     }
   );
   const [, setNoticeMessage] = useAtom(notice);
-  const [isEditing, setIsEditing] = useState<boolean[]>([false]);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
-  console.log(events);
+  const [saveWarning, setSaveWarning] = useState<string>("");
+
+  useEffect(() => {
+    if (events.every((event) => !event.isEditing)) {
+      setSaveWarning("");
+    }
+  }, [events]);
+
+  const setErrorBorder = () => {
+    const eventsWithUnsavedEdits = events.map((event) => {
+      if (event.isEditing) {
+        return {
+          ...event,
+          className: "border border-red-500",
+        };
+      } else {
+        return {
+          ...event,
+          className: "",
+        };
+      }
+    });
+    setEvents([...eventsWithUnsavedEdits]);
+  };
+
   const initializeEvents = (data: Schedule | null) => {
     // const savedTimes = getSavedTimes(scheduleEvents);
     const attendees = data?.attendees as UserAvailability[];
@@ -83,15 +108,18 @@ function Publish() {
   };
 
   const handlePublish = () => {
-    setNoticeMessage("Your events have been successfully published!");
-    router.push(`/schedule/${slug}`);
+    if (events.some((event) => event.isEditing)) {
+      setSaveWarning("You have unsaved events!");
+      setErrorBorder();
+    } else {
+      setNoticeMessage("Your events have been successfully published!");
+
+      router.push(`/schedule/${slug}`);
+    }
   };
 
-  // TODO: implement deleting + adding an event
   const deleteEvent = (index: number) => {
-    const newEvents = events.filter((_event, i) => {
-      i === index;
-    });
+    const newEvents = events.filter((_event, i) => i !== index);
     setEvents([...newEvents]);
   };
 
@@ -102,6 +130,7 @@ function Publish() {
       startTime: schedule.data?.startTime as string,
       endTime: schedule.data?.endTime as string,
       isEditing: true,
+      className: saveWarning !== "" ? "border border-red-500" : "",
     };
     setEvents([...events, newEvent]);
   };
@@ -124,7 +153,7 @@ function Publish() {
                 schedule.data?.lengthOfEvents
               } ${schedule.data?.numberOfEvents === 1 ? "long" : "each"}):`}
             </h3>
-            <div className="my-4 flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4">
               {events.map((event, index) => {
                 return (
                   <div key={index} className="w-full">
@@ -134,6 +163,11 @@ function Publish() {
                         events={events}
                         setEvents={setEvents}
                         deleteEvent={deleteEvent}
+                        className={
+                          event.className && event.className !== ""
+                            ? ` ${event.className}`
+                            : ""
+                        }
                       />
                     ) : (
                       <PublishEventCard
@@ -152,14 +186,19 @@ function Publish() {
               >
                 <FontAwesomeIcon icon={faPlus} />
               </button>
+              {saveWarning !== "" && (
+                <div className="-mb-6 w-full">
+                  <ServerSideErrorMessage error={saveWarning} />
+                </div>
+              )}
+              <button
+                className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
+                onClick={() => handlePublish()}
+              >
+                <FontAwesomeIcon icon={faListCheck} className="mr-2" />
+                Confirm and Publish
+              </button>
             </div>
-            <button
-              className="mt-12 w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
-              onClick={() => handlePublish()}
-            >
-              <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-              Confirm and Publish
-            </button>
           </>
         )}
       </section>

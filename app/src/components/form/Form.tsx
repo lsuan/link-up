@@ -152,11 +152,9 @@ Form.Select = function Select({
 Form.Button = function Button({
   name,
   type,
-  onClick,
 }: {
   name: string;
   type: "button" | "reset" | "submit" | undefined;
-  onClick?: () => void;
 }) {
   const {
     formState: { isSubmitting },
@@ -164,8 +162,7 @@ Form.Button = function Button({
   return (
     <button
       type={type}
-      className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-black transition-colors hover:bg-blue-300"
-      onClick={onClick}
+      className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-black transition-colors hover:bg-blue-300"
     >
       {name}
       {isSubmitting && (

@@ -29,12 +29,13 @@ function PublishEventCard({
     <section className="w-full rounded-lg bg-neutral-500 p-6">
       <header className="relative">
         <p className="text-sm">
-          {Intl.DateTimeFormat("en-us", {
-            weekday: "long",
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          }).format(event.date)}
+          {event.date &&
+            Intl.DateTimeFormat("en-us", {
+              weekday: "long",
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            }).format(event.date)}
         </p>
         <div className="absolute right-0 top-0 flex gap-2">
           <button
@@ -66,17 +67,17 @@ function PublishEventCard({
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
           <p className="text-neutral-300">
-            {event.location || event.location === ""
-              ? "Add a location..."
-              : event.location}
+            {event.location && event.location !== ""
+              ? event.location
+              : "Add a location..."}
           </p>
         </li>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faNoteSticky} />
           <p className="text-neutral-300">
-            {event.description || event.description === ""
-              ? "Add a location..."
-              : event.description}
+            {event.description && event.description !== ""
+              ? event.description
+              : "Add a description..."}
           </p>
         </li>
       </ul>
