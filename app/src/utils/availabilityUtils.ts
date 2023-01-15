@@ -1,4 +1,5 @@
-import { getFormattedHours } from "./formUtils";
+import { Event } from "@prisma/client";
+import { getFormattedHours, getTimeFromString } from "./formUtils";
 
 export type UserAvailability = {
   user: string;
@@ -135,8 +136,33 @@ export const getCellColor = (
   }
 };
 
+/** Returns numbered bounds [lower, upper] from a time string */
+export const parseRange = (range: string) => {
+  const [lower, upper] = range.split(":")[1]?.split("-") as [
+    lower: string,
+    upper: string
+  ];
+  return [lower, upper];
+};
+
+/** Gets the blocked time range from a given event */
+export const getSavedTimes = (events: Event[]) => {
+  const times: string[] = [];
+  events.forEach((event) => {
+    for (
+      let i = getTimeFromString(event.startTime);
+      i < getTimeFromString(event.endTime);
+      i += 0.5
+    ) {
+      times.push(`${event.date.toISOString().split("T")[0]}:${i}-${i + 0.5}`);
+    }
+  });
+  return times;
+};
+
 /** Returns a sorted map of the availability */
 export const getBestTimes = (
+  reserved: string[], // ["date:start-end", ...]
   categorizedUsers: Map<string, string[]> | undefined,
   leastUsers: number,
   mostUsers: number
@@ -146,14 +172,14 @@ export const getBestTimes = (
   }
 
   let categorizedEntries = Array.from(categorizedUsers);
-  // filtering out the entries with least users to save memory usage
+  // filtering out the entries with least users + already reserved times to save memory usage
   if (leastUsers !== mostUsers) {
     categorizedEntries = categorizedEntries.filter(
-      (entry) => entry[1].length > leastUsers
+      (entry) => entry[1].length > leastUsers && !reserved.includes(entry[0])
     );
   } else {
     categorizedEntries = categorizedEntries.filter(
-      (entry) => entry[1].length > 0
+      (entry) => entry[1].length > 0 && !reserved.includes(entry[0])
     );
   }
   categorizedEntries.sort((a, b) => {
@@ -180,8 +206,7 @@ export const getEventTimes = (bestTimes: Map<string, string[]>) => {
 /** Gets the timeblock for the current best day */
 export const getTimeBlock = (
   bestTimes: Map<string, string[]>,
-  lengthOfEvents: number,
-  parseRange: (range: string) => string[]
+  lengthOfEvents: number
 ) => {
   const dateTimes = getEventTimes(bestTimes) as string[];
   const dateBlock: string[] = [dateTimes[0] as string];

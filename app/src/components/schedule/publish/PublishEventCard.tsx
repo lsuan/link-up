@@ -5,6 +5,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Event } from "@prisma/client";
 import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 
 function PublishEventCard({
@@ -16,7 +17,7 @@ function PublishEventCard({
   index: number;
   isEditing: boolean[];
   setIsEditing: (state: boolean[]) => void;
-  event: InitialEventInfo;
+  event: InitialEventInfo | Event;
 }) {
   const setCardEditState = () => {
     const prevCards = isEditing.slice(0, index);

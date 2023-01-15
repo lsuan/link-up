@@ -24,4 +24,16 @@ export const eventRouter = router({
 
       return { event };
     }),
+
+  getEventsByScheduleId: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const events = await ctx.prisma.event.findMany({
+        where: {
+          scheduleId: input,
+        },
+      });
+
+      return { events };
+    }),
 });

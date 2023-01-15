@@ -1,3 +1,4 @@
+import { Event } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
@@ -50,7 +51,7 @@ function EditEventCard({
   setIsEditing,
   scheduleId,
 }: {
-  event: InitialEventInfo;
+  event: InitialEventInfo | Event;
   index: number;
   isEditing: boolean[];
   setIsEditing: (state: boolean[]) => void;

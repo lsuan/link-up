@@ -1,5 +1,6 @@
 import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Event } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -15,7 +16,9 @@ import {
   getBestTimes,
   getLeastUsers,
   getMostUsers,
+  getSavedTimes,
   getTimeBlock,
+  parseRange,
   UserAvailability,
 } from "../../../utils/availabilityUtils";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
@@ -39,51 +42,59 @@ function Publish() {
       name: name,
       id: scheduleIdPart,
     },
-    { enabled: sessionData?.user !== undefined, refetchOnWindowFocus: false }
+    {
+      enabled: sessionData?.user !== undefined,
+      refetchOnWindowFocus: false,
+      onSuccess: (data) => initializeEvents(data?.events ?? []),
+    }
   );
   const attendees = schedule.data?.attendees as UserAvailability[];
   const [, setNoticeMessage] = useAtom(notice);
   const [isEditing, setIsEditing] = useState<boolean[]>([false]);
-  const categorizedUsers = categorizeUsers(attendees);
-  const leastUsers = getLeastUsers(categorizedUsers, attendees?.length ?? 0);
-  const mostUsers = getMostUsers(categorizedUsers);
-  const bestTimes = getBestTimes(categorizedUsers, leastUsers, mostUsers);
+  const [events, setEvents] = useState<Array<InitialEventInfo | Event>>([]);
+  console.log(events);
 
-  const parseRange = (range: string) => {
-    const [lower, upper] = range.split(":")[1]?.split("-") as [
-      lower: string,
-      upper: string
-    ];
-    return [lower, upper];
-  };
+  const initializeEvents = (createdEvents: Event[]) => {
+    const scheduleEvents: Array<Event> = [...createdEvents];
+    const savedTimes = getSavedTimes(scheduleEvents);
+    const categorizedUsers = categorizeUsers(attendees);
+    const leastUsers = getLeastUsers(categorizedUsers, attendees?.length ?? 0);
+    const mostUsers = getMostUsers(categorizedUsers);
+    const bestTimes = getBestTimes(
+      savedTimes,
+      categorizedUsers,
+      leastUsers,
+      mostUsers
+    );
 
-  const initializeEvents = () => {
     if (!schedule.data || !bestTimes) {
       return;
     }
 
-    let events: InitialEventInfo[] = [];
-    for (let i = 0; i < schedule.data?.numberOfEvents; i++) {
+    const initEvents: Array<InitialEventInfo | Event> = [...scheduleEvents];
+    for (
+      let i = 0;
+      i < schedule.data?.numberOfEvents - initEvents.length;
+      i++
+    ) {
       const length = parseInt(
         schedule.data.lengthOfEvents.split(" ")[0] as string
       );
-      const [date, startTime, endTime] = getTimeBlock(
-        bestTimes,
-        length,
-        parseRange
-      ) as [date: string, startTime: string, endTime: string];
+      const [date, startTime, endTime] = getTimeBlock(bestTimes, length) as [
+        date: string,
+        startTime: string,
+        endTime: string
+      ];
 
-      events.push({
+      initEvents.push({
         name: `Event ${i + 1}`,
         date: new Date(`${date}T00:00:00`),
         startTime,
         endTime,
       });
     }
-    return events;
+    setEvents([...initEvents]);
   };
-
-  const events = initializeEvents();
 
   const handlePublish = () => {
     setNoticeMessage("Your events have been successfully published!");
@@ -95,6 +106,7 @@ function Publish() {
 
   const addEvent = () => {};
 
+  // FIXME: events are not properly set on load
   return (
     <>
       <SuccessNotice />
@@ -114,7 +126,7 @@ function Publish() {
               } ${schedule.data?.numberOfEvents === 1 ? "long" : "each"}):`}
             </h3>
             <div className="my-4 flex flex-col items-center gap-4">
-              {events?.map((event, index) => {
+              {events.map((event, index) => {
                 return (
                   <div key={index} className="w-full">
                     {isEditing[index] ? (
