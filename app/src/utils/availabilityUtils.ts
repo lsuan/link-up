@@ -1,3 +1,5 @@
+import { getFormattedHours } from "./formUtils";
+
 export type UserAvailability = {
   user: string;
   name:
@@ -149,6 +151,10 @@ export const getBestTimes = (
     categorizedEntries = categorizedEntries.filter(
       (entry) => entry[1].length > leastUsers
     );
+  } else {
+    categorizedEntries = categorizedEntries.filter(
+      (entry) => entry[1].length > 0
+    );
   }
   categorizedEntries.sort((a, b) => {
     return b[1].length - a[1].length;
@@ -169,4 +175,53 @@ export const getEventTimes = (bestTimes: Map<string, string[]>) => {
   }
   const sameDate = times.filter((time) => time.split(":")[0]);
   return sameDate;
+};
+
+/** Gets the timeblock for the current best day */
+export const getTimeBlock = (
+  bestTimes: Map<string, string[]>,
+  lengthOfEvents: number,
+  parseRange: (range: string) => string[]
+) => {
+  const dateTimes = getEventTimes(bestTimes) as string[];
+  const dateBlock: string[] = [dateTimes[0] as string];
+
+  // in the case where the event is 30 mins long
+  if (lengthOfEvents === 30) {
+    lengthOfEvents = 0.5;
+  }
+  for (let j = 1; j < lengthOfEvents * 2 && j < dateTimes.length - 1; j++) {
+    const currentDateTime = dateTimes[j] as string;
+    const [lower, upper] = parseRange(currentDateTime) as [
+      lower: string,
+      upper: string
+    ];
+    if (
+      dateBlock.some((current) => {
+        return (
+          parseRange(current).includes(lower) ||
+          parseRange(current).includes(upper)
+        );
+      })
+    ) {
+      dateBlock.push(currentDateTime);
+    }
+  }
+  dateBlock.forEach((time) => {
+    bestTimes.delete(time);
+  });
+
+  if (!dateBlock[0]) {
+    return ["", "", ""];
+  }
+
+  dateBlock.sort();
+  const start = [parseInt(parseRange(dateBlock[0])[0] as string)];
+  const end = [
+    parseInt(parseRange(dateBlock[dateBlock.length - 1]!)[1] as string),
+  ];
+  const date = dateBlock[0].split(":")[0];
+  const startTime = getFormattedHours(start, "long")[0] as string;
+  const endTime = getFormattedHours(end, "long")[0] as string;
+  return [date, startTime, endTime];
 };

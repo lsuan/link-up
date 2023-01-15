@@ -100,8 +100,8 @@ model Event {
   date        DateTime
   startTime   String
   endTime     String
+  scheduleId  String
   description String?
   location    String?
-  scheduleId  String
   schedule    Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 }

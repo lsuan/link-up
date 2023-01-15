@@ -43,6 +43,9 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   );
 
   const onSuccess = () => {
+    if (!attendees) {
+      return;
+    }
     const userAvailability = attendees.filter(
       (attendee) => attendee.user === sessionData?.user?.id ?? guestUser
     )[0];

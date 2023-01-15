@@ -26,7 +26,7 @@ function AvailabilityKey({ schedule }: AvailabilityProps) {
 
   return (
     <>
-      {allAvailability.every((availability) => {
+      {allAvailability?.every((availability) => {
         return Object.values(availability.availability).length > 0;
       }) && (
         <div className="my-4 mx-auto flex w-full max-w-xs overflow-hidden rounded-full border border-indigo-500 text-center text-xs font-semibold">
@@ -39,7 +39,7 @@ function AvailabilityKey({ schedule }: AvailabilityProps) {
                 }`}
               >
                 {index === 0
-                  ? `${leastUsers}/${total}`
+                  ? `${leastUsers !== 0 ? 0 : leastUsers}/${total}`
                   : index === cellColors.length - 1
                   ? `${mostUsers}/${total}`
                   : ""}

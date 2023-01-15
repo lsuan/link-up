@@ -67,6 +67,13 @@ export const getFormattedHours = (hours: number[], style: "long" | "short") => {
   return formattedHours;
 };
 
+/** Given a formatted time (tt:00 AM/PM), return its time value as a number */
+export const getTimeFromString = (timeString: string) => {
+  const [time, meridian] = timeString.split(" ");
+  const hour = parseInt(time?.split(":")[0] as string);
+  return meridian === "PM" ? hour + 12 : hour;
+};
+
 export const MONTHS = [
   "January",
   "February",

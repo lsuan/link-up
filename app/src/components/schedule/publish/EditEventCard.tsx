@@ -2,7 +2,10 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
-import { getTimeOptions } from "../../../utils/formUtils";
+import { notice } from "../../../pages/schedule/[slug]";
+import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
+import { getTimeFromString, getTimeOptions } from "../../../utils/formUtils";
+import { trpc } from "../../../utils/trpc";
 import {
   CalendarContainer,
   CalendarHeader,
@@ -12,36 +15,51 @@ import {
 import { Form } from "../../form/Form";
 import ModalBackground from "../../shared/ModalBackground";
 
-type EditEventInputs = {
-  eventName: string;
-  eventDate: Date | null;
-  startTime: string;
-  endTime: string;
-  location?: string;
-  description?: string;
-};
-
 const EditEventSchema = z.object({
-  eventName: z.string().min(1, { message: "Event must have a name!" }),
-  eventDate: z.date({ required_error: "Event must have a date!" }),
-  startTime: z.string({ required_error: "Event must have a start time!" }),
-  endTime: z.string({ required_error: "Event must have an end time!" }),
+  name: z.string().min(1, { message: "Event must have a name!" }),
+  date: z.date({ required_error: "Event must have a date!" }),
+  times: z
+    .object({
+      startTime: z.string({ required_error: "Event must have a start time!" }),
+      endTime: z.string({ required_error: "Event must have an end time!" }),
+    })
+    .refine(
+      (data) =>
+        getTimeFromString(data.startTime) < getTimeFromString(data.endTime),
+      "End time must be later than start time!"
+    ),
   location: z.string().optional(),
   description: z.string().optional(),
 });
 
-type EditEventResponse = {};
+type EditEventInputs = {
+  name: string;
+  date: Date;
+  times: {
+    startTime: string;
+    endTime: string;
+  };
+  location: string;
+  description: string;
+};
+
 function EditEventCard({
+  event,
   index,
   isEditing,
   setIsEditing,
+  scheduleId,
 }: {
+  event: InitialEventInfo;
   index: number;
   isEditing: boolean[];
   setIsEditing: (state: boolean[]) => void;
+  scheduleId: string;
 }) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
-  const [eventDate, setEventDate] = useState<Date | null>();
+  const [eventDate, setEventDate] = useState<Date | null>(event.date);
+  const createEvent = trpc.event.createEvent.useMutation();
+  const [, setNoticeMessage] = useAtom(notice);
 
   const setCardEditState = () => {
     const prevCards = isEditing.slice(0, index);
@@ -49,8 +67,24 @@ function EditEventCard({
     setIsEditing([...prevCards, false, ...rest]);
   };
 
-  const handleEventEdit = (data: EditEventResponse) => {
-    setCardEditState();
+  const handleEventEdit = async (data: EditEventInputs) => {
+    const eventData: InitialEventInfo = {
+      name: data.name,
+      date: data.date,
+      startTime: data.times.startTime,
+      endTime: data.times.endTime,
+      description: data.description,
+      location: data.location,
+    };
+    const newEvent = await createEvent.mutateAsync({
+      ...eventData,
+      scheduleId,
+    });
+
+    if (newEvent) {
+      setCardEditState();
+      setNoticeMessage("Event successfully updated.");
+    }
   };
 
   return (
@@ -61,10 +95,16 @@ function EditEventCard({
           schema={EditEventSchema}
           onSubmit={handleEventEdit}
           className="flex flex-col gap-4"
-          defaultValues={{ eventDate }}
+          defaultValues={{
+            name: event.name,
+            date: event.date,
+            times: { startTime: event.startTime, endTime: event.endTime },
+            location: event.location,
+            description: event.description,
+          }}
         >
           <Form.Input
-            name="eventName"
+            name="name"
             displayName="Event Name"
             type="text"
             required
@@ -90,12 +130,12 @@ function EditEventCard({
           />
           <div className="flex justify-between gap-2">
             <Form.Select
-              name="startTime"
+              name="times.startTime"
               displayName="From"
               options={getTimeOptions()}
             />
             <Form.Select
-              name="endTime"
+              name="times.endTime"
               displayName="To"
               options={getTimeOptions()}
             />

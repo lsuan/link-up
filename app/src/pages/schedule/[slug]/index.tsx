@@ -107,7 +107,7 @@ function Schedule() {
                 </div>
               </div>
             </div>
-          ) : schedule.data?.attendees === undefined ? (
+          ) : isHost && !schedule.data?.attendees ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...
@@ -117,7 +117,7 @@ function Schedule() {
               </div>
             </div>
           ) : (
-            <PublishSection slug={slug} />
+            isHost && <PublishSection slug={slug} />
           )}
         </div>
 
