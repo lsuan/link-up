@@ -13,10 +13,11 @@ import PublishEventCard from "../../../components/schedule/publish/PublishEventC
 import BackArrow from "../../../components/shared/BackArrow";
 import {
   categorizeUsers,
-  getBestTimes,
-  getLeastUsers,
+  getBestTimeBlock,
+  getBestTimesPerDay,
+  getHeuristics,
   getMostUsers,
-  getTimeBlock,
+  TimeBlock,
   UserAvailability,
 } from "../../../utils/availabilityUtils";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
@@ -76,35 +77,49 @@ function Publish() {
   };
 
   const initializeEvents = (data: Schedule | null) => {
-    // const savedTimes = getSavedTimes(scheduleEvents);
-    const attendees = data?.attendees as UserAvailability[];
-    const categorizedUsers = categorizeUsers(attendees);
-    const leastUsers = getLeastUsers(categorizedUsers, attendees?.length ?? 0);
-    const mostUsers = getMostUsers(categorizedUsers);
-    const bestTimes = getBestTimes(categorizedUsers, leastUsers, mostUsers);
-
-    if (!data || !bestTimes) {
+    if (!data) {
       return;
     }
+    const attendees = data.attendees as UserAvailability[];
+    let lengthOfEvents = parseInt(data.lengthOfEvents.split(" ")[0] as string);
+    if (lengthOfEvents === 30) {
+      lengthOfEvents = 0.5;
+    }
+    const blockLength = lengthOfEvents * 2;
+    const categorizedUsers = categorizeUsers(attendees);
+    const mostUsers = getMostUsers(categorizedUsers);
+    const bestTimes = getBestTimesPerDay(
+      categorizedUsers,
+      mostUsers,
+      blockLength
+    );
 
-    const initEvents: InitialEventInfo[] = [];
-    for (let i = 0; i < data.numberOfEvents - initEvents.length; i++) {
-      const length = parseInt(data.lengthOfEvents.split(" ")[0] as string);
-      const [date, startTime, endTime] = getTimeBlock(bestTimes, length) as [
-        date: string,
-        startTime: string,
-        endTime: string
-      ];
+    if (!categorizedUsers || !bestTimes) {
+      return;
+    }
+    const heuristics = getHeuristics(categorizedUsers, bestTimes);
+    const initialEvents: InitialEventInfo[] = [];
+    for (let i = 0; i < data.numberOfEvents; i++) {
+      const timeBlock = getBestTimeBlock(
+        bestTimes,
+        heuristics,
+        categorizedUsers,
+        blockLength
+      );
 
-      initEvents.push({
+      if (!timeBlock) {
+        return;
+      }
+
+      initialEvents.push({
         name: `Event ${i + 1}`,
-        date: new Date(`${date}T00:00:00`),
-        startTime,
-        endTime,
+        date: new Date(`${timeBlock.date}T00:00:00`),
+        startTime: timeBlock.startTime,
+        endTime: timeBlock.endTime,
         isEditing: false,
       });
     }
-    setEvents([...initEvents]);
+    setEvents([...initialEvents]);
   };
 
   const handlePublish = () => {

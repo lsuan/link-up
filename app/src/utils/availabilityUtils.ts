@@ -1,6 +1,3 @@
-import { Event } from "@prisma/client";
-import { getFormattedHours, getTimeFromString } from "./formUtils";
-
 export type UserAvailability = {
   user: string;
   name:
@@ -12,6 +9,13 @@ export type UserAvailability = {
   availability: object;
 };
 
+export type TimeBlock = {
+  date: string;
+  startTime: string;
+  endTime: string;
+};
+
+/** Takes a time in the format tt:00 XM and returns its numerical value */
 export const getHourNumber = (time: string) => {
   const [hour, meridiem] = time.split(" ");
   const hourNumber = parseInt(hour?.split(":")[0] || "");
@@ -27,6 +31,10 @@ export const getHourNumber = (time: string) => {
   }
 };
 
+/** Gets which users are available per time cell.
+ *
+ * Ex. { date: [user, ...]}
+ */
 export const categorizeUsers = (attendees: UserAvailability[]) => {
   if (!attendees) {
     return;
@@ -56,6 +64,7 @@ export const categorizeUsers = (attendees: UserAvailability[]) => {
   return categorizedUsers;
 };
 
+/** Returns the highest number of available users. */
 export const getMostUsers = (
   categorizedUsers: Map<string, string[]> | undefined
 ) => {
@@ -68,6 +77,7 @@ export const getMostUsers = (
   return max;
 };
 
+/** Returns the lowest number of available users. */
 export const getLeastUsers = (
   categorizedUsers: Map<string, string[]> | undefined,
   totalUsers: number
@@ -82,7 +92,7 @@ export const getLeastUsers = (
 };
 
 // TODO: revisit when implementing dark / light mode
-// FIXME: incorrect when most users is 1
+/** Sets up the specific colors to be used for cell backgrounds. */
 export const setColors = (mostUsers: number) => {
   const cellColors: string[] = [];
 
@@ -110,6 +120,7 @@ export const setColors = (mostUsers: number) => {
   return cellColors;
 };
 
+/** Get the specific cell background color by its ratio. */
 export const getCellColor = (
   numberOfUsers: number,
   mostUsers: number,
@@ -136,7 +147,7 @@ export const getCellColor = (
   }
 };
 
-/** Returns numbered bounds [lower, upper] from a time string */
+/** Returns numbered bounds [lower, upper] from a time string. */
 export const parseRange = (range: string) => {
   const [lower, upper] = range.split(":")[1]?.split("-") as [
     lower: string,
@@ -145,108 +156,180 @@ export const parseRange = (range: string) => {
   return [lower, upper];
 };
 
-/** Gets the blocked time range from a given event */
-// export const getSavedTimes = (events: Event[]) => {
-//   const times: string[] = [];
-//   events.forEach((event) => {
-//     for (
-//       let i = getTimeFromString(event.startTime);
-//       i < getTimeFromString(event.endTime);
-//       i += 0.5
-//     ) {
-//       times.push(`${event.date.toISOString().split("T")[0]}:${i}-${i + 0.5}`);
-//     }
-//   });
-//   return times;
-// };
-
-/** Returns a sorted map of the availability */
-export const getBestTimes = (
+/** Gets the best possible time blocks per day.
+ * Returns a map with each day as a key, and array of mini time block arrays as its value.
+ *
+ * Ex. { date: [[15-15.5, 15.5-16], [20-20.5, 20.5-21, 21-21.5]], ... }
+ */
+export const getBestTimesPerDay = (
   // reserved: string[], // ["date:start-end", ...]
   categorizedUsers: Map<string, string[]> | undefined,
-  leastUsers: number,
-  mostUsers: number
+  mostUsers: number,
+  blockLength: number
 ) => {
   if (!categorizedUsers) {
     return;
   }
 
-  let categorizedEntries = Array.from(categorizedUsers);
-  // filtering out the entries with least users + already reserved times to save memory usage
-  if (leastUsers !== mostUsers) {
-    categorizedEntries = categorizedEntries.filter(
-      (entry) => entry[1].length > leastUsers
-    ); //&& !reserved.includes(entry[0])
-  } else {
-    categorizedEntries = categorizedEntries.filter(
-      (entry) => entry[1].length > 0
-    ); // && !reserved.includes(entry[0])
-  }
-  categorizedEntries.sort((a, b) => {
+  const categorizedEntries = Array.from(categorizedUsers);
+  const betterEntries = categorizedEntries.filter(
+    (entry) => entry[1].length > Math.round(mostUsers / 2)
+  );
+  betterEntries.sort((a, b) => {
     return b[1].length - a[1].length;
   });
-  const bestTimes = new Map(categorizedEntries);
-  return bestTimes;
+  const bestTimes = new Map(betterEntries);
+  const bestTimesPerDay = new Map<string, string[][]>();
+
+  for (const time of bestTimes.keys()) {
+    const [day, hours] = time.split(":") as [day: string, hours: string];
+    const prevHours = bestTimesPerDay.get(day);
+
+    if (prevHours) {
+      for (let i = 0; i < prevHours.length; i++) {
+        const hourBlock = prevHours[i] as string[];
+        if (
+          parseRange(`${day}:${hourBlock[hourBlock.length - 1]}`)[1] ===
+          parseRange(`${day}:${hours}`)[0]
+        ) {
+          // needs to continue to the next day if a best time has already been found
+          if (hourBlock.length === blockLength) {
+            break;
+          }
+          const current = [...hourBlock, hours];
+          const prev = prevHours.slice(0, i);
+          const rest = prevHours.slice(i + 1);
+          bestTimesPerDay.set(day, [...prev, current, ...rest]);
+        } else {
+          bestTimesPerDay.set(day, [...prevHours, [hours]]);
+        }
+      }
+    } else {
+      bestTimesPerDay.set(day, [[hours]]);
+    }
+  }
+  return bestTimesPerDay;
 };
 
-/** Returns an array with a collection of all times from the best day*/
-export const getEventTimes = (bestTimes: Map<string, string[]>) => {
-  if (!bestTimes) {
-    return;
-  }
-
-  const times = [...bestTimes.keys()];
-  if (!times) {
-    return;
-  }
-  const sameDate = times.filter((time) => time.split(":")[0]);
-  return sameDate;
-};
-
-/** Gets the timeblock for the current best day */
-export const getTimeBlock = (
-  bestTimes: Map<string, string[]>,
-  lengthOfEvents: number
+/** Gets the heuristics for all best time options.
+ * Returns a map with dates as keys and the heuristic of each block in an array.
+ * Each index of the heuristic array represents an individual block.
+ *
+ * Ex. { date: [3, 4, 5] }
+ */
+export const getHeuristics = (
+  categorizedUsers: Map<string, string[]>,
+  bestTimes: Map<string, string[][]>
 ) => {
-  const dateTimes = getEventTimes(bestTimes) as string[];
-  const dateBlock: string[] = [dateTimes[0] as string];
+  const heuristics = new Map<string, number[]>();
+  bestTimes.forEach((blocks, date) => {
+    blocks.forEach((times) => {
+      const values: number[] = [];
+      times.forEach((time) => {
+        const heuristic = categorizedUsers.get(`${date}:${time}`)
+          ?.length as number;
+        values.push(heuristic);
+      });
+      const prevValues = heuristics.get(date);
+      const sum = values.reduce((a, b) => a + b, 0);
+      if (prevValues) {
+        heuristics.set(date, [...prevValues, sum]);
+      } else {
+        heuristics.set(date, [sum]);
+      }
+    });
+  });
+  return heuristics;
+};
 
-  // in the case where the event is 30 mins long
-  if (lengthOfEvents === 30) {
-    lengthOfEvents = 0.5;
-  }
-  for (let j = 1; j < lengthOfEvents * 2 && j < dateTimes.length - 1; j++) {
-    const currentDateTime = dateTimes[j] as string;
-    const [lower, upper] = parseRange(currentDateTime) as [
+const getPrevHour = (upper: string) => {
+  return Number(upper) - 0.5;
+};
+
+const getNextHour = (lower: string) => {
+  return Number(lower) + 0.5;
+};
+
+/** Returns the time block that is earliest and closest to the targetValue. */
+export const getBestTimeBlock = (
+  bestTimes: Map<string, string[][]>,
+  heuristics: Map<string, number[]>,
+  categorizedUsers: Map<string, string[]>,
+  blockLength: number
+) => {
+  const maxValuesPerDay: number[] = [];
+  [...heuristics.values()].forEach((values) => {
+    maxValuesPerDay.push(Math.max(...values));
+  });
+
+  // key of this map is `${date}:${startTime}-${endTime}`
+  // value is the [heuristic, currentBlockLength]
+  const chosenBlocks: Map<string, number[]>[] = [];
+
+  let dayIndex = 0;
+  bestTimes.forEach((blocks, date) => {
+    const blockMap = new Map<string, number[]>();
+    blocks.forEach((block, blockIndex) => {
+      if (
+        [...heuristics.values()][dayIndex]![blockIndex] ===
+        maxValuesPerDay[dayIndex]
+      ) {
+        blockMap.set(
+          `${date}:${block[0]?.split("-")[0]}-${
+            block[block.length - 1]?.split("-")[1]
+          }`,
+          [maxValuesPerDay[dayIndex]!, block.length]
+        );
+        chosenBlocks.push(blockMap);
+      }
+    });
+    dayIndex++;
+  });
+
+  // sort the chosen blocks by heuristic in descending order
+  chosenBlocks.sort((firstMap, secondMap) => {
+    const values1: number[][] = [...firstMap.values()];
+    const values2: number[][] = [...secondMap.values()];
+    return values2[0]![0]! - values1[0]![0]!;
+  });
+
+  let bestBlock = [...chosenBlocks[0]!.keys()][0] as string;
+  const bestBlockLength = [...chosenBlocks[0]!.values()][0]![1] as number;
+  const date = bestBlock.split(":")[0] as string;
+
+  // if length of the best block doesn't fulfill the length of the event,
+  // then fill it with the best possible continual time
+  for (let i = 0; i < blockLength - bestBlockLength; i++) {
+    const [lower, upper] = parseRange(bestBlock) as [
       lower: string,
       upper: string
     ];
+    const prevHour = `${date}:${getPrevHour(lower)}-${lower}`;
+    const nextHour = `${date}:${upper}-${getNextHour(upper)}`;
     if (
-      dateBlock.some((current) => {
-        return (
-          parseRange(current).includes(lower) ||
-          parseRange(current).includes(upper)
-        );
-      })
+      (categorizedUsers.has(prevHour) &&
+        categorizedUsers.get(prevHour)!.length) <
+      (categorizedUsers.has(nextHour) && categorizedUsers.get(nextHour)!.length)
     ) {
-      dateBlock.push(currentDateTime);
+      const newUpper = nextHour.split(":")[1] as string;
+      bestBlock = bestBlock.replace(`-${upper}`, `-${newUpper}:`);
+      categorizedUsers.delete(nextHour);
+    } else {
+      const newLower = prevHour.split(":")[1]?.split("-")[0] as string;
+      bestBlock = bestBlock.replace(`${lower}-`, `${newLower}-`);
+      categorizedUsers.delete(prevHour);
     }
   }
-  dateBlock.forEach((time) => {
-    bestTimes.delete(time);
-  });
 
-  if (!dateBlock[0]) {
-    return ["", "", ""];
-  }
-
-  dateBlock.sort();
-  const start = [parseInt(parseRange(dateBlock[0])[0] as string)];
-  const end = [
-    parseInt(parseRange(dateBlock[dateBlock.length - 1]!)[1] as string),
+  const [startTime, endTime] = parseRange(bestBlock) as [
+    startTime: string,
+    endTime: string
   ];
-  const date = dateBlock[0].split(":")[0];
-  const startTime = getFormattedHours(start, "long")[0] as string;
-  const endTime = getFormattedHours(end, "long")[0] as string;
-  return [date, startTime, endTime];
+
+  // delete the recorded blocks
+  for (let start = Number(startTime); start < Number(endTime); start += 0.5) {
+    // categorizedUsers.delete(`${date}:${start}-${start + 0.5}`);
+    bestTimes.delete(date);
+  }
+  return { date, startTime, endTime } as TimeBlock;
 };

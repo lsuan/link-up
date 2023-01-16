@@ -36,8 +36,6 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
 
   const hours = getAllHours();
   const getAllFormattedHours = () => {
-    const allHours = hours;
-
     return getFormattedHours(hours, "long");
   };
 

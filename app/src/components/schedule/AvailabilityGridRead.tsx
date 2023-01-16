@@ -38,7 +38,9 @@ const AvailabilityGridRead = memo(function AvailabilityGridRead({
           <div
             key={date.toISOString().split("T")[0]}
             className="flex flex-col"
-            data-date={date.toISOString().split("T")[0]}
+            data-date={
+              new Date(date.toDateString()).toISOString().split("T")[0]
+            }
           >
             {hours.map((hour, hourIndex) => {
               return (
