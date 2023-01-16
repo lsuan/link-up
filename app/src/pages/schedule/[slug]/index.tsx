@@ -16,18 +16,6 @@ import ModalBackground from "../../../components/shared/ModalBackground";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
-type Event = {
-  id: string;
-  scheduleName?: string;
-  name?: string;
-  date?: Date;
-  start?: number;
-  end?: number;
-  location?: string;
-  description?: string;
-};
-
-const events: Event[] = [];
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
@@ -47,7 +35,9 @@ function Schedule() {
   );
   const host = schedule.data?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
-  const eventSectionWidth = events.length * 256 + 16 * events.length;
+  const events = schedule.data?.events;
+  const eventSectionWidth =
+    events?.length ?? 0 * 256 + 16 * events?.length ?? 0;
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
@@ -92,7 +82,7 @@ function Schedule() {
             host?.firstName
           } ${host?.lastName || ""}`}</div>
 
-          {events.length > 0 ? (
+          {events?.length && events.length > 0 ? (
             <div className="relative">
               {isAddToCalendarModalShown && <AddToCalendarModal />}
               <div className="horizontal-scrollbar overflow-x-scroll pb-4">
@@ -101,7 +91,7 @@ function Schedule() {
                 >
                   {events.map((event) => {
                     return (
-                      <EventCard key={event.id} {...event} className="w-64" />
+                      <EventCard key={event?.id} {...event} className="w-64" />
                     );
                   })}
                 </div>

@@ -1,3 +1,5 @@
+import { getFormattedHours } from "./formUtils";
+
 export type UserAvailability = {
   user: string;
   name:
@@ -331,5 +333,14 @@ export const getBestTimeBlock = (
     // categorizedUsers.delete(`${date}:${start}-${start + 0.5}`);
     bestTimes.delete(date);
   }
-  return { date, startTime, endTime } as TimeBlock;
+
+  const formattedRange = getFormattedHours(
+    [Number(startTime), Number(endTime)],
+    "long"
+  );
+  return {
+    date,
+    startTime: formattedRange[0],
+    endTime: formattedRange[1],
+  } as TimeBlock;
 };

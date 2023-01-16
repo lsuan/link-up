@@ -1,6 +1,6 @@
 import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Event, Schedule } from "@prisma/client";
+import { Schedule } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -30,8 +30,9 @@ export type InitialEventInfo = {
   endTime: string;
   location?: string;
   description?: string;
-  isEditing: boolean;
+  isEditing?: boolean;
   className?: string;
+  scheduleId?: string;
 };
 function Publish() {
   const { data: sessionData } = useSession();
@@ -52,6 +53,7 @@ function Publish() {
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
   const [saveWarning, setSaveWarning] = useState<string>("");
+  const createEvents = trpc.event.createEvents.useMutation();
 
   useEffect(() => {
     if (events.every((event) => !event.isEditing)) {
@@ -100,12 +102,12 @@ function Publish() {
     const heuristics = getHeuristics(categorizedUsers, bestTimes);
     const initialEvents: InitialEventInfo[] = [];
     for (let i = 0; i < data.numberOfEvents; i++) {
-      const timeBlock = getBestTimeBlock(
+      const timeBlock: TimeBlock = getBestTimeBlock(
         bestTimes,
         heuristics,
         categorizedUsers,
         blockLength
-      );
+      ) as TimeBlock;
 
       if (!timeBlock) {
         return;
@@ -122,14 +124,27 @@ function Publish() {
     setEvents([...initialEvents]);
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (events.some((event) => event.isEditing)) {
       setSaveWarning("You have unsaved events!");
       setErrorBorder();
     } else {
       setNoticeMessage("Your events have been successfully published!");
+      const eventData = events.map((event) => {
+        delete event.isEditing;
+        delete event.className;
+        return {
+          ...event,
+          scheduleId: schedule.data?.id as string,
+          date: event.date as Date,
+        };
+      });
+      const res = await createEvents.mutateAsync(eventData);
 
-      router.push(`/schedule/${slug}`);
+      if (res) {
+        router.push(`/schedule/${slug}`);
+        setNoticeMessage("Your events have been successfully published!");
+      }
     }
   };
 
@@ -150,7 +165,6 @@ function Publish() {
     setEvents([...events, newEvent]);
   };
 
-  // FIXME: events are not properly set on load
   return (
     <>
       <section className="px-8">
