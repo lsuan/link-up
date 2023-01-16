@@ -8,6 +8,7 @@ import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import { trpc } from "../utils/trpc";
 
+// TODO: refactor to get rid errors
 function Dashboard() {
   const { data } = useSession();
   const [active, setActive] = useState<string>("upcoming");
@@ -16,6 +17,7 @@ function Dashboard() {
 
   return (
     <section className="min-h-screen px-8">
+      {(unstarted.isLoading || upcoming.isLoading) && <div>Loading...</div>}
       <header className="mb-12 flex w-full items-center justify-between">
         <h1 className="text-3xl font-semibold">Events</h1>
         <Link

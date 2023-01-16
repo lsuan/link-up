@@ -19,6 +19,7 @@ import { trpc } from "../../../utils/trpc";
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
+// TODO: refactor this to get rid of the errors
 function Schedule() {
   const router = useRouter();
   // this is needed since it is different from the actual user
@@ -37,7 +38,7 @@ function Schedule() {
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule.data?.events;
   const eventSectionWidth =
-    events?.length ?? 0 * 256 + 16 * events?.length ?? 0;
+    events?.length ?? 0 * 256 + 16 * (events?.length ?? 0);
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
@@ -56,6 +57,7 @@ function Schedule() {
       <section>
         <SuccessNotice />
         <div className="px-8">
+          {schedule.isLoading && <div>Loading...</div>}
           {sessionData?.user && (
             <BackArrow href="/dashboard" page="Dashboard" />
           )}

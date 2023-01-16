@@ -6,67 +6,39 @@ import {
   faNoteSticky,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Event } from "@prisma/client";
 import { atom, useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { createSlug } from "../../utils/scheduleSlugUtils";
-
-type Event = {
-  // scheduleId: string;
-  scheduleName?: string;
-  name?: string;
-  date?: Date;
-  start?: number;
-  end?: number;
-  location?: string;
-  description?: string | null;
-  className?: string;
-};
+import { useState } from "react";
+import { trpc } from "../../utils/trpc";
 
 export const addToCalendarModal = atom(false);
 
 function EventCard({
-  // scheduleId,
-  scheduleName,
+  scheduleId,
   name,
   date,
-  start,
-  end,
+  startTime,
+  endTime,
   location,
   description,
-  className,
 }: Event) {
   const [, setIsAddToCalendarModalShown] = useAtom(addToCalendarModal);
-  // const slug = createSlug(scheduleName || "", scheduleId);
+  const [scheduleName, setScheduleName] = useState<string>();
+  const schedule = trpc.schedule.getScheduleById.useQuery(scheduleId, {
+    onSuccess: (data) => setScheduleName(data?.name),
+    refetchOnWindowFocus: false,
+  });
   const router = useRouter();
   console.log(router.pathname);
-
-  const convertDate = (date: Date | undefined) => {
-    return date
-      ? new Intl.DateTimeFormat("en-US", {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        }).format(date)
-      : "TBD";
-  };
-  const convertTime = (time: number, timeZone: string) => {
-    return new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-      timeZone: timeZone,
-      timeZoneName: "short",
-    }).format(new Date(time * 1000));
-  };
 
   // TODO: figure out how to convert time by location
   return (
     <div
       className={`flex flex-col rounded-xl bg-neutral-700 p-4 ${
         scheduleName ? "gap-4" : "gap-2"
-      } ${className || ""}`}
+      }`}
     >
       <header className="relative flex items-start justify-between gap-2">
         <h3 className="w-9/12 text-lg">{`${scheduleName || ""}${
@@ -85,13 +57,8 @@ function EventCard({
       <ul className="flex flex-col gap-2 text-sm">
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
-          <p>{`${convertDate(date)} ${
-            start && end
-              ? `| ${convertTime(start, "America/Los_Angeles")} — ${convertTime(
-                  end,
-                  "America/Los_Angeles"
-                )}`
-              : ""
+          <p>{`${date} ${
+            startTime && endTime ? `| ${startTime} — ${endTime}` : ""
           }`}</p>
         </li>
         <li className="flex items-start gap-2">
