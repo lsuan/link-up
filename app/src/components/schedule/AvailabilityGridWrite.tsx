@@ -44,18 +44,22 @@ function AvailabilityGridWrite({
           <div
             key={date.toISOString().split("T")[0]}
             className="flex flex-col"
-            data-date={date.toISOString().split("T")[0]}
+            data-date={
+              new Date(date.toDateString()).toISOString().split("T")[0]
+            }
           >
             {hours.map((hour, hourIndex) => {
               return (
                 <div
-                  key={`${hour}-${hour + 1}`}
-                  date-time={`${hour}-${hour + 1}`}
+                  key={`${hour}-${hour + 0.5}`}
+                  date-time={`${hour}-${hour + 0.5}`}
                   className={`h-10 w-20 cursor-pointer transition-all ${
                     dateIndex !== dates.length - 1 ? "border-r" : ""
                   } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
                     selectedCells.includes(
-                      `${date.toISOString().split("T")[0]}:${hour}-${hour + 1}`
+                      `${date.toISOString().split("T")[0]}:${hour}-${
+                        hour + 0.5
+                      }`
                     )
                       ? "bg-indigo-500"
                       : ""
@@ -66,13 +70,17 @@ function AvailabilityGridWrite({
                     setNoticeMessage("");
                     saveCell(
                       e.target as HTMLDivElement,
-                      `${date.toISOString().split("T")[0]}:${hour}-${hour + 1}`
+                      `${date.toISOString().split("T")[0]}:${hour}-${
+                        hour + 0.5
+                      }`
                     );
                   }}
                   onMouseOver={(e) =>
                     onMouseOver(
                       e,
-                      `${date.toISOString().split("T")[0]}:${hour}-${hour + 1}`
+                      `${date.toISOString().split("T")[0]}:${hour}-${
+                        hour + 0.5
+                      }`
                     )
                   }
                   onMouseUp={() => setIsEditing(false)}

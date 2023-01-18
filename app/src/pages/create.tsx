@@ -114,14 +114,17 @@ function Create() {
 
   const getEventLengthOptions = () => {
     const mins = [...MINUTES];
+    console.log(mins);
 
     const options = mins.map((min) => {
-      if (typeof min == "number" && min >= 60) {
+      console.log(min / 60);
+      if (min >= 60) {
         return `${min / 60} ${min / 60 === 1 ? "hour" : "hours"}`;
       } else {
         return `${min} mins`;
       }
     });
+    console.log(options);
     return options;
   };
 
@@ -172,13 +175,13 @@ function Create() {
             name="startTime"
             displayName="No Earlier Than"
             options={getTimeOptions()}
-            required={true}
+            required
           />
           <Form.Select
             name="endTime"
             displayName="No Later Than"
             options={getTimeOptions()}
-            required={true}
+            required
           />
         </div>
         <DatePicker
@@ -209,13 +212,13 @@ function Create() {
             name="numberOfEvents"
             displayName="Number of Events"
             options={[1, 2, 3, 4, 5]}
-            required={true}
+            required
           />
           <Form.Select
             name="lengthOfEvents"
             displayName="Length of Events"
             options={getEventLengthOptions()}
-            required={true}
+            required
           />
         </div>
         <Form.Button name="Create Schedule" type="submit" />

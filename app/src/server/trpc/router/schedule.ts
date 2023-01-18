@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserAvailability } from "../../../utils/availabilityTableUtils";
+import { UserAvailability } from "../../../utils/availabilityUtils";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
@@ -27,6 +27,16 @@ export const scheduleRouter = router({
       return { schedule: newSchedule };
     }),
 
+  getScheduleById: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const schedule = await ctx.prisma.schedule.findFirst({
+        where: { id: input },
+      });
+
+      return schedule;
+    }),
+
   getScheduleFromSlugId: publicProcedure
     .input(
       z.object({
@@ -45,6 +55,7 @@ export const scheduleRouter = router({
         },
         include: {
           host: true,
+          events: true,
         },
       });
 

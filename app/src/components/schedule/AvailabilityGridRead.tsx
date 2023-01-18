@@ -1,6 +1,6 @@
 import { useEffect, useState, memo } from "react";
-import { UserAvailability } from "../../utils/availabilityTableUtils";
-import GridReadCell from "./GridReadCell";
+import { UserAvailability } from "../../utils/availabilityUtils";
+import AvailabilityGridReadCell from "./AvailabilityGridReadCell";
 
 const AvailabilityGridRead = memo(function AvailabilityGridRead({
   dates,
@@ -38,12 +38,14 @@ const AvailabilityGridRead = memo(function AvailabilityGridRead({
           <div
             key={date.toISOString().split("T")[0]}
             className="flex flex-col"
-            data-date={date.toISOString().split("T")[0]}
+            data-date={
+              new Date(date.toDateString()).toISOString().split("T")[0]
+            }
           >
             {hours.map((hour, hourIndex) => {
               return (
-                <GridReadCell
-                  key={`${hour}-${hour + 1}`}
+                <AvailabilityGridReadCell
+                  key={`${hour}-${hour + 0.5}`}
                   attendees={attendees}
                   allUsers={allUsers}
                   dates={dates}

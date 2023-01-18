@@ -16,39 +16,6 @@ import ModalBackground from "../../../components/shared/ModalBackground";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
-type Event = {
-  id: string;
-  scheduleName?: string;
-  name?: string;
-  date?: Date;
-  start?: number;
-  end?: number;
-  location?: string;
-  description?: string;
-};
-
-const events: Event[] = [
-  {
-    id: "2",
-    name: "User Testing Responses!",
-    date: new Date("1/4/2022"),
-    start: 1673128800,
-    end: 1673139600,
-    location: "Zoom Link",
-    description:
-      "Be ready with User Testing responses. We will discuss test outcomes and iterate over design",
-  },
-  {
-    id: "3",
-    name: "General",
-    date: new Date("1/11/2022"),
-    start: 1673736000,
-    end: 1673744400,
-    location: "Zoom Link",
-    description: "Have revisions to design done.",
-  },
-];
-
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
@@ -68,7 +35,9 @@ function Schedule() {
   );
   const host = schedule.data?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
-  const eventSectionWidth = events.length * 256 + 16 * events.length;
+  const events = schedule.data?.events;
+  const eventSectionWidth =
+    events?.length ?? 0 * 256 + 16 * (events?.length ?? 0);
   const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
@@ -87,7 +56,10 @@ function Schedule() {
       <section>
         <SuccessNotice />
         <div className="px-8">
-          <BackArrow href="/dashboard" page="Dashboard" />
+          {schedule.isLoading && <div>Loading...</div>}
+          {sessionData?.user && (
+            <BackArrow href="/dashboard" page="Dashboard" />
+          )}
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
             <h1 className="text-3xl font-semibold">{schedule?.data?.name}</h1>
             {isShareModalShown && <Share />}
@@ -111,7 +83,7 @@ function Schedule() {
             host?.firstName
           } ${host?.lastName || ""}`}</div>
 
-          {events.length > 0 ? (
+          {events?.length && events.length > 0 ? (
             <div className="relative">
               {isAddToCalendarModalShown && <AddToCalendarModal />}
               <div className="horizontal-scrollbar overflow-x-scroll pb-4">
@@ -119,14 +91,12 @@ function Schedule() {
                   className={`flex w-fit justify-between gap-4 ${eventSectionWidthClass}`}
                 >
                   {events.map((event) => {
-                    return (
-                      <EventCard key={event.id} {...event} className="w-64" />
-                    );
+                    return <EventCard key={event?.id} {...event} />;
                   })}
                 </div>
               </div>
             </div>
-          ) : (
+          ) : isHost && !schedule.data?.attendees ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...
@@ -135,13 +105,14 @@ function Schedule() {
                 Click the Share button at the top to share this event to others!
               </div>
             </div>
+          ) : (
+            isHost && <PublishSection slug={slug} />
           )}
         </div>
 
         {schedule.data && (
           <>
             <AvailabilitySection schedule={schedule.data} slug={slug} />
-            <PublishSection />
           </>
         )}
       </section>
