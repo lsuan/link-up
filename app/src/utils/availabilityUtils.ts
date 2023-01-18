@@ -20,16 +20,18 @@ export type TimeBlock = {
 /** Takes a time in the format tt:00 XM and returns its numerical value */
 export const getHourNumber = (time: string) => {
   const [hour, meridiem] = time.split(" ");
-  const hourNumber = parseInt(hour?.split(":")[0] || "");
+  const hourNumber = Number(hour?.split(":")[0] || "");
 
-  if (meridiem === "AM" && hourNumber !== 12) {
+  if (hour === "11:59") {
+    return 24;
+  } else if (meridiem === "AM" && hourNumber !== 12) {
     return hourNumber;
   } else if (meridiem === "PM" && hourNumber !== 12) {
     return hourNumber + 12;
   } else if (meridiem === "AM" && hourNumber === 12) {
-    return 24;
-  } else {
     return 0;
+  } else {
+    return 12;
   }
 };
 

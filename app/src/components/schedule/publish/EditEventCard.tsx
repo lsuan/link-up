@@ -3,7 +3,8 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
 import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
-import { getTimeFromString, getTimeOptions } from "../../../utils/formUtils";
+import { getHourNumber } from "../../../utils/availabilityUtils";
+import { getTimeOptions } from "../../../utils/formUtils";
 import {
   CalendarContainer,
   CalendarHeader,
@@ -22,8 +23,7 @@ const EditEventSchema = z.object({
       endTime: z.string({ required_error: "Event must have an end time!" }),
     })
     .refine(
-      (data) =>
-        getTimeFromString(data.startTime) < getTimeFromString(data.endTime),
+      (data) => getHourNumber(data.startTime) < getHourNumber(data.endTime),
       "End time must be later than start time!"
     ),
   location: z.string().optional(),
