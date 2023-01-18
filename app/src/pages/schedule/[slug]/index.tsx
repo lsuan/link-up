@@ -19,7 +19,6 @@ import { trpc } from "../../../utils/trpc";
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
-// TODO: refactor this to get rid of the errors
 function Schedule() {
   const router = useRouter();
   // this is needed since it is different from the actual user
@@ -92,9 +91,7 @@ function Schedule() {
                   className={`flex w-fit justify-between gap-4 ${eventSectionWidthClass}`}
                 >
                   {events.map((event) => {
-                    return (
-                      <EventCard key={event?.id} {...event} className="w-64" />
-                    );
+                    return <EventCard key={event?.id} {...event} />;
                   })}
                 </div>
               </div>

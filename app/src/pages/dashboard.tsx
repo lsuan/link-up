@@ -8,7 +8,6 @@ import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import { trpc } from "../utils/trpc";
 
-// TODO: refactor to get rid errors
 function Dashboard() {
   const { data } = useSession();
   const [active, setActive] = useState<string>("upcoming");
@@ -40,7 +39,7 @@ function Dashboard() {
           name={"unstarted"}
           active={active}
           setActive={setActive}
-          amount={unstarted.data?.length || 0}
+          amount={unstarted.data?.length ?? 0}
         />
       </div>
       {active === "upcoming" ? (

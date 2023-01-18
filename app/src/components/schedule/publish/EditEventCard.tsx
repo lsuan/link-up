@@ -16,7 +16,7 @@ import ModalBackground from "../../shared/ModalBackground";
 
 const EditEventSchema = z.object({
   name: z.string().min(1, { message: "Event must have a name!" }),
-  date: z.date({ required_error: "Event must have a date!" }),
+  date: z.date({ invalid_type_error: "Event must have a date!" }),
   times: z
     .object({
       startTime: z.string({ required_error: "Event must have a start time!" }),
@@ -118,6 +118,7 @@ function EditEventCard({
             renderCustomHeader={CalendarHeader}
             showDisabledMonthNavigation
           />
+          <Form.Input type="hidden" name="date" displayName="Date" />
           <div className="flex justify-between gap-2">
             <Form.Select
               name="times.startTime"
