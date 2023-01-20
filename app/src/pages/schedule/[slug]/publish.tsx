@@ -16,6 +16,7 @@ import {
   getBestTimeBlock,
   getBestTimesPerDay,
   getHeuristics,
+  getHourNumber,
   getMostUsers,
   TimeBlock,
   UserAvailability,
@@ -50,6 +51,7 @@ function Publish() {
       onSuccess: (data) => initializeEvents(data),
     }
   );
+
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
   const [saveWarning, setSaveWarning] = useState<string>("");
@@ -121,8 +123,13 @@ function Publish() {
         isEditing: false,
       });
     }
+
     setEvents([...initialEvents]);
   };
+
+  if (schedule.isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handlePublish = async () => {
     if (events.some((event) => event.isEditing)) {
@@ -133,10 +140,20 @@ function Publish() {
       const eventData = events.map((event) => {
         delete event.isEditing;
         delete event.className;
+
+        // needed so we can use a more accurate comparison for seeing upcoming events in `eventRouter.getUpcoming`
+        const startHour = getHourNumber(event.startTime);
+        const startMins = Number.isInteger(startHour) ? "00" : "30";
+        const eventDate = new Date(
+          `${event.date?.toISOString().split("T")[0]}T${Math.floor(startHour)
+            .toString()
+            .padStart(2, "0")}:${startMins}:00`
+        );
+
         return {
           ...event,
           scheduleId: schedule.data?.id as string,
-          date: event.date as Date,
+          date: eventDate,
         };
       });
       const res = await createEvents.mutateAsync(eventData);
@@ -170,66 +187,62 @@ function Publish() {
       <section className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <h1 className="mb-12 text-3xl font-semibold">Publish Event(s)</h1>
-        {schedule.isLoading ? (
-          <div>Loading...</div>
-        ) : (
-          <>
-            <AvailabilityResponses schedule={schedule.data!} />
-            <h3 className="mt-8 mb-4 font-semibold">
-              {`These are the best times based on your preferences (${
-                schedule.data?.numberOfEvents
-              } ${schedule.data?.numberOfEvents === 1 ? "event" : "events"}, ${
-                schedule.data?.lengthOfEvents
-              } ${schedule.data?.numberOfEvents === 1 ? "long" : "each"}):`}
-            </h3>
-            <div className="flex flex-col items-center gap-4">
-              {events.map((event, index) => {
-                return (
-                  <div key={index} className="w-full">
-                    {events[index]?.isEditing ? (
-                      <EditEventCard
-                        index={index}
-                        events={events}
-                        setEvents={setEvents}
-                        deleteEvent={deleteEvent}
-                        className={
-                          event.className && event.className !== ""
-                            ? ` ${event.className}`
-                            : ""
-                        }
-                      />
-                    ) : (
-                      <PublishEventCard
-                        index={index}
-                        events={events}
-                        setEvents={setEvents}
-                        deleteEvent={deleteEvent}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-              <button
-                className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-                onClick={() => addEvent()}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-              {saveWarning !== "" && (
-                <div className="-mb-6 w-full">
-                  <ServerSideErrorMessage error={saveWarning} />
-                </div>
-              )}
-              <button
-                className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
-                onClick={() => handlePublish()}
-              >
-                <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-                Confirm and Publish
-              </button>
+        <AvailabilityResponses schedule={schedule.data!} />
+        <h3 className="mt-8 mb-4 font-semibold">
+          {`These are the best times based on your preferences (${
+            schedule.data?.numberOfEvents
+          } ${schedule.data?.numberOfEvents === 1 ? "event" : "events"}, ${
+            schedule.data?.lengthOfEvents
+          } ${schedule.data?.numberOfEvents === 1 ? "long" : "each"}):`}
+        </h3>
+        <div className="flex flex-col items-center gap-4">
+          {events.map((event, index) => {
+            return (
+              <div key={index} className="w-full">
+                {events[index]?.isEditing ? (
+                  <EditEventCard
+                    index={index}
+                    events={events}
+                    scheduleStartTime={schedule.data?.startTime ?? ""}
+                    scheduleEndTime={schedule.data?.endTime ?? ""}
+                    setEvents={setEvents}
+                    deleteEvent={deleteEvent}
+                    className={
+                      event.className && event.className !== ""
+                        ? ` ${event.className}`
+                        : ""
+                    }
+                  />
+                ) : (
+                  <PublishEventCard
+                    index={index}
+                    events={events}
+                    setEvents={setEvents}
+                    deleteEvent={deleteEvent}
+                  />
+                )}
+              </div>
+            );
+          })}
+          <button
+            className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => addEvent()}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+          {saveWarning !== "" && (
+            <div className="-mb-6 w-full">
+              <ServerSideErrorMessage error={saveWarning} />
             </div>
-          </>
-        )}
+          )}
+          <button
+            className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
+            onClick={() => handlePublish()}
+          >
+            <FontAwesomeIcon icon={faListCheck} className="mr-2" />
+            Confirm and Publish
+          </button>
+        </div>
       </section>
     </>
   );

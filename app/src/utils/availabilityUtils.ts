@@ -17,22 +17,26 @@ export type TimeBlock = {
   endTime: string;
 };
 
-/** Takes a time in the format tt:00 XM and returns its numerical value */
+/** Takes a time in the format tt:X0 XM and returns its numerical value */
 export const getHourNumber = (time: string) => {
-  const [hour, meridiem] = time.split(" ");
-  const hourNumber = Number(hour?.split(":")[0] || "");
+  const [timeValue, meridiem] = time.split(" ");
+  const [hour, half] = timeValue!.split(":");
+  let hourNumber = Number(hour || "");
 
   if (hour === "11:59") {
     return 24;
-  } else if (meridiem === "AM" && hourNumber !== 12) {
-    return hourNumber;
   } else if (meridiem === "PM" && hourNumber !== 12) {
-    return hourNumber + 12;
+    hourNumber += 12;
   } else if (meridiem === "AM" && hourNumber === 12) {
     return 0;
-  } else {
+  } else if (meridiem === "PM" && hourNumber === 12) {
     return 12;
   }
+
+  if (half === "30") {
+    hourNumber += 0.5;
+  }
+  return hourNumber;
 };
 
 /** Gets which users are available per time cell.
@@ -166,7 +170,6 @@ export const parseRange = (range: string) => {
  * Ex. { date: [[15-15.5, 15.5-16], [20-20.5, 20.5-21, 21-21.5]], ... }
  */
 export const getBestTimesPerDay = (
-  // reserved: string[], // ["date:start-end", ...]
   categorizedUsers: Map<string, string[]> | undefined,
   mostUsers: number,
   blockLength: number

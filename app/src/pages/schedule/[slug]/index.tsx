@@ -13,6 +13,7 @@ import Share from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import ModalBackground from "../../../components/shared/ModalBackground";
+import { UserAvailability } from "../../../utils/availabilityUtils";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
@@ -96,7 +97,8 @@ function Schedule() {
                 </div>
               </div>
             </div>
-          ) : isHost && !schedule.data?.attendees ? (
+          ) : isHost &&
+            (schedule.data?.attendees as UserAvailability[]).length < 1 ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...

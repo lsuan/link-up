@@ -32,13 +32,21 @@ export const parseDeepErrors = (
   }
 };
 
-/** Returns all the available time options from 12 AM to 11:59 PM */
-export const getTimeOptions = () => {
-  const hours = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24,
-  ];
-  const formattedHours = getFormattedHours(hours, "long");
+/** Returns all the available time options from 12 AM to 11:59 PM.
+ * Takes optional parameters to specify the range of times for a given select element.
+ */
+export const getTimeOptions = (
+  start: number = 0,
+  end: number | undefined = undefined
+) => {
+  const startIndex = HOURS.findIndex((hour) => hour === start);
+  const endIndex = end
+    ? HOURS.findIndex((hour) => hour === end) + 1
+    : undefined;
+  const formattedHours = getFormattedHours(
+    HOURS.slice(startIndex, endIndex),
+    "long"
+  );
   return formattedHours;
 };
 
@@ -89,6 +97,12 @@ export const MONTHS = [
   "October",
   "November",
   "December",
+] as const;
+
+const HOURS: readonly number[] = [
+  0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9,
+  9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16, 16.5, 17,
+  17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21, 21.5, 22, 22.5, 23, 23.5, 24,
 ] as const;
 
 export const MINUTES = [

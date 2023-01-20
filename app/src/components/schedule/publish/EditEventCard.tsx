@@ -44,12 +44,16 @@ type EditEventInputs = {
 function EditEventCard({
   index,
   events,
+  scheduleStartTime,
+  scheduleEndTime,
   setEvents,
   deleteEvent,
   className,
 }: {
   index: number;
   events: InitialEventInfo[];
+  scheduleStartTime: string;
+  scheduleEndTime: string;
   setEvents: (events: InitialEventInfo[]) => void;
   deleteEvent: (index: number) => void;
   className?: string;
@@ -57,6 +61,9 @@ function EditEventCard({
   const event = events[index] as InitialEventInfo;
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [eventDate, setEventDate] = useState<Date | null>(event.date);
+  const eventStartTime = getHourNumber(scheduleStartTime);
+  const eventEndTime = getHourNumber(scheduleEndTime);
+  const selectOptions = getTimeOptions(eventStartTime, eventEndTime);
 
   const handleEventSave = async (data: EditEventInputs) => {
     console.log(data);
@@ -123,13 +130,13 @@ function EditEventCard({
             <Form.Select
               name="times.startTime"
               displayName="From"
-              options={getTimeOptions()}
+              options={selectOptions}
               required
             />
             <Form.Select
               name="times.endTime"
               displayName="To"
-              options={getTimeOptions()}
+              options={selectOptions}
               required
             />
           </div>
