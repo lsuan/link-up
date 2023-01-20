@@ -1,4 +1,4 @@
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -13,7 +13,9 @@ import {
 } from "../components/form/DatePickerHelpers";
 import { Form } from "../components/form/Form";
 import BackArrow from "../components/shared/BackArrow";
+import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
+import Unauthenticated from "../components/shared/Unauthenticated";
 import { getTimeOptions, MINUTES } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleSlugUtils";
 import { trpc } from "../utils/trpc";
@@ -62,7 +64,7 @@ const CreateScheduleSchema = z.object({
 });
 
 function Create() {
-  const { data: sessionData } = useSession();
+  const { status, data: sessionData } = useSession();
   const createSchedule = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
@@ -128,7 +130,14 @@ function Create() {
     return options;
   };
 
-  // TODO: add defaultValues + account for datepicker values
+  if (status === "loading") {
+    return <Loading />;
+  }
+
+  if (status === "unauthenticated") {
+    return <Unauthenticated />;
+  }
+
   return (
     <section className="px-8">
       <BackArrow href="/dashboard" page="Dashboard" />

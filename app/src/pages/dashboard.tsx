@@ -6,17 +6,31 @@ import { useState } from "react";
 import EventCard from "../components/dashboard/EventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
+import Loading from "../components/shared/Loading";
+import Unauthenticated from "../components/shared/Unauthenticated";
 import { trpc } from "../utils/trpc";
 
 function Dashboard() {
-  const { data } = useSession();
+  const { status } = useSession();
   const [active, setActive] = useState<string>("upcoming");
-  const unstarted = trpc.schedule.getUnstartedSchedules.useQuery();
-  const upcoming = trpc.event.getUpcoming.useQuery();
+  const unstarted = trpc.schedule.getUnstartedSchedules.useQuery(undefined, {
+    enabled: status === "authenticated",
+    refetchOnWindowFocus: false,
+  });
+  const upcoming = trpc.event.getUpcoming.useQuery(undefined, {
+    enabled: status === "authenticated",
+    refetchOnWindowFocus: false,
+  });
+
+  if (status === "loading" && (unstarted.isLoading || upcoming.isLoading)) {
+    return <Loading />;
+  }
+  if (status === "unauthenticated") {
+    return <Unauthenticated />;
+  }
 
   return (
     <section className="min-h-screen px-8">
-      {(unstarted.isLoading || upcoming.isLoading) && <div>Loading...</div>}
       <header className="mb-12 flex w-full items-center justify-between">
         <h1 className="text-3xl font-semibold">Events</h1>
         <Link

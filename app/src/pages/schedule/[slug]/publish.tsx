@@ -11,6 +11,8 @@ import AvailabilityResponses from "../../../components/schedule/AvailabilityResp
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
 import BackArrow from "../../../components/shared/BackArrow";
+import Loading from "../../../components/shared/Loading";
+import Unauthenticated from "../../../components/shared/Unauthenticated";
 import {
   categorizeUsers,
   getBestTimeBlock,
@@ -36,7 +38,7 @@ export type InitialEventInfo = {
   scheduleId?: string;
 };
 function Publish() {
-  const { data: sessionData } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
@@ -46,7 +48,7 @@ function Publish() {
       id: scheduleIdPart,
     },
     {
-      enabled: sessionData?.user !== undefined,
+      enabled: status === "authenticated",
       refetchOnWindowFocus: false,
       onSuccess: (data) => initializeEvents(data),
     }
@@ -127,10 +129,6 @@ function Publish() {
     setEvents([...initialEvents]);
   };
 
-  if (schedule.isLoading) {
-    return <div>Loading...</div>;
-  }
-
   const handlePublish = async () => {
     if (events.some((event) => event.isEditing)) {
       setSaveWarning("You have unsaved events!");
@@ -181,6 +179,14 @@ function Publish() {
     };
     setEvents([...events, newEvent]);
   };
+
+  if (status === "loading" && schedule.isLoading) {
+    return <Loading />;
+  }
+
+  if (status === "unauthenticated") {
+    return <Unauthenticated />;
+  }
 
   return (
     <>

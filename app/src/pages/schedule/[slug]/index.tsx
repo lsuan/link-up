@@ -12,8 +12,8 @@ import PublishSection from "../../../components/schedule/PublishSection";
 import Share from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
+import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { UserAvailability } from "../../../utils/availabilityUtils";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
@@ -34,6 +34,7 @@ function Schedule() {
     },
     { enabled: router.isReady, refetchOnWindowFocus: false }
   );
+
   const host = schedule.data?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule.data?.events;
@@ -43,6 +44,10 @@ function Schedule() {
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
     useAtom(addToCalendarModal);
+
+  if (schedule.isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -57,7 +62,6 @@ function Schedule() {
       <section>
         <SuccessNotice />
         <div className="px-8">
-          {schedule.isLoading && <div>Loading...</div>}
           {sessionData?.user && (
             <BackArrow href="/dashboard" page="Dashboard" />
           )}
@@ -97,8 +101,7 @@ function Schedule() {
                 </div>
               </div>
             </div>
-          ) : isHost &&
-            (schedule.data?.attendees as UserAvailability[]).length < 1 ? (
+          ) : isHost && !schedule.data?.attendees ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...

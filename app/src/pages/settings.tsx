@@ -7,6 +7,8 @@ import { Form } from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
 import ServerSideSuccessMessage from "../components/form/ServerSideSuccessMessage";
 import BackArrow from "../components/shared/BackArrow";
+import Loading from "../components/shared/Loading";
+import Unauthenticated from "../components/shared/Unauthenticated";
 import { trpc } from "../utils/trpc";
 
 type SettingsInputs = {
@@ -51,10 +53,10 @@ const SettingsSchema = z.object({
 });
 
 function Settings() {
-  const { data } = useSession();
+  const { status, data } = useSession();
   const user = trpc.user.getUser.useQuery(
     { id: data?.user?.id as string },
-    { enabled: data?.user !== undefined, refetchOnWindowFocus: false }
+    { enabled: status === "authenticated", refetchOnWindowFocus: false }
   );
   const updateUser = trpc.user.updateUser.useMutation();
   const [formValues, setFormValues] = useState<Record<string, any>>({
@@ -86,7 +88,15 @@ function Settings() {
         confirmPassword: user.data?.password,
       },
     });
-  }, [user.data !== undefined]);
+  }, [user.data !== undefined && status === "authenticated"]);
+
+  if (status === "loading") {
+    return <Loading />;
+  }
+
+  if (status === "unauthenticated") {
+    return <Unauthenticated />;
+  }
 
   // TODO: add a way to update profile pic
   return (
@@ -113,7 +123,7 @@ function Settings() {
               name="firstName"
               displayName="First Name"
               type="text"
-              required={true}
+              required
             />
             <Form.Input name="lastName" displayName="Last Name" type="text" />
 
@@ -125,20 +135,20 @@ function Settings() {
                   name="email"
                   displayName="Email"
                   type="email"
-                  required={true}
+                  required
                 />
 
                 <Form.Input
                   name="passwords.password"
                   displayName="Password"
                   type="password"
-                  required={true}
+                  required
                 />
                 <Form.Input
                   name="passwords.confirmPassword"
                   displayName="Confirm Password"
                   type="password"
-                  required={true}
+                  required
                 />
               </>
             )}
