@@ -27,14 +27,15 @@ export const scheduleRouter = router({
       return { schedule: newSchedule };
     }),
 
-  getScheduleById: protectedProcedure
+  getScheduleNameById: protectedProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
-      const schedule = await ctx.prisma.schedule.findFirst({
+      const scheduleName = await ctx.prisma.schedule.findFirst({
         where: { id: input },
+        select: { name: true },
       });
 
-      return schedule;
+      return scheduleName;
     }),
 
   getScheduleFromSlugId: publicProcedure

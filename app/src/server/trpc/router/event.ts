@@ -25,8 +25,8 @@ export const eventRouter = router({
       return { event };
     }),
 
-  getUpcoming: protectedProcedure.query(({ ctx }) => {
-    const upcoming = ctx.prisma.event.findMany({
+  getUpcoming: protectedProcedure.query(async ({ ctx }) => {
+    const upcoming = await ctx.prisma.event.findMany({
       where: {
         date: {
           gte: new Date(),
@@ -36,6 +36,7 @@ export const eventRouter = router({
         date: "asc",
       },
     });
+
     return upcoming;
   }),
 });

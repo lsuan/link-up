@@ -1,5 +1,6 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Schedule } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -10,21 +11,38 @@ import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
 import { trpc } from "../utils/trpc";
 
+// caches events with schedule names saved to prevent multiple calls to `scheduleRouter.getScheduleNameById` on tab switch
+const upcomingCache: EventCard[] = [];
+
 function Dashboard() {
   const { status } = useSession();
   const [active, setActive] = useState<string>("upcoming");
-  const unstarted = trpc.schedule.getUnstartedSchedules.useQuery(undefined, {
-    enabled: status === "authenticated",
-    refetchOnWindowFocus: false,
-  });
+  const [unstarted, setUnstarted] = useState<Schedule[]>([]);
+
+  const unstartedQuery = trpc.schedule.getUnstartedSchedules.useQuery(
+    undefined,
+    {
+      enabled: status === "authenticated",
+      refetchOnWindowFocus: false,
+      onSuccess: (data) => setUnstarted(data),
+    }
+  );
+
   const upcoming = trpc.event.getUpcoming.useQuery(undefined, {
-    enabled: status === "authenticated",
+    enabled: status === "authenticated" && upcomingCache.length === 0,
     refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      upcomingCache.push(...data);
+    },
   });
 
-  if (status === "loading" && (unstarted.isLoading || upcoming.isLoading)) {
+  if (
+    status === "loading" ||
+    (status === "authenticated" && upcomingCache.length === 0)
+  ) {
     return <Loading />;
   }
+
   if (status === "unauthenticated") {
     return <Unauthenticated />;
   }
@@ -47,24 +65,31 @@ function Dashboard() {
           name={"upcoming"}
           active={active}
           setActive={setActive}
-          amount={upcoming.data?.length ?? 0}
+          amount={upcomingCache.length}
         />
         <Pill
           name={"unstarted"}
           active={active}
           setActive={setActive}
-          amount={unstarted.data?.length ?? 0}
+          amount={unstarted.length ?? 0}
         />
       </div>
       {active === "upcoming" ? (
         <div className="flex flex-col gap-4">
-          {upcoming.data?.map((event) => {
-            return <EventCard key={event.id} {...event} />;
+          {upcomingCache.map((event, index) => {
+            return (
+              <EventCard
+                key={event.id}
+                index={index}
+                {...event}
+                upcoming={upcomingCache}
+              />
+            );
           })}
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {unstarted.data?.map((schedule) => {
+          {unstarted.map((schedule) => {
             return (
               <UnstartedCard
                 key={schedule.id}

@@ -15,23 +15,48 @@ import { trpc } from "../../utils/trpc";
 
 export const addToCalendarModal = atom(false);
 
+type EventCard = {
+  index?: number;
+  cachedScheduleName?: string;
+} & Event;
+
+type EventCardProps = {
+  upcoming: EventCard[];
+} & EventCard;
+
 function EventCard({
+  index,
   scheduleId,
+  cachedScheduleName,
   name,
   date,
   startTime,
   endTime,
   location,
   description,
-}: Event) {
+  upcoming,
+}: EventCardProps) {
   const [, setIsAddToCalendarModalShown] = useAtom(addToCalendarModal);
-  const [scheduleName, setScheduleName] = useState<string>();
-  const schedule = trpc.schedule.getScheduleById.useQuery(scheduleId, {
-    onSuccess: (data) => setScheduleName(data?.name),
+  const [scheduleName, setScheduleName] = useState<string>(
+    cachedScheduleName ?? ""
+  );
+  const schedule = trpc.schedule.getScheduleNameById.useQuery(scheduleId, {
+    onSuccess: (data) => onScheduleSuccess(data?.name as string),
     refetchOnWindowFocus: false,
+    enabled: cachedScheduleName === undefined,
   });
   const router = useRouter();
-  console.log(router.pathname);
+
+  const onScheduleSuccess = (name: string) => {
+    setScheduleName(name);
+    const eventIndex = index as number;
+    const currentEvent = upcoming[eventIndex] as EventCard;
+    const cachedEvent: EventCard = {
+      ...currentEvent,
+      cachedScheduleName: name,
+    };
+    upcoming.splice(eventIndex, 1, cachedEvent);
+  };
 
   // TODO: figure out how to convert time by location
   return (
