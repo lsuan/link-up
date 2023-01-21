@@ -21,3 +21,5 @@ A scheduling app that allows users to create events and share them to users to f
   - <a href="https://docs.google.com/document/d/1HJGcOf68lUw8O9xGnOPdF3KExHidh01FeFSBQiKQkZ0/edit?usp=sharing">Google Doc</a>
 - 01/11/23: Design Iterations + Branding Brainstorm
   - <a href="https://docs.google.com/document/d/1vnTgJP70diIgqEsnQabP6wWRapkr5YLolMKYiQT-8wI/edit?usp=sharing">Google Doc</a>
+- 01/18/23: Projected Timeline Created
+  - <a href="https://docs.google.com/document/d/1gtinLUJ8_xG6R5DKCDB5MzPpNjzMcxEEopntYCEavew/edit?usp=sharing">Google Doc</a>
