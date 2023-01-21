@@ -4,7 +4,9 @@ import { Schedule } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import EventCard from "../components/dashboard/EventCard";
+import DashboardEventCard, {
+  type EventCard,
+} from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import Loading from "../components/shared/Loading";
@@ -13,7 +15,7 @@ import { trpc } from "../utils/trpc";
 
 // caches events with schedule names saved to prevent multiple calls to `scheduleRouter.getScheduleNameById` on tab switch
 const upcomingCache: EventCard[] = [];
-
+// TODO: make a separate component for schedule page event view
 function Dashboard() {
   const { status } = useSession();
   const [active, setActive] = useState<string>("upcoming");
@@ -78,7 +80,7 @@ function Dashboard() {
         <div className="flex flex-col gap-4">
           {upcomingCache.map((event, index) => {
             return (
-              <EventCard
+              <DashboardEventCard
                 key={event.id}
                 index={index}
                 {...event}

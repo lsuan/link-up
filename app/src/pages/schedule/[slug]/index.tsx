@@ -3,12 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import EventCard, {
-  addToCalendarModal,
-} from "../../../components/dashboard/EventCard";
+import { useEffect, useState } from "react";
 import AddToCalendarModal from "../../../components/schedule/AddToCalendarModal";
 import AvailabilitySection from "../../../components/schedule/AvailabilitySection";
 import PublishSection from "../../../components/schedule/PublishSection";
+import ScheduleEventCard from "../../../components/schedule/ScheduleEventCard";
 import Share from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
@@ -38,12 +37,16 @@ function Schedule() {
   const host = schedule.data?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule.data?.events;
-  const eventSectionWidth =
-    events?.length ?? 0 * 256 + 16 * (events?.length ?? 0);
-  const eventSectionWidthClass = `w-[${eventSectionWidth}px]`;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
-  const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] =
-    useAtom(addToCalendarModal);
+  const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
+    boolean[]
+  >([]);
+
+  useEffect(() => {
+    const modalsShown: boolean[] = [];
+    events?.forEach((event) => modalsShown.push(false));
+    setIsAddToCalendarModalShown([...modalsShown]);
+  }, [events]);
 
   if (schedule.isLoading) {
     return <Loading />;
@@ -55,10 +58,9 @@ function Schedule() {
         isModalOpen={isShareModalShown}
         setIsModalOpen={setIsShareModalShown}
       />
-      <ModalBackground
-        isModalOpen={isAddToCalendarModalShown}
-        setIsModalOpen={setIsAddToCalendarModalShown}
-      />
+      {isAddToCalendarModalShown.some((isShown) => isShown) && (
+        <ModalBackground isModalOpen={true} />
+      )}
       <section>
         <SuccessNotice />
         <div className="px-8">
@@ -90,13 +92,33 @@ function Schedule() {
 
           {events?.length && events.length > 0 ? (
             <div className="relative">
-              {isAddToCalendarModalShown && <AddToCalendarModal />}
               <div className="horizontal-scrollbar overflow-x-scroll pb-4">
-                <div
-                  className={`flex w-fit justify-between gap-4 ${eventSectionWidthClass}`}
-                >
-                  {events.map((event) => {
-                    return <EventCard key={event?.id} {...event} />;
+                <div className="flex w-max justify-between gap-4">
+                  {events.map((event, index) => {
+                    return (
+                      <div key={event.id} className="flex justify-start">
+                        {isAddToCalendarModalShown[index] && (
+                          <AddToCalendarModal
+                            {...event}
+                            index={index}
+                            isAddToCalendarModalShown={
+                              isAddToCalendarModalShown
+                            }
+                            setIsAddToCalendarModalShown={
+                              setIsAddToCalendarModalShown
+                            }
+                          />
+                        )}
+                        <ScheduleEventCard
+                          {...event}
+                          index={index}
+                          isAddToCalendarModalShown={isAddToCalendarModalShown}
+                          setIsAddToCalendarModalShown={
+                            setIsAddToCalendarModalShown
+                          }
+                        />
+                      </div>
+                    );
                   })}
                 </div>
               </div>
