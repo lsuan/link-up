@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { router, protectedProcedure } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 
 export const eventRouter = router({
   createEvents: protectedProcedure
@@ -25,14 +25,18 @@ export const eventRouter = router({
       return { event };
     }),
 
-  getUpcoming: protectedProcedure.query(({ ctx }) => {
-    const upcoming = ctx.prisma.event.findMany({
+  getUpcoming: protectedProcedure.query(async ({ ctx }) => {
+    const upcoming = await ctx.prisma.event.findMany({
       where: {
         date: {
-          gt: new Date(),
+          gte: new Date(),
         },
       },
+      orderBy: {
+        date: "asc",
+      },
     });
+
     return upcoming;
   }),
 });

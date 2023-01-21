@@ -15,20 +15,20 @@ import { AvailabilityProps } from "./AvailabilitySection";
 type AnonAvailabilityInputs = {
   name: string;
 };
-
 const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
 
 export const disabled = atom<boolean>(true);
 export const selected = atom<string[]>([]);
 
 function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
-  const { status, data: sessionData } = useSession();
+  const { data: sessionData } = useSession();
   const { startDate, endDate } = schedule;
   const attendees = schedule.attendees as UserAvailability[];
   const setScheduleAvailability = trpc.schedule.setAvailability.useMutation();
   const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [selectedCells, setSelectedCells] = useAtom(selected);
+
   // might not need this copy, need to double check expected functionality
   // const [selectedCellsCopy, setSelectedCellsCopy] = useState<string[]>([]);
   const [isDisabled, setIsDisabled] = useAtom(disabled);
