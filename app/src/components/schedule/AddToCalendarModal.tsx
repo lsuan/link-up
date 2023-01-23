@@ -38,7 +38,7 @@ function AddToCalendarModal({
           onClick={() => handleModalClose()}
         />
       </header>
-      <button className="hover:text-blacke flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300">
+      <button className="hover:text-blacke flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
         <FontAwesomeIcon icon={faGoogle} />
         Google Calendar
       </button>

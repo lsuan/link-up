@@ -9,6 +9,7 @@ import { Event } from "@prisma/client";
 import Link from "next/link";
 import { useState } from "react";
 import { createSlug } from "../../utils/scheduleSlugUtils";
+import { getEventCardDateDisplay } from "../../utils/timeUtils";
 import { trpc } from "../../utils/trpc";
 
 export type EventCard = {
@@ -52,6 +53,8 @@ function DashboardEventCard({
     upcoming.splice(eventIndex, 1, cachedEvent);
   };
 
+  const slug = createSlug(scheduleName, scheduleId) ?? "";
+
   // TODO: figure out how to convert time by location
   return (
     <div
@@ -66,9 +69,9 @@ function DashboardEventCard({
       <ul className="flex flex-col gap-2 text-sm">
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
-          <p>{`${date} ${
-            startTime && endTime ? `| ${startTime} — ${endTime}` : ""
-          }`}</p>
+          <p className="break-words">
+            {`${getEventCardDateDisplay(date)} | ${startTime} — ${endTime}`}
+          </p>
         </li>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
@@ -86,7 +89,7 @@ function DashboardEventCard({
       </ul>
 
       <Link
-        href={`/schedule/${createSlug(scheduleName, scheduleId)}`}
+        href={`/schedule/${slug}`}
         className="group w-full rounded-lg bg-neutral-500 p-2 text-center text-white transition-all hover:bg-neutral-300 hover:text-black"
       >
         View

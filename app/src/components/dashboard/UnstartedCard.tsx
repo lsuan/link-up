@@ -15,7 +15,7 @@ type UnstartedProps = {
 };
 
 function UnstartedCard({ id, name, description }: UnstartedProps) {
-  const slug = createSlug(name, id);
+  const slug = createSlug(name, id) ?? "";
 
   // TODO: figure out how to convert time by location
   return (
