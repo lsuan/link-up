@@ -82,7 +82,7 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
 
   return (
     <div
-      date-time={`${hour}-${hour + 0.5}`}
+      data-time={`${hour}-${hour + 0.5}`}
       className={`h-10 w-20 transition-all ${
         dateIndex !== dates.length - 1 ? "border-r" : ""
       } ${

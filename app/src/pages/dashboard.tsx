@@ -40,7 +40,7 @@ function Dashboard() {
 
   if (
     status === "loading" ||
-    (status === "authenticated" && upcomingCache.length === 0)
+    (status === "authenticated" && upcoming.isLoading)
   ) {
     return <Loading />;
   }

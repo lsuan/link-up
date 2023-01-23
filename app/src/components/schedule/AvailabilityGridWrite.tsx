@@ -1,7 +1,14 @@
 import { useAtom } from "jotai";
-import { BaseSyntheticEvent, useState } from "react";
+import React, { useState } from "react";
 import { notice } from "../../pages/schedule/[slug]";
 import { disabled, selected } from "./AvailabilityInput";
+
+type StartCoordinates = {
+  clientX: number;
+  clientY: number;
+  row: number;
+  col: number;
+};
 
 function AvailabilityGridWrite({
   dates,
@@ -14,27 +21,108 @@ function AvailabilityGridWrite({
   const [, setIsDisabled] = useAtom(disabled);
   const [selectedCells, setSelectedCells] = useAtom(selected);
   const [, setNoticeMessage] = useAtom(notice);
+  const [startCoordinates, setStartCoordinates] = useState<StartCoordinates>();
+  const [neighbors, setNeighbors] = useState<Set<HTMLDivElement>>(new Set());
 
-  const saveCell = (cell: HTMLDivElement, timeKey: string) => {
-    if (cell.classList.contains("bg-indigo-500")) {
-      cell.classList.remove("bg-indigo-500");
-      const foundIndex = selectedCells.findIndex((key) => key === timeKey);
-      const prevElements = selectedCells.slice(0, foundIndex);
-      const rest = selectedCells.slice(foundIndex + 1);
-      setSelectedCells([...prevElements, ...rest]);
-    } else {
-      cell.classList.add("bg-indigo-500");
-      setSelectedCells([...selectedCells, timeKey]);
-    }
+  const initializeSave = (e: React.MouseEvent) => {
+    setIsEditing(true);
+    setIsDisabled(false);
+    setNoticeMessage("");
+    const cell = e.target as HTMLDivElement;
+    const row = parseInt(cell.getAttribute("data-row") as string);
+    const col = parseInt(cell.getAttribute("data-col") as string);
+    setStartCoordinates({ clientX: e.clientX, clientY: e.clientY, row, col });
+    setNeighbors(new Set([cell]));
+    updateGrid(neighbors, row, col);
   };
 
-  const onMouseOver = (e: BaseSyntheticEvent, timeKey: string) => {
-    if (!isEditing) {
+  const onMouseOver = (e: React.MouseEvent, timeKey: string) => {
+    if (!isEditing || !startCoordinates) {
       return;
     }
 
-    const cell = e.target as HTMLDivElement;
-    saveCell(cell, timeKey);
+    const currentCell = e.target as HTMLDivElement;
+    const currentX = e.clientX;
+    const currentY = e.clientY;
+    const currentRow = parseInt(currentCell.getAttribute("data-row") as string);
+    const currentCol = parseInt(currentCell.getAttribute("data-col") as string);
+    const {
+      clientX: prevX,
+      clientY: prevY,
+      row: startRow,
+      col: startCol,
+    } = startCoordinates;
+
+    const currentNeighbors = new Set<HTMLDivElement>([...neighbors]);
+    if (currentY < prevY && currentX < prevX) {
+      // going up left
+      for (let rowIndex = startRow; rowIndex >= currentRow; rowIndex--) {
+        for (let colIndex = startCol; colIndex >= currentCol; colIndex--) {
+          updateGrid(currentNeighbors, rowIndex, colIndex);
+        }
+      }
+    } else if (currentY < prevY && currentX > prevX) {
+      // going up right
+      for (let rowIndex = startRow; rowIndex >= currentRow; rowIndex--) {
+        for (let colIndex = startCol; colIndex <= currentCol; colIndex++) {
+          updateGrid(currentNeighbors, rowIndex, colIndex);
+        }
+      }
+    } else if (currentY > prevY && currentX < prevX) {
+      // going down left
+      for (let rowIndex = startRow; rowIndex <= currentRow; rowIndex++) {
+        for (let colIndex = startCol; colIndex >= currentCol; colIndex--) {
+          updateGrid(currentNeighbors, rowIndex, colIndex);
+        }
+      }
+    } else if (currentY > prevY && currentX > prevX) {
+      // going down right
+      for (let rowIndex = startRow; rowIndex <= currentRow; rowIndex++) {
+        for (let colIndex = startCol; colIndex <= currentCol; colIndex++) {
+          updateGrid(currentNeighbors, rowIndex, colIndex);
+        }
+      }
+    } else {
+      updateGrid(currentNeighbors, currentRow, currentCol);
+    }
+
+    setNeighbors(new Set([...currentNeighbors]));
+  };
+
+  const updateGrid = (
+    neighbors: Set<HTMLDivElement>,
+    rowIndex: number,
+    colIndex: number
+  ) => {
+    const neighbor = document.querySelector(
+      `div[data-row='${rowIndex}'][data-col='${colIndex}']`
+    ) as HTMLDivElement;
+    const neighborTimeKey = neighbor.getAttribute("data-time") as string;
+
+    selectedCells.includes(neighborTimeKey)
+      ? neighbor.classList.remove("bg-indigo-500")
+      : neighbor.classList.add("bg-indigo-500");
+
+    neighbors.add(neighbor);
+  };
+
+  const onMouseUp = () => {
+    let timeKeys: string[] = [...selectedCells];
+    neighbors.forEach((neighbor) => {
+      const currentTimeKey = neighbor?.getAttribute("data-time") as string;
+      timeKeys.filter((timeKey) => timeKey === currentTimeKey);
+      if (selectedCells.includes(currentTimeKey)) {
+        timeKeys = timeKeys.filter((timeKey) => timeKey !== currentTimeKey);
+      } else {
+        timeKeys.push(currentTimeKey);
+      }
+    });
+    setIsEditing(false);
+    setSelectedCells([...timeKeys]);
+    if (timeKeys.length === 0) {
+      setIsDisabled(true);
+    }
+    setNeighbors(new Set());
   };
 
   return (
@@ -52,7 +140,11 @@ function AvailabilityGridWrite({
               return (
                 <div
                   key={`${hour}-${hour + 0.5}`}
-                  date-time={`${hour}-${hour + 0.5}`}
+                  data-time={`${date.toISOString().split("T")[0]}:${hour}-${
+                    hour + 0.5
+                  }`}
+                  data-row={hourIndex}
+                  data-col={dateIndex}
                   className={`h-10 w-20 cursor-pointer transition-all ${
                     dateIndex !== dates.length - 1 ? "border-r" : ""
                   } ${hourIndex !== hours.length - 1 ? "border-b" : ""} ${
@@ -64,17 +156,7 @@ function AvailabilityGridWrite({
                       ? "bg-indigo-500"
                       : ""
                   }`}
-                  onMouseDown={(e) => {
-                    setIsEditing(true);
-                    setIsDisabled(false);
-                    setNoticeMessage("");
-                    saveCell(
-                      e.target as HTMLDivElement,
-                      `${date.toISOString().split("T")[0]}:${hour}-${
-                        hour + 0.5
-                      }`
-                    );
-                  }}
+                  onMouseDown={(e) => initializeSave(e)}
                   onMouseOver={(e) =>
                     onMouseOver(
                       e,
@@ -83,7 +165,7 @@ function AvailabilityGridWrite({
                       }`
                     )
                   }
-                  onMouseUp={() => setIsEditing(false)}
+                  onMouseUp={() => onMouseUp()}
                 />
               );
             })}
