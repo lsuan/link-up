@@ -1,5 +1,6 @@
 import { getHourNumber, UserAvailability } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
+import { getShortenedDateWithDay } from "../../utils/timeUtils";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 import { AvailabilityProps } from "./AvailabilitySection";
@@ -52,11 +53,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
                 key={date.toDateString()}
                 className="pointer-events-none w-20 select-none pb-2 text-center text-xs font-semibold"
               >
-                {new Intl.DateTimeFormat("en-us", {
-                  weekday: "short",
-                  day: "2-digit",
-                  month: "2-digit",
-                }).format(date)}
+                {getShortenedDateWithDay(date)}
               </label>
             );
           })}

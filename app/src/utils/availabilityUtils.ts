@@ -328,10 +328,7 @@ export const getBestTimeBlock = (
     }
   }
 
-  const [startTime, endTime] = parseRange(bestBlock) as [
-    startTime: string,
-    endTime: string
-  ];
+  const [startTime, endTime] = parseRange(bestBlock) as [string, string];
 
   // delete the recorded blocks
   for (let start = Number(startTime); start < Number(endTime); start += 0.5) {

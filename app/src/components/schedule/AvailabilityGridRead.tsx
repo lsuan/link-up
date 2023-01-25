@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { UserAvailability } from "../../utils/availabilityUtils";
 import AvailabilityGridReadCell from "./AvailabilityGridReadCell";
 
@@ -32,7 +32,10 @@ const AvailabilityGridRead = memo(function AvailabilityGridRead({
   }, [attendees]);
 
   return (
-    <div className="flex overflow-hidden rounded-lg border">
+    <div
+      id="availability-responses-grid"
+      className="flex overflow-hidden rounded-lg border"
+    >
       {dates.map((date: Date, dateIndex) => {
         return (
           <div

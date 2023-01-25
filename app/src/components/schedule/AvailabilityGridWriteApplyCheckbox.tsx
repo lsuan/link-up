@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { ChangeEvent, SyntheticEvent, useRef, useState } from "react";
+import { getShortenedDateWithDay } from "../../utils/timeUtils";
 import { selected } from "./AvailabilityInput";
 
 function AvailabilityGridWriteApplyCheckbox({
@@ -76,11 +77,7 @@ function AvailabilityGridWriteApplyCheckbox({
           {uniqueDays.map((day) => {
             return (
               <option key={day} value={day}>
-                {Intl.DateTimeFormat("en-us", {
-                  weekday: "short",
-                  day: "2-digit",
-                  month: "2-digit",
-                }).format(new Date(`${day}`))}
+                {getShortenedDateWithDay(new Date(day))}
               </option>
             );
           })}
