@@ -45,13 +45,15 @@ function ScheduleEventCard({
               startTime && endTime ? `| ${startTime} — ${endTime}` : ""
             }`}</p>
           </li>
-          <li className="flex items-start gap-2">
-            <FontAwesomeIcon
-              className="mt-[3px] w-[14px]"
-              icon={faLocationPin}
-            />
-            <p>{location || "TBD"}</p>
-          </li>
+          {location && (
+            <li className="flex items-start gap-2">
+              <FontAwesomeIcon
+                className="mt-[3px] w-[14px]"
+                icon={faLocationPin}
+              />
+              <p>{location || "TBD"}</p>
+            </li>
+          )}
           {description && (
             <li className="flex items-start gap-2">
               <FontAwesomeIcon
