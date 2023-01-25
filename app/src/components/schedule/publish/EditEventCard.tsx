@@ -66,7 +66,6 @@ function EditEventCard({
   const selectOptions = getTimeOptions(eventStartTime, eventEndTime);
 
   const handleEventSave = async (data: EditEventInputs) => {
-    console.log(data);
     const eventData: InitialEventInfo = {
       name: data.name,
       date: data.date,
@@ -79,8 +78,6 @@ function EditEventCard({
 
     const prevEvents = events.slice(0, index);
     const rest = events.slice(index + 1);
-    console.log(prevEvents);
-    console.log(rest);
     setEvents([...prevEvents, eventData, ...rest]);
   };
 

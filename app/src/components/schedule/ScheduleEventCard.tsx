@@ -11,6 +11,7 @@ import { getEventCardDateDisplay } from "../../utils/timeUtils";
 export type ScheduleEventCardProps = {
   index: number;
   isAddToCalendarModalShown: boolean[];
+  slug?: string;
   setIsAddToCalendarModalShown: (state: boolean[]) => void;
 } & Event;
 

@@ -107,6 +107,7 @@ function Schedule() {
                             setIsAddToCalendarModalShown={
                               setIsAddToCalendarModalShown
                             }
+                            slug={slug}
                           />
                         )}
                         <ScheduleEventCard

@@ -25,6 +25,7 @@ function AvailabilityGridWrite({
   const [neighbors, setNeighbors] = useState<Set<HTMLDivElement>>(new Set());
 
   const initializeSave = (e: React.MouseEvent) => {
+    e.preventDefault();
     setIsEditing(true);
     setIsDisabled(false);
     setNoticeMessage("");
@@ -36,7 +37,10 @@ function AvailabilityGridWrite({
     updateGrid(neighbors, row, col);
   };
 
+  // FIXME: need to be able to get rid of previous cells while editing
+  // keep track of when the mouse direction goes the opposite way
   const onMouseOver = (e: React.MouseEvent, timeKey: string) => {
+    e.preventDefault();
     if (!isEditing || !startCoordinates) {
       return;
     }
@@ -47,35 +51,35 @@ function AvailabilityGridWrite({
     const currentRow = parseInt(currentCell.getAttribute("data-row") as string);
     const currentCol = parseInt(currentCell.getAttribute("data-col") as string);
     const {
-      clientX: prevX,
-      clientY: prevY,
+      clientX: startX,
+      clientY: startY,
       row: startRow,
       col: startCol,
     } = startCoordinates;
 
     const currentNeighbors = new Set<HTMLDivElement>([...neighbors]);
-    if (currentY < prevY && currentX < prevX) {
+    if (currentY < startY && currentX < startX) {
       // going up left
       for (let rowIndex = startRow; rowIndex >= currentRow; rowIndex--) {
         for (let colIndex = startCol; colIndex >= currentCol; colIndex--) {
           updateGrid(currentNeighbors, rowIndex, colIndex);
         }
       }
-    } else if (currentY < prevY && currentX > prevX) {
+    } else if (currentY < startY && currentX > startX) {
       // going up right
       for (let rowIndex = startRow; rowIndex >= currentRow; rowIndex--) {
         for (let colIndex = startCol; colIndex <= currentCol; colIndex++) {
           updateGrid(currentNeighbors, rowIndex, colIndex);
         }
       }
-    } else if (currentY > prevY && currentX < prevX) {
+    } else if (currentY > startY && currentX < startX) {
       // going down left
       for (let rowIndex = startRow; rowIndex <= currentRow; rowIndex++) {
         for (let colIndex = startCol; colIndex >= currentCol; colIndex--) {
           updateGrid(currentNeighbors, rowIndex, colIndex);
         }
       }
-    } else if (currentY > prevY && currentX > prevX) {
+    } else if (currentY > startY && currentX > startX) {
       // going down right
       for (let rowIndex = startRow; rowIndex <= currentRow; rowIndex++) {
         for (let colIndex = startCol; colIndex <= currentCol; colIndex++) {
