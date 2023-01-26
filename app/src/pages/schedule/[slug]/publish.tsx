@@ -180,7 +180,7 @@ function Publish() {
     setEvents([...events, newEvent]);
   };
 
-  if (status === "loading" && schedule.isLoading) {
+  if (status === "loading" || schedule.isLoading) {
     return <Loading />;
   }
 

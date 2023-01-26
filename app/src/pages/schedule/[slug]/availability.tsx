@@ -3,13 +3,17 @@ import AvailabilityInput from "../../../components/schedule/AvailabilityInput";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
+import Loading from "../../../components/shared/Loading";
 import { parseSlug } from "../../../utils/scheduleSlugUtils";
 import { trpc } from "../../../utils/trpc";
 
 function Availability() {
   const router = useRouter();
-  const { slug } = router.query as { slug: string };
-  const { name, scheduleIdPart } = parseSlug(slug);
+  const slug = router.asPath.split("/")[2];
+  console.log(router.asPath.split("/"));
+  const { name, scheduleIdPart } = slug
+    ? parseSlug(slug)
+    : { name: "", scheduleIdPart: "" };
   const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
     {
       name: name,
@@ -18,11 +22,16 @@ function Availability() {
     { refetchOnWindowFocus: false }
   );
 
+  if (!router.isReady) {
+    return <Loading />;
+  }
+
   return (
     <section className="relative">
       <SuccessNotice />
       <div className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
+
         <h1 className="mb-12 text-3xl font-semibold">Add/Edit Availability</h1>
         {schedule?.data && (
           <AvailabilityInput

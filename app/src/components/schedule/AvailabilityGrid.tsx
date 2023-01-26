@@ -1,5 +1,6 @@
 import { getHourNumber, UserAvailability } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
+import { getShortenedDateWithDay } from "../../utils/timeUtils";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 import { AvailabilityProps } from "./AvailabilitySection";
@@ -43,7 +44,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
     formattedHours = getAllFormattedHours();
 
   return (
-    <>
+    <section className="availability-container">
       <div className="horizontal-scrollbar relative my-4 grid place-items-center overflow-x-scroll pb-4">
         <div className="relative flex w-full justify-end">
           {dates.map((date: Date) => {
@@ -52,17 +53,13 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
                 key={date.toDateString()}
                 className="pointer-events-none w-20 select-none pb-2 text-center text-xs font-semibold"
               >
-                {new Intl.DateTimeFormat("en-us", {
-                  weekday: "short",
-                  day: "2-digit",
-                  month: "2-digit",
-                }).format(date)}
+                {getShortenedDateWithDay(date)}
               </label>
             );
           })}
         </div>
         <div className="border-grey-500 flex w-fit pl-1">
-          <div className="sticky left-0 -mt-2 mr-2 flex flex-col bg-inherit">
+          <div className="sticky left-0 z-10 -mt-2 mr-2 flex flex-col bg-inherit">
             {formattedHours.map((hour, index) => {
               return (
                 <label
@@ -92,7 +89,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
           )}
         </div>
       </div>
-    </>
+    </section>
   );
 }
 

@@ -1,7 +1,13 @@
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 import MobileNavMenuItem from "./MobileNavMenuItem";
 
 function SignedInNavMenu() {
+  const router = useRouter();
+  const handleSignOut = async () => {
+    const data = await signOut({ callbackUrl: "/", redirect: false });
+    router.push(data.url);
+  };
   return (
     <ul className="absolute left-0 top-0 z-[999] flex h-full w-full flex-col items-center bg-neutral-900 px-8 text-xl">
       <MobileNavMenuItem href="/dashboard" name="My Dashboard" />
@@ -12,7 +18,7 @@ function SignedInNavMenu() {
         href=""
         name="Sign Out"
         className="border-b-0"
-        onClick={() => signOut({ callbackUrl: "/" })}
+        onClick={() => handleSignOut()}
       />
     </ul>
   );
