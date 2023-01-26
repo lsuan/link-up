@@ -59,6 +59,7 @@ export const userRouter = router({
         where: { email: input.email },
       });
       const id = ctx.session.user.id;
+
       if (otherUser?.id !== id) {
         const trpcError: TRPCError = {
           name: "User Update Error",
