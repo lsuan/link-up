@@ -15,7 +15,7 @@ import { trpc } from "../utils/trpc";
 
 // caches events with schedule names saved to prevent multiple calls to `scheduleRouter.getScheduleNameById` on tab switch
 const upcomingCache: EventCard[] = [];
-// TODO: make a separate component for schedule page event view
+
 function Dashboard() {
   const { status } = useSession();
   const [active, setActive] = useState<string>("upcoming");
@@ -49,6 +49,8 @@ function Dashboard() {
     return <Unauthenticated />;
   }
 
+  // FIXME: right now it loads all schedules + events, but it should filter
+  // based on whether user is participating in or hosting a schedule/event
   return (
     <section className="min-h-screen px-8">
       <header className="mb-12 flex w-full items-center justify-between">
