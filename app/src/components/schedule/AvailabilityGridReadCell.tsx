@@ -1,4 +1,12 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { isSuspensePromiseAlreadyCancelled } from "jotai/core/suspensePromise";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   categorizeUsers,
   getCellColor,
@@ -15,12 +23,12 @@ type AvailabilityStatus = {
   available: string[];
   unavailable: string[];
   clientX: number;
-  clientY: number;
 };
 
 type PopupPosition = {
   vertical: string;
   horizontal: string;
+  translate: string;
 };
 
 const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
@@ -65,12 +73,15 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
   );
 
   const onMouseOver = (e: React.MouseEvent, date: Date, hour: string) => {
+    console.log(e);
+    const cell = e.target as HTMLDivElement;
+    console.log("cell offset ", cell.offsetLeft);
+
     const availabilityStatus: AvailabilityStatus = {
       timeKey: "",
       available: [],
       unavailable: [],
       clientX: e.clientX,
-      clientY: e.clientY,
     };
 
     setUsersByTime(date, hour, availabilityStatus);
@@ -126,8 +137,7 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
           dateIndex !== dates.length - 1 ? "border-r" : ""
         } ${
           hourIndex !== hours.length - 1 ? "border-b border-b-neutral-100" : ""
-        } ${users ? `cursor-pointer ${cellColor}` : ""}
-`}
+        } ${users ? `cursor-pointer ${cellColor}` : ""}`}
         onMouseOver={(e) =>
           users ? onMouseOver(e, date, `${hour}-${hour + 0.5}`) : null
         }
@@ -138,37 +148,76 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
 });
 
 function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
-  const { timeKey, available, unavailable, clientX, clientY } =
-    availabilityStatus;
+  const popupRef = useRef<HTMLDivElement>(null);
+  const { timeKey, available, unavailable, clientX } = availabilityStatus;
   const dateString = timeKey.split(":")[0] as string;
   const [startTime, endTime] = parseRange(timeKey) as [string, string];
   const [start, end] = getFormattedHours(
     [Number(startTime), Number(endTime)],
     "long"
   );
-  const grid = document.getElementById("availability-responses-grid");
-  const container = document.querySelector(".horizontal-scrollbar.grid");
   const [positions, setPositions] = useState<PopupPosition>();
 
   useEffect(() => {
-    const horizontalBreakpoint = ((container?.clientWidth as number) - 60) / 2;
-    const positions = { vertical: "top-0", horizontal: "-left-40" };
-    const containerHeight = container?.clientHeight as number;
-    if (clientX < horizontalBreakpoint) {
-      positions.horizontal = "-right-40";
+    const popup = popupRef.current;
+    if (!popup) {
+      return;
     }
 
-    if (clientY > containerHeight / 2) {
-      positions.vertical = "bottom-0";
+    const positions = {
+      vertical: "top-4",
+      horizontal: "-left-40",
+      translate: "-translate-y-4",
+    };
+    const container = document.querySelector(
+      ".availability-container"
+    ) as HTMLDivElement;
+    const grid = document.getElementById("availability-responses-grid");
+    const gridHeight = grid?.scrollHeight as number;
+    const parentOffsetTop = popup.parentElement?.offsetTop as number;
+    const containerWidth = container?.clientWidth as number;
+    const containerPaddingX = 64;
+    const timeLabelsWidth = 60;
+    const popupWidth = popup.clientWidth as number;
+    const popupHeight = popup.clientHeight as number;
+    const cellWidth = 80;
+    const topOverflow = parentOffsetTop + popupHeight;
+    const borderOffset = 2; // a pixel per cell
+
+    // if container is too small
+    if (containerWidth - timeLabelsWidth - containerPaddingX < 160) {
+      positions.vertical =
+        topOverflow > gridHeight ? "bottom-full" : "top-full";
+      positions.horizontal =
+        clientX < (containerWidth + containerPaddingX) / 2
+          ? "left-0"
+          : "right-0";
+      positions.translate = "";
+      setPositions({ ...positions });
+      return;
     }
+
+    if (
+      clientX - popupWidth - cellWidth / 2 - timeLabelsWidth - borderOffset <=
+      0
+    ) {
+      positions.horizontal = "-right-40";
+    }
+    if (topOverflow > gridHeight) {
+      positions.vertical = "bottom-4";
+      positions.translate = "translate-y-4";
+    }
+
     setPositions({ ...positions });
-  }, []);
+  }, [popupRef.current]);
 
   return (
     <div
-      id="availability-popup"
-      className={`absolute z-10 flex w-40 flex-col gap-2 rounded-lg border border-neutral-500 bg-neutral-900 p-2 text-xs transition-all${
-        positions ? ` ${positions.horizontal} ${positions.vertical}` : ""
+      ref={popupRef}
+      className={`absolute z-20 flex w-40 flex-col gap-2 rounded-lg border border-neutral-500 bg-neutral-900 p-2 text-xs transition-all${
+        positions
+          ? ` ${positions.horizontal} ${positions.vertical} ${positions.translate}`
+          : ""
       }`}
     >
       <header className="font-semibold">
@@ -180,7 +229,7 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
           <span className="font-semibold text-indigo-300">Available</span>
           {` (${available.length}): ${available.join(", ")}`}
         </p>
-        {unavailable?.length && (
+        {unavailable?.length > 0 && (
           <p>
             <span className="font-semibold text-indigo-500">Unavailable</span>
             {` (${unavailable.length}): ${unavailable.join(", ")}`}
