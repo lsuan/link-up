@@ -1,8 +1,10 @@
+import { Input } from "postcss";
 import { z } from "zod";
 import { UserAvailability } from "../../../utils/availabilityUtils";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
+  /** Creates a new schedule with the specified inputs. */
   createSchedule: protectedProcedure
     .input(
       z.object({
@@ -27,6 +29,7 @@ export const scheduleRouter = router({
       return { schedule: newSchedule };
     }),
 
+  /** Gets the schedule by its id. */
   getScheduleNameById: protectedProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
@@ -38,6 +41,7 @@ export const scheduleRouter = router({
       return scheduleName;
     }),
 
+  /** Gets the schedule by its name and last 8 digits of its id. */
   getScheduleFromSlugId: publicProcedure
     .input(
       z.object({
@@ -63,21 +67,38 @@ export const scheduleRouter = router({
       return schedule;
     }),
 
+  /** Finds all unpublished schedules that the user is hosting and ones in which the user has submitted availability. */
   getUnstartedSchedules: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
     const unstarted = await ctx.prisma.schedule.findMany({
       where: {
+        OR: [
+          {
+            userId: userId,
+          },
+          {
+            attendees: {
+              path: "$[*].user",
+              array_contains: userId,
+            },
+          },
+        ],
         events: {
           none: {},
         },
+      },
+      orderBy: {
+        createdAt: "asc",
       },
     });
 
     return unstarted;
   }),
 
-  /*
+  /** Sets the availability for the specific user in the following format:
+   *
    * JSON DATA STRUCTURE
-   * [ {user: "user", availability: {"date": []}} ]
+   * `[ {user: "user", availability: {"date": []}} ]`
    */
   setAvailability: publicProcedure
     .input(z.object({ id: z.string(), attendee: z.string() }))
@@ -107,9 +128,9 @@ export const scheduleRouter = router({
       return newSchedule;
     }),
 
-  /*
-   * this procedure gets the availability for only user
-   * used for filling in the response table if they wish to edit their times
+  /**
+   * Gets the availability for only user.
+   * Used for filling in the response table if they wish to edit their times.
    * */
   getUserAvailability: publicProcedure
     .input(z.object({ id: z.string(), user: z.string() }))
