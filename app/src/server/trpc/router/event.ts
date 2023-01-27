@@ -53,8 +53,13 @@ export const eventRouter = router({
       },
       include: {
         schedule: {
-          select: {
-            name: true,
+          include: {
+            host: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         },
       },

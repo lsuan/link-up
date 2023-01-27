@@ -3,15 +3,17 @@ import {
   faClock,
   faLocationPin,
   faNoteSticky,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Event } from "@prisma/client";
 import Link from "next/link";
-import { createSlug } from "../../utils/scheduleSlugUtils";
+import { createSlug } from "../../utils/scheduleUtils";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
 
 type EventCardProps = {
   scheduleName: string;
+  host: string;
 } & Event;
 
 function DashboardEventCard({
@@ -23,6 +25,7 @@ function DashboardEventCard({
   endTime,
   location,
   description,
+  host,
 }: EventCardProps) {
   const slug = createSlug(scheduleName, scheduleId) ?? "";
 
@@ -38,6 +41,10 @@ function DashboardEventCard({
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">
+        <li className="flex items-start gap-2">
+          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faUser} />
+          <p>{`Hosted by: ${host}`}</p>
+        </li>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
           <p className="break-words">

@@ -13,7 +13,7 @@ import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { parseSlug } from "../../../utils/scheduleSlugUtils";
+import { getHost, parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
 export const notice = atom("");
@@ -86,9 +86,9 @@ function Schedule() {
             </p>
           )}
           <div className="my-4">{schedule?.data?.description}</div>
-          <div className="z-10 mb-4 font-semibold">{`Hosted by: ${
-            host?.firstName
-          } ${host?.lastName || ""}`}</div>
+          <div className="z-10 mb-4 font-semibold">
+            {getHost(sessionData?.user?.id!, schedule.data!)}
+          </div>
 
           {events?.length && events.length > 0 ? (
             <div className="relative">

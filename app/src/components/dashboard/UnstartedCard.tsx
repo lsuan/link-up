@@ -3,18 +3,20 @@ import {
   faClock,
   faLocationPin,
   faNoteSticky,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { createSlug } from "../../utils/scheduleSlugUtils";
+import { createSlug } from "../../utils/scheduleUtils";
 
 type UnstartedProps = {
   id: string;
   name: string;
   description?: string | null;
+  host: string;
 };
 
-function UnstartedCard({ id, name, description }: UnstartedProps) {
+function UnstartedCard({ id, name, description, host }: UnstartedProps) {
   const slug = createSlug(name, id) ?? "";
 
   // TODO: figure out how to convert time by location
@@ -25,6 +27,10 @@ function UnstartedCard({ id, name, description }: UnstartedProps) {
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">
+        <li className="flex items-start gap-2">
+          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faUser} />
+          <p>{`Hosted by: ${host}`}</p>
+        </li>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
           <p>TBD</p>

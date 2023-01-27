@@ -90,6 +90,14 @@ export const scheduleRouter = router({
       orderBy: {
         createdAt: "asc",
       },
+      include: {
+        host: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     return unstarted;

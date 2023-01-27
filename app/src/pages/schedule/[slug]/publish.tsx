@@ -23,7 +23,7 @@ import {
   TimeBlock,
   UserAvailability,
 } from "../../../utils/availabilityUtils";
-import { parseSlug } from "../../../utils/scheduleSlugUtils";
+import { parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
 export type InitialEventInfo = {

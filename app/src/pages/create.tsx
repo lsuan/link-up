@@ -17,7 +17,7 @@ import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
 import Unauthenticated from "../components/shared/Unauthenticated";
 import { getTimeOptions, MINUTES } from "../utils/formUtils";
-import { createSlug } from "../utils/scheduleSlugUtils";
+import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 import { notice } from "./schedule/[slug]";
 

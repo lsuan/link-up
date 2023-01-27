@@ -1,7 +1,5 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Event, Schedule } from "@prisma/client";
-import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -10,28 +8,23 @@ import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
+import { getHost } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
 function Dashboard() {
-  const { status } = useSession();
+  const { status, data: sessionData } = useSession();
   const [active, setActive] = useState<string>("upcoming");
-  const [unstarted, setUnstarted] = useState<Schedule[]>([]);
-
   const unstartedQuery = trpc.schedule.getUnstartedSchedules.useQuery(
     undefined,
     {
       enabled: status === "authenticated",
       refetchOnWindowFocus: false,
-      onSuccess: (data) => setUnstarted(data),
     }
   );
 
   const upcomingQuery = trpc.event.getUpcoming.useQuery(undefined, {
     enabled: status === "authenticated",
     refetchOnWindowFocus: false,
-    // onSuccess: (data) => {
-    //   upcomingCache.push(...data);
-    // },
   });
 
   if (
@@ -60,16 +53,16 @@ function Dashboard() {
 
       <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">
         <Pill
-          name={"upcoming"}
+          name="upcoming"
           active={active}
           setActive={setActive}
           amount={upcomingQuery.data?.length ?? 0}
         />
         <Pill
-          name={"unstarted"}
+          name="unstarted"
           active={active}
           setActive={setActive}
-          amount={unstarted.length ?? 0}
+          amount={unstartedQuery.data?.length ?? 0}
         />
       </div>
       {active === "upcoming" ? (
@@ -79,6 +72,7 @@ function Dashboard() {
               <DashboardEventCard
                 key={event.id}
                 scheduleName={event.schedule.name}
+                host={getHost(sessionData?.user?.id!, event.schedule)}
                 {...event}
               />
             );
@@ -86,13 +80,14 @@ function Dashboard() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {unstarted.map((schedule) => {
+          {unstartedQuery.data?.map((schedule) => {
             return (
               <UnstartedCard
                 key={schedule.id}
                 id={schedule.id}
                 name={schedule.name}
                 description={schedule.description}
+                host={getHost(sessionData?.user?.id!, schedule)}
               />
             );
           })}
