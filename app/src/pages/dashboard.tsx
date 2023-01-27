@@ -14,23 +14,19 @@ import { trpc } from "../utils/trpc";
 function Dashboard() {
   const { status, data: sessionData } = useSession();
   const [active, setActive] = useState<string>("upcoming");
-  const unstartedQuery = trpc.schedule.getUnstartedSchedules.useQuery(
-    undefined,
-    {
+  const { data: unstarted, isLoading: isUnstartedLoading } =
+    trpc.schedule.getUnstartedSchedules.useQuery(undefined, {
       enabled: status === "authenticated",
       refetchOnWindowFocus: false,
-    }
-  );
+    });
 
-  const upcomingQuery = trpc.event.getUpcoming.useQuery(undefined, {
-    enabled: status === "authenticated",
-    refetchOnWindowFocus: false,
-  });
+  const { data: upcoming, isLoading: isUpcomingLoading } =
+    trpc.event.getUpcoming.useQuery(undefined, {
+      enabled: status === "authenticated",
+      refetchOnWindowFocus: false,
+    });
 
-  if (
-    status === "loading" ||
-    (status === "authenticated" && upcomingQuery.isLoading)
-  ) {
+  if (status === "loading" || isUnstartedLoading || isUpcomingLoading) {
     return <Loading />;
   }
 
@@ -56,18 +52,18 @@ function Dashboard() {
           name="upcoming"
           active={active}
           setActive={setActive}
-          amount={upcomingQuery.data?.length ?? 0}
+          amount={upcoming?.length ?? 0}
         />
         <Pill
           name="unstarted"
           active={active}
           setActive={setActive}
-          amount={unstartedQuery.data?.length ?? 0}
+          amount={unstarted?.length ?? 0}
         />
       </div>
       {active === "upcoming" ? (
         <div className="flex flex-col gap-4">
-          {upcomingQuery.data?.map((event, index) => {
+          {upcoming?.map((event, index) => {
             return (
               <DashboardEventCard
                 key={event.id}
@@ -80,7 +76,7 @@ function Dashboard() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {unstartedQuery.data?.map((schedule) => {
+          {unstarted?.map((schedule) => {
             return (
               <UnstartedCard
                 key={schedule.id}

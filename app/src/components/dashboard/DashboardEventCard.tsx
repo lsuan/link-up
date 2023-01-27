@@ -43,7 +43,7 @@ function DashboardEventCard({
       <ul className="flex flex-col gap-2 text-sm">
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faUser} />
-          <p>{`Hosted by: ${host}`}</p>
+          <p>{host}</p>
         </li>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px]" icon={faClock} />

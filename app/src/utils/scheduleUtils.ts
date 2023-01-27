@@ -21,8 +21,10 @@ export const parseSlug = (slug: string) => {
 
 export const getHost = (userId: string, schedule: ScheduleParam) => {
   if (userId === schedule.userId) {
-    return "You";
+    return "Hosted by: You";
   }
 
-  return `${schedule.host.firstName}${` ${schedule.host.lastName}` ?? ""}`;
+  return `Hosted by: ${schedule.host.firstName}${
+    ` ${schedule.host.lastName}` ?? ""
+  }`;
 };
