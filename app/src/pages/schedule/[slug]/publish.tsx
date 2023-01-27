@@ -23,7 +23,7 @@ import {
   TimeBlock,
   UserAvailability,
 } from "../../../utils/availabilityUtils";
-import { parseSlug } from "../../../utils/scheduleSlugUtils";
+import { parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
 export type InitialEventInfo = {
@@ -37,6 +37,8 @@ export type InitialEventInfo = {
   className?: string;
   scheduleId?: string;
 };
+
+// OPTIMIZE: might want to get rid of className option and create refs instead for error border?
 function Publish() {
   const { status } = useSession();
   const router = useRouter();
@@ -140,10 +142,11 @@ function Publish() {
         delete event.className;
 
         // needed so we can use a more accurate comparison for seeing upcoming events in `eventRouter.getUpcoming`
-        const startHour = getHourNumber(event.startTime);
-        const startMins = Number.isInteger(startHour) ? "00" : "30";
+        // events will stay on upcoming until event ends
+        const endHour = getHourNumber(event.endTime);
+        const startMins = Number.isInteger(endHour) ? "00" : "30";
         const eventDate = new Date(
-          `${event.date?.toISOString().split("T")[0]}T${Math.floor(startHour)
+          `${event.date?.toISOString().split("T")[0]}T${Math.floor(endHour)
             .toString()
             .padStart(2, "0")}:${startMins}:00`
         );

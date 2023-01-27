@@ -4,7 +4,7 @@ import AvailabilityResponses from "../../../components/schedule/AvailabilityResp
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
-import { parseSlug } from "../../../utils/scheduleSlugUtils";
+import { parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
 function Availability() {

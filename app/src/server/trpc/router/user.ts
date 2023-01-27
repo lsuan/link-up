@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const userRouter = router({
   createUser: publicProcedure
@@ -45,22 +45,22 @@ export const userRouter = router({
       return user;
     }),
 
-  updateUser: protectedProcedure
+  updateUserEmailCredentials: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
         firstName: z.string(),
         lastName: z.string().optional(),
-        email: z.string().optional(),
-        password: z.string().optional(),
+        email: z.string(),
+        password: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const otherUser = await ctx.prisma.user.findUnique({
         where: { email: input.email },
       });
+      const id = ctx.session.user.id;
 
-      if (otherUser?.id !== input.id) {
+      if (otherUser?.id !== id) {
         const trpcError: TRPCError = {
           name: "User Update Error",
           code: "CONFLICT",
@@ -70,9 +70,23 @@ export const userRouter = router({
       }
 
       const user = await ctx.prisma.user.update({
-        where: { id: input.id },
+        where: { id: id },
         data: { ...input },
       });
+      return { user, success: { message: "Changes have been saved!" } };
+    }),
+
+  updateUserWithAccountProvider: protectedProcedure
+    .input(z.object({ firstName: z.string(), lastName: z.string().optional() }))
+    .mutation(async ({ input, ctx }) => {
+      const id = ctx.session.user.id;
+      const user = await ctx.prisma.user.update({
+        where: { id: id },
+        data: {
+          ...input,
+        },
+      });
+
       return { user, success: { message: "Changes have been saved!" } };
     }),
 

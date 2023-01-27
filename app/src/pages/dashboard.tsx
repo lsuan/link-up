@@ -1,47 +1,32 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Schedule } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import DashboardEventCard, {
-  type EventCard,
-} from "../components/dashboard/DashboardEventCard";
+import DashboardEventCard from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
+import { getHost } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
-// caches events with schedule names saved to prevent multiple calls to `scheduleRouter.getScheduleNameById` on tab switch
-const upcomingCache: EventCard[] = [];
-// TODO: make a separate component for schedule page event view
 function Dashboard() {
-  const { status } = useSession();
+  const { status, data: sessionData } = useSession();
   const [active, setActive] = useState<string>("upcoming");
-  const [unstarted, setUnstarted] = useState<Schedule[]>([]);
-
-  const unstartedQuery = trpc.schedule.getUnstartedSchedules.useQuery(
-    undefined,
-    {
+  const { data: unstarted, isLoading: isUnstartedLoading } =
+    trpc.schedule.getUnstartedSchedules.useQuery(undefined, {
       enabled: status === "authenticated",
       refetchOnWindowFocus: false,
-      onSuccess: (data) => setUnstarted(data),
-    }
-  );
+    });
 
-  const upcoming = trpc.event.getUpcoming.useQuery(undefined, {
-    enabled: status === "authenticated" && upcomingCache.length === 0,
-    refetchOnWindowFocus: false,
-    onSuccess: (data) => {
-      upcomingCache.push(...data);
-    },
-  });
+  const { data: upcoming, isLoading: isUpcomingLoading } =
+    trpc.event.getUpcoming.useQuery(undefined, {
+      enabled: status === "authenticated",
+      refetchOnWindowFocus: false,
+    });
 
-  if (
-    status === "loading" ||
-    (status === "authenticated" && upcoming.isLoading)
-  ) {
+  if (status === "loading" || isUnstartedLoading || isUpcomingLoading) {
     return <Loading />;
   }
 
@@ -64,40 +49,41 @@ function Dashboard() {
 
       <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">
         <Pill
-          name={"upcoming"}
+          name="upcoming"
           active={active}
           setActive={setActive}
-          amount={upcomingCache.length}
+          amount={upcoming?.length ?? 0}
         />
         <Pill
-          name={"unstarted"}
+          name="unstarted"
           active={active}
           setActive={setActive}
-          amount={unstarted.length ?? 0}
+          amount={unstarted?.length ?? 0}
         />
       </div>
       {active === "upcoming" ? (
         <div className="flex flex-col gap-4">
-          {upcomingCache.map((event, index) => {
+          {upcoming?.map((event, index) => {
             return (
               <DashboardEventCard
                 key={event.id}
-                index={index}
+                scheduleName={event.schedule.name}
+                host={getHost(sessionData?.user?.id!, event.schedule)}
                 {...event}
-                upcoming={upcomingCache}
               />
             );
           })}
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {unstarted.map((schedule) => {
+          {unstarted?.map((schedule) => {
             return (
               <UnstartedCard
                 key={schedule.id}
                 id={schedule.id}
                 name={schedule.name}
                 description={schedule.description}
+                host={getHost(sessionData?.user?.id!, schedule)}
               />
             );
           })}

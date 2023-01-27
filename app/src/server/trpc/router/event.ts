@@ -3,6 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const eventRouter = router({
+  /** Creates events based on the input. Used in the publish schedule page. */
   createEvents: protectedProcedure
     .input(
       z.array(
@@ -25,15 +26,42 @@ export const eventRouter = router({
       return { event };
     }),
 
+  /** Gets all the upcoming events in which its end time is before now. Used in dashboard. */
   getUpcoming: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
     const upcoming = await ctx.prisma.event.findMany({
       where: {
         date: {
           gte: new Date(),
         },
+        schedule: {
+          OR: [
+            {
+              userId: userId,
+            },
+            {
+              attendees: {
+                path: "$[*].user",
+                array_contains: userId,
+              },
+            },
+          ],
+        },
       },
       orderBy: {
         date: "asc",
+      },
+      include: {
+        schedule: {
+          include: {
+            host: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -13,7 +13,7 @@ import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { parseSlug } from "../../../utils/scheduleSlugUtils";
+import { getHost, parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
 export const notice = atom("");
@@ -26,17 +26,18 @@ function Schedule() {
   const { data: sessionData } = useSession();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
-  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
-    {
-      name: name,
-      id: scheduleIdPart,
-    },
-    { enabled: router.isReady, refetchOnWindowFocus: false }
-  );
+  const { data: schedule, isLoading } =
+    trpc.schedule.getScheduleFromSlugId.useQuery(
+      {
+        name: name,
+        id: scheduleIdPart,
+      },
+      { enabled: router.isReady, refetchOnWindowFocus: false }
+    );
 
-  const host = schedule.data?.host ?? null;
+  const host = schedule?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
-  const events = schedule.data?.events;
+  const events = schedule?.events;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
     boolean[]
@@ -48,7 +49,7 @@ function Schedule() {
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
-  if (schedule.isLoading) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -68,7 +69,7 @@ function Schedule() {
             <BackArrow href="/dashboard" page="Dashboard" />
           )}
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
-            <h1 className="text-3xl font-semibold">{schedule?.data?.name}</h1>
+            <h1 className="text-3xl font-semibold">{schedule?.name}</h1>
             {isShareModalShown && <Share />}
             <button
               className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
@@ -79,16 +80,16 @@ function Schedule() {
             </button>
           </header>
 
-          {schedule?.data?.deadline && (
+          {schedule?.deadline && (
             <p>
               <span className="underline">Deadline to Fill By</span>
-              <span>{`: ${schedule?.data?.deadline.toLocaleDateString()}`}</span>
+              <span>{`: ${schedule?.deadline.toLocaleDateString()}`}</span>
             </p>
           )}
-          <div className="my-4">{schedule?.data?.description}</div>
-          <div className="z-10 mb-4 font-semibold">{`Hosted by: ${
-            host?.firstName
-          } ${host?.lastName || ""}`}</div>
+          <p className="my-4">{schedule?.description}</p>
+          <p className="z-10 mb-4 font-semibold">
+            {getHost(sessionData?.user?.id!, schedule!)}
+          </p>
 
           {events?.length && events.length > 0 ? (
             <div className="relative">
@@ -124,7 +125,7 @@ function Schedule() {
                 </div>
               </div>
             </div>
-          ) : isHost && !schedule.data?.attendees ? (
+          ) : isHost && !schedule?.attendees ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...
@@ -137,12 +138,7 @@ function Schedule() {
             isHost && <PublishSection slug={slug} />
           )}
         </div>
-
-        {schedule.data && (
-          <>
-            <AvailabilitySection schedule={schedule.data} slug={slug} />
-          </>
-        )}
+        <AvailabilitySection schedule={schedule!} slug={slug} />
       </section>
     </>
   );
