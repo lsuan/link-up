@@ -51,6 +51,13 @@ export const eventRouter = router({
       orderBy: {
         date: "asc",
       },
+      include: {
+        schedule: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     return upcoming;

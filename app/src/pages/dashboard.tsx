@@ -1,20 +1,16 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Schedule } from "@prisma/client";
+import { Event, Schedule } from "@prisma/client";
+import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import DashboardEventCard, {
-  type EventCard,
-} from "../components/dashboard/DashboardEventCard";
+import DashboardEventCard from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
 import { trpc } from "../utils/trpc";
-
-// caches events with schedule names saved to prevent multiple calls to `scheduleRouter.getScheduleNameById` on tab switch
-const upcomingCache: EventCard[] = [];
 
 function Dashboard() {
   const { status } = useSession();
@@ -30,17 +26,17 @@ function Dashboard() {
     }
   );
 
-  const upcoming = trpc.event.getUpcoming.useQuery(undefined, {
-    enabled: status === "authenticated" && upcomingCache.length === 0,
+  const upcomingQuery = trpc.event.getUpcoming.useQuery(undefined, {
+    enabled: status === "authenticated",
     refetchOnWindowFocus: false,
-    onSuccess: (data) => {
-      upcomingCache.push(...data);
-    },
+    // onSuccess: (data) => {
+    //   upcomingCache.push(...data);
+    // },
   });
 
   if (
     status === "loading" ||
-    (status === "authenticated" && upcoming.isLoading)
+    (status === "authenticated" && upcomingQuery.isLoading)
   ) {
     return <Loading />;
   }
@@ -49,8 +45,6 @@ function Dashboard() {
     return <Unauthenticated />;
   }
 
-  // FIXME: right now it loads all schedules + events, but it should filter
-  // based on whether user is participating in or hosting a schedule/event
   return (
     <section className="min-h-screen px-8">
       <header className="mb-12 flex w-full items-center justify-between">
@@ -69,7 +63,7 @@ function Dashboard() {
           name={"upcoming"}
           active={active}
           setActive={setActive}
-          amount={upcomingCache.length}
+          amount={upcomingQuery.data?.length ?? 0}
         />
         <Pill
           name={"unstarted"}
@@ -80,13 +74,12 @@ function Dashboard() {
       </div>
       {active === "upcoming" ? (
         <div className="flex flex-col gap-4">
-          {upcomingCache.map((event, index) => {
+          {upcomingQuery.data?.map((event, index) => {
             return (
               <DashboardEventCard
                 key={event.id}
-                index={index}
+                scheduleName={event.schedule.name}
                 {...event}
-                upcoming={upcomingCache}
               />
             );
           })}

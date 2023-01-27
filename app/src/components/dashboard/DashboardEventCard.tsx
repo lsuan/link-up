@@ -7,52 +7,23 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Event } from "@prisma/client";
 import Link from "next/link";
-import { useState } from "react";
 import { createSlug } from "../../utils/scheduleSlugUtils";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
-import { trpc } from "../../utils/trpc";
-
-export type EventCard = {
-  index?: number;
-  cachedScheduleName?: string;
-} & Event;
 
 type EventCardProps = {
-  upcoming: EventCard[];
-} & EventCard;
+  scheduleName: string;
+} & Event;
 
 function DashboardEventCard({
-  index,
   scheduleId,
-  cachedScheduleName,
+  scheduleName,
   name,
   date,
   startTime,
   endTime,
   location,
   description,
-  upcoming,
 }: EventCardProps) {
-  const [scheduleName, setScheduleName] = useState<string>(
-    cachedScheduleName ?? ""
-  );
-  const schedule = trpc.schedule.getScheduleNameById.useQuery(scheduleId, {
-    onSuccess: (data) => onScheduleSuccess(data?.name as string),
-    refetchOnWindowFocus: false,
-    enabled: cachedScheduleName === undefined,
-  });
-
-  const onScheduleSuccess = (name: string) => {
-    setScheduleName(name);
-    const eventIndex = index as number;
-    const currentEvent = upcoming[eventIndex] as EventCard;
-    const cachedEvent: EventCard = {
-      ...currentEvent,
-      cachedScheduleName: name,
-    };
-    upcoming.splice(eventIndex, 1, cachedEvent);
-  };
-
   const slug = createSlug(scheduleName, scheduleId) ?? "";
 
   // TODO: figure out how to convert time by location
