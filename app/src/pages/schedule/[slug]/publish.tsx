@@ -44,17 +44,18 @@ function Publish() {
   const router = useRouter();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
-  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
-    {
-      name: name,
-      id: scheduleIdPart,
-    },
-    {
-      enabled: status === "authenticated",
-      refetchOnWindowFocus: false,
-      onSuccess: (data) => initializeEvents(data),
-    }
-  );
+  const { data: schedule, isLoading } =
+    trpc.schedule.getScheduleFromSlugId.useQuery(
+      {
+        name: name,
+        id: scheduleIdPart,
+      },
+      {
+        enabled: status === "authenticated",
+        refetchOnWindowFocus: false,
+        onSuccess: (data) => initializeEvents(data),
+      }
+    );
 
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
@@ -88,13 +89,15 @@ function Publish() {
     if (!data) {
       return;
     }
-    const attendees = data.attendees as UserAvailability[];
+
     let lengthOfEvents = parseInt(data.lengthOfEvents.split(" ")[0] as string);
     if (lengthOfEvents === 30) {
       lengthOfEvents = 0.5;
     }
+    const categorizedUsers = categorizeUsers(
+      schedule?.attendees as UserAvailability[]
+    );
     const blockLength = lengthOfEvents * 2;
-    const categorizedUsers = categorizeUsers(attendees);
     const mostUsers = getMostUsers(categorizedUsers);
     const bestTimes = getBestTimesPerDay(
       categorizedUsers,
@@ -153,7 +156,7 @@ function Publish() {
 
         return {
           ...event,
-          scheduleId: schedule.data?.id as string,
+          scheduleId: schedule?.id as string,
           date: eventDate,
         };
       });
@@ -175,15 +178,15 @@ function Publish() {
     const newEvent: InitialEventInfo = {
       name: "New Event",
       date: null,
-      startTime: schedule.data?.startTime as string,
-      endTime: schedule.data?.endTime as string,
+      startTime: schedule?.startTime as string,
+      endTime: schedule?.endTime as string,
       isEditing: true,
       className: saveWarning !== "" ? "border border-red-500" : "",
     };
     setEvents([...events, newEvent]);
   };
 
-  if (status === "loading" || schedule.isLoading) {
+  if (status === "loading" || isLoading) {
     return <Loading />;
   }
 
@@ -196,13 +199,13 @@ function Publish() {
       <section className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <h1 className="mb-12 text-3xl font-semibold">Publish Event(s)</h1>
-        <AvailabilityResponses schedule={schedule.data!} />
+        <AvailabilityResponses schedule={schedule!} />
         <h3 className="mt-8 mb-4 font-semibold">
           {`These are the best times based on your preferences (${
-            schedule.data?.numberOfEvents
-          } ${schedule.data?.numberOfEvents === 1 ? "event" : "events"}, ${
-            schedule.data?.lengthOfEvents
-          } ${schedule.data?.numberOfEvents === 1 ? "long" : "each"}):`}
+            schedule?.numberOfEvents
+          } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
+            schedule?.lengthOfEvents
+          } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
         </h3>
         <div className="flex flex-col items-center gap-4">
           {events.map((event, index) => {
@@ -212,8 +215,8 @@ function Publish() {
                   <EditEventCard
                     index={index}
                     events={events}
-                    scheduleStartTime={schedule.data?.startTime ?? ""}
-                    scheduleEndTime={schedule.data?.endTime ?? ""}
+                    scheduleStartTime={schedule?.startTime ?? ""}
+                    scheduleEndTime={schedule?.endTime ?? ""}
                     setEvents={setEvents}
                     deleteEvent={deleteEvent}
                     className={
@@ -228,6 +231,7 @@ function Publish() {
                     events={events}
                     setEvents={setEvents}
                     deleteEvent={deleteEvent}
+                    attendees={schedule?.attendees as UserAvailability[]}
                   />
                 )}
               </div>

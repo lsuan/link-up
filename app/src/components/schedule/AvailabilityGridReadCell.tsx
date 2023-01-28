@@ -73,9 +73,7 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
   );
 
   const onMouseOver = (e: React.MouseEvent, date: Date, hour: string) => {
-    console.log(e);
     const cell = e.target as HTMLDivElement;
-    console.log("cell offset ", cell.offsetLeft);
 
     const availabilityStatus: AvailabilityStatus = {
       timeKey: "",

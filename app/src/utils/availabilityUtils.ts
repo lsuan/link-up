@@ -72,7 +72,7 @@ export const categorizeUsers = (attendees: UserAvailability[]) => {
   return categorizedUsers;
 };
 
-/** Returns the highest number of available users. */
+/** Returns the highest number of available users, different from the number of all users which is just the length of attendees. */
 export const getMostUsers = (
   categorizedUsers: Map<string, string[]> | undefined
 ) => {
