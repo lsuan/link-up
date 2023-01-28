@@ -2,12 +2,7 @@ import { getFormattedHours } from "./formUtils";
 
 export type UserAvailability = {
   user: string;
-  name:
-    | {
-        firstName: string;
-        lastName: string | null;
-      }
-    | string;
+  name: string;
   availability: object;
 };
 
@@ -49,12 +44,7 @@ export const categorizeUsers = (attendees: UserAvailability[]) => {
   }
   const categorizedUsers = new Map<string, string[]>();
   attendees.forEach((attendee) => {
-    let name: string;
-    if (typeof attendee.name === "string") {
-      name = attendee.name;
-    } else {
-      name = attendee.name.firstName;
-    }
+    const name = attendee.name;
 
     for (const [date, times] of Object.entries(attendee.availability)) {
       times.forEach((time: string) => {

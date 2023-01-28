@@ -1,8 +1,58 @@
+import { Prisma, PrismaClient, PrismaPromise, User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { type UserAvailability } from "../../../utils/availabilityUtils";
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
+
+/** Updates all submitted availabilities with the user's updated name */
+const updateScheduleAttendees = async (
+  prisma: PrismaClient<
+    Prisma.PrismaClientOptions,
+    never,
+    Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+  >,
+  user: User
+) => {
+  const schedules = await prisma?.schedule.findMany({
+    where: {
+      attendees: {
+        path: "$[*].user",
+        array_contains: user.id,
+      },
+    },
+  });
+
+  const updatedAttendeesQueries: PrismaPromise<any>[] = [];
+  schedules.forEach((schedule) => {
+    const attendees = schedule.attendees as Prisma.JsonArray;
+    attendees.forEach((attendee, index) => {
+      const newAttendee = attendee as UserAvailability;
+      if (newAttendee["user"] === user.id) {
+        newAttendee["name"] = `${user.firstName}${
+          user.lastName ? ` ${user.lastName}` : ""
+        }`;
+      }
+    });
+    const whereClause = Prisma.validator<Prisma.ScheduleWhereInput>()({
+      id: schedule.id,
+    });
+
+    const dataClause = Prisma.validator<Prisma.ScheduleUpdateInput>()({
+      attendees: attendees as Prisma.JsonValue[],
+    });
+
+    updatedAttendeesQueries.push(
+      prisma.schedule.update({
+        where: whereClause,
+        data: dataClause,
+      })
+    );
+  });
+
+  await prisma.$transaction(updatedAttendeesQueries);
+};
 
 export const userRouter = router({
   createUser: publicProcedure
@@ -73,6 +123,9 @@ export const userRouter = router({
         where: { id: id },
         data: { ...input },
       });
+
+      updateScheduleAttendees(ctx.prisma, user);
+
       return { user, success: { message: "Changes have been saved!" } };
     }),
 
@@ -86,6 +139,8 @@ export const userRouter = router({
           ...input,
         },
       });
+
+      await updateScheduleAttendees(ctx.prisma, user);
 
       return { user, success: { message: "Changes have been saved!" } };
     }),

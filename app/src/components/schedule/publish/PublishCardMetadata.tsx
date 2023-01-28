@@ -65,14 +65,8 @@ function PublishCardMetadata({
         const unavailableUsers: string[] = [];
 
         attendees.forEach((attendee) => {
-          const attendeeName =
-            typeof attendee.name === "string"
-              ? attendee.name
-              : `${attendee.name.firstName}${
-                  attendee.name.lastName ? ` ${attendee.name.lastName}` : ""
-                }`;
-          if (!currentUsers?.includes(attendeeName)) {
-            unavailableUsers.push(attendeeName);
+          if (!currentUsers?.includes(attendee.name)) {
+            unavailableUsers.push(attendee.name);
           }
         });
 
