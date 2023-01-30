@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { SubmitHandler } from "react-hook-form";
+import { createGzip } from "zlib";
 import { z } from "zod";
 import {
   CalendarContainer,
@@ -23,14 +24,14 @@ import { notice } from "./schedule/[slug]";
 
 type CreateScheduleInputs = {
   scheduleName: string;
-  description: string;
+  description?: string;
   dateRange: {
     startDate: Date | null;
     endDate: Date | null;
+    isOneDay: boolean;
   };
   startTime: string;
   endTime: string;
-  timeZone: string;
   deadline?: Date | null;
   numberOfEvents: number;
   lengthOfEvents: string;
@@ -44,12 +45,23 @@ const CreateScheduleSchema = z.object({
       startDate: z
         .date({ invalid_type_error: "Start date must be set!" })
         .min(new Date(), { message: "Start date must not be in the past!" }),
-      endDate: z
-        .date({ invalid_type_error: "End date must be set!" })
-        .min(new Date(), { message: "End date must not be in the past!" }),
+      endDate: z.date().nullish(),
+      isOneDay: z.boolean(),
     })
-    .refine((data) => data.endDate > data.startDate, {
-      message: "End date must be after start date!",
+    .superRefine((data, ctx) => {
+      if (data.endDate && data.endDate < data.startDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.invalid_date,
+          message: "End date must be later than the start date!",
+        });
+      }
+
+      if (data.endDate === null && !data.isOneDay) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.invalid_date,
+          message: "Check the 'One Day Schedule?' option or set an end date!",
+        });
+      }
     }),
   startTime: z.string({ required_error: "Start time is required!" }),
   endTime: z.string({ required_error: "End time must be set!" }),
@@ -63,14 +75,16 @@ const CreateScheduleSchema = z.object({
   lengthOfEvents: z.string(),
 });
 
+// TODO: add a 30 day schedule limit
 function Create() {
   const { status, data: sessionData } = useSession();
-  const createSchedule = trpc.schedule.createSchedule.useMutation();
+  const { mutateAsync } = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
-  const [defaultValues, setDefaultValues] = useState<Record<string, any>>({
-    dateRange: { startDate: new Date(), endDate: null },
+  const [defaultValues, setDefaultValues] = useState<CreateScheduleInputs>({
+    scheduleName: "",
+    dateRange: { startDate: new Date(), endDate: null, isOneDay: false },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
     numberOfEvents: 1,
@@ -93,40 +107,37 @@ function Create() {
     };
     const userId = sessionData?.user?.id as string;
 
-    const res = await createSchedule.mutateAsync({
-      name,
-      description,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
-      deadline,
-      numberOfEvents,
-      lengthOfEvents,
-      userId,
-    });
+    // const res = await mutateAsync({
+    //   name,
+    //   description,
+    //   startDate,
+    //   endDate,
+    //   startTime,
+    //   endTime,
+    //   deadline,
+    //   numberOfEvents,
+    //   lengthOfEvents,
+    //   userId,
+    // });
 
-    if (res) {
-      const { name, id } = res.schedule;
-      const slug = createSlug(name, id);
-      setNoticeMessage("Your schedule has successfully been created!");
-      router.push(`schedule/${slug}`);
-    }
+    // if (res) {
+    //   const { name, id } = res.schedule;
+    //   const slug = createSlug(name, id);
+    //   setNoticeMessage("Your schedule has successfully been created!");
+    //   router.push(`schedule/${slug}`);
+    // }
   };
 
   const getEventLengthOptions = () => {
     const mins = [...MINUTES];
-    console.log(mins);
 
     const options = mins.map((min) => {
-      console.log(min / 60);
       if (min >= 60) {
         return `${min / 60} ${min / 60 === 1 ? "hour" : "hours"}`;
       } else {
         return `${min} mins`;
       }
     });
-    console.log(options);
     return options;
   };
 
@@ -158,16 +169,21 @@ function Create() {
         {/* TODO: add tinymce integration */}
         <Form.Input name="description" displayName="Description" type="text" />
 
-        <div className="relative mt-2 mb-4 rounded-lg bg-neutral-700 p-4 pb-3">
-          {/* uncomment for disabled if we need this functionality */}
-          {/* <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" /> */}
+        <div className="relative rounded-lg bg-neutral-700 p-4">
+          {defaultValues.dateRange.isOneDay && (
+            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" />
+          )}
           <DatePicker
             id="calendarDatePicker"
             selected={defaultValues.dateRange.startDate}
             onChange={(dates) =>
               setDefaultValues({
                 ...defaultValues,
-                dateRange: { startDate: dates[0], endDate: dates[1] },
+                dateRange: {
+                  startDate: dates[0],
+                  endDate: dates[1],
+                  isOneDay: false,
+                },
               })
             }
             startDate={defaultValues.dateRange.startDate}
@@ -176,8 +192,25 @@ function Create() {
             inline
             dayClassName={(_) => "p-1 m-1 rounded-lg"}
             renderCustomHeader={CalendarHeader}
+            disabled={defaultValues.dateRange.isOneDay}
+            disabledKeyboardNavigation={defaultValues.dateRange.isOneDay}
+            ariaInvalid={defaultValues.dateRange.isOneDay ? "true" : "false"}
           />
         </div>
+        <Form.Checkbox
+          name="dateRange.isOneDay"
+          label="One Day Schedule?"
+          onClick={() =>
+            setDefaultValues({
+              ...defaultValues,
+              dateRange: {
+                ...defaultValues.dateRange,
+                endDate: defaultValues.dateRange.startDate,
+                isOneDay: !defaultValues.dateRange.isOneDay,
+              },
+            })
+          }
+        />
 
         <div className="flex justify-between gap-4">
           <Form.Select
