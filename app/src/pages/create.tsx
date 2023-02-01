@@ -22,6 +22,8 @@ import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 import { notice } from "./schedule/[slug]";
 
+const MAX_SCHEDULE_RANGE = 30;
+
 type CreateScheduleInputs = {
   scheduleName: string;
   description?: string;
@@ -54,12 +56,35 @@ const CreateScheduleSchema = z.object({
           code: z.ZodIssueCode.invalid_date,
           message: "End date must be later than the start date!",
         });
+
+        return;
       }
 
-      if (data.endDate === null && !data.isOneDay) {
+      if (
+        (data.endDate === null ||
+          data.endDate?.toDateString() === data.startDate.toDateString()) &&
+        !data.isOneDay
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.invalid_date,
           message: "Check the 'One Day Schedule?' option or set an end date!",
+          path: ["isOneDay"],
+        });
+        return;
+      }
+
+      const timeDifferenceMs = Math.abs(
+        data.endDate?.getTime() ?? 0 - data.startDate.getTime()
+      );
+      const dayDifference = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
+      if (dayDifference > MAX_SCHEDULE_RANGE && !data.isOneDay) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_big,
+          message: "The max range for a schedule is 30 days!",
+          type: "date",
+          inclusive: true,
+          maximum: dayDifference,
+          path: ["endDate"],
         });
       }
     }),
@@ -75,7 +100,6 @@ const CreateScheduleSchema = z.object({
   lengthOfEvents: z.string(),
 });
 
-// TODO: add a 30 day schedule limit
 function Create() {
   const { status, data: sessionData } = useSession();
   const { mutateAsync } = trpc.schedule.createSchedule.useMutation();
@@ -101,31 +125,56 @@ function Create() {
       numberOfEvents,
       lengthOfEvents,
     } = data;
-    const { startDate, endDate } = data.dateRange as {
+    let { startDate, endDate, isOneDay } = data.dateRange as {
       startDate: Date;
       endDate: Date;
+      isOneDay: boolean;
     };
-    const userId = sessionData?.user?.id as string;
 
-    // const res = await mutateAsync({
-    //   name,
-    //   description,
-    //   startDate,
-    //   endDate,
-    //   startTime,
-    //   endTime,
-    //   deadline,
-    //   numberOfEvents,
-    //   lengthOfEvents,
-    //   userId,
-    // });
+    if (isOneDay) {
+      endDate = startDate;
+    }
 
-    // if (res) {
-    //   const { name, id } = res.schedule;
-    //   const slug = createSlug(name, id);
-    //   setNoticeMessage("Your schedule has successfully been created!");
-    //   router.push(`schedule/${slug}`);
-    // }
+    const res = await mutateAsync({
+      name,
+      description,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      deadline,
+      numberOfEvents,
+      lengthOfEvents,
+    });
+
+    if (res) {
+      const { name, id } = res.schedule;
+      const slug = createSlug(name, id);
+      setNoticeMessage("Your schedule has successfully been created!");
+      router.push(`schedule/${slug}`);
+    }
+  };
+
+  const handleOneDayChange = () => {
+    const { startDate, endDate, isOneDay } = defaultValues.dateRange;
+    if (isOneDay) {
+      setDefaultValues({
+        ...defaultValues,
+        dateRange: {
+          ...defaultValues.dateRange,
+          isOneDay: false,
+        },
+      });
+    } else {
+      setDefaultValues({
+        ...defaultValues,
+        dateRange: {
+          startDate: startDate,
+          endDate: null,
+          isOneDay: true,
+        },
+      });
+    }
   };
 
   const getEventLengthOptions = () => {
@@ -197,19 +246,20 @@ function Create() {
             ariaInvalid={defaultValues.dateRange.isOneDay ? "true" : "false"}
           />
         </div>
+        <Form.Input
+          type="hidden"
+          name="dateRange.endDate"
+          displayName="End Date"
+        />
+        {!defaultValues.dateRange.isOneDay &&
+          defaultValues.dateRange.endDate && (
+            <span>{`Current Schedule Range: ${defaultValues.dateRange.startDate?.toLocaleDateString()} — ${defaultValues.dateRange.endDate?.toLocaleDateString()}`}</span>
+          )}
         <Form.Checkbox
           name="dateRange.isOneDay"
           label="One Day Schedule?"
-          onClick={() =>
-            setDefaultValues({
-              ...defaultValues,
-              dateRange: {
-                ...defaultValues.dateRange,
-                endDate: defaultValues.dateRange.startDate,
-                isOneDay: !defaultValues.dateRange.isOneDay,
-              },
-            })
-          }
+          className="-mt-2 mb-2"
+          onClick={() => handleOneDayChange()}
         />
 
         <div className="flex justify-between gap-4">

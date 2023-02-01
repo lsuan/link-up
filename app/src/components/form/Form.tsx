@@ -51,6 +51,7 @@ export function Form<
   );
 }
 
+/** Use this component for text-based input fields. */
 Form.Input = function Input({
   name,
   displayName,
@@ -66,7 +67,7 @@ Form.Input = function Input({
     register,
     formState: { isSubmitting, errors },
   } = useFormContext();
-
+  console.log(errors);
   const error = parseDeepErrors(errors, name);
 
   return (
@@ -187,20 +188,21 @@ Form.Checkbox = function Input({
   name,
   label,
   onClick,
+  className,
 }: {
   name: string;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
+  className?: string;
 }) {
   const {
     register,
     formState: { isSubmitting, errors },
   } = useFormContext();
   const error = parseDeepErrors(errors, name);
-  console.log(error);
-  console.log(name);
+
   return (
-    <div className="flex flex-col gap-1">
+    <div className={`flex flex-col gap-1${className ? ` ${className}` : ""}`}>
       <fieldset className="flex gap-2">
         <input type="checkbox" {...register(name)} onClick={onClick} />
         <label htmlFor={name}>{label}</label>
