@@ -68,7 +68,6 @@ const CreateScheduleSchema = z.object({
           code: z.ZodIssueCode.invalid_date,
           message: "End date must be later than the start date!",
         });
-
         return;
       }
 
@@ -86,7 +85,7 @@ const CreateScheduleSchema = z.object({
       }
 
       const timeDifferenceMs = Math.abs(
-        data.endDate?.getTime() ?? 0 - data.startDate.getTime()
+        (data.endDate?.getTime() ?? 0) - data.startDate.getTime()
       );
       const dayDifference = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
       if (dayDifference > MAX_SCHEDULE_RANGE && !data.isOneDay) {
