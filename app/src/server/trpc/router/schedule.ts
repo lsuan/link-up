@@ -17,13 +17,14 @@ export const scheduleRouter = router({
         deadline: z.date().nullish().optional(),
         numberOfEvents: z.number(),
         lengthOfEvents: z.string(),
-        userId: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user.id;
       const newSchedule = await ctx.prisma.schedule.create({
         data: {
           ...input,
+          userId,
         },
       });
       return { schedule: newSchedule };

@@ -12,7 +12,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
     let dates = [];
     for (
       let date = new Date(startDate), colIndex = 0;
-      date < endDate;
+      date <= endDate;
       date.setDate(date.getDate() + 1), colIndex++
     ) {
       dates.push(new Date(date));

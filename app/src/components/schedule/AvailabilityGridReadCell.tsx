@@ -73,9 +73,7 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
   );
 
   const onMouseOver = (e: React.MouseEvent, date: Date, hour: string) => {
-    console.log(e);
     const cell = e.target as HTMLDivElement;
-    console.log("cell offset ", cell.offsetLeft);
 
     const availabilityStatus: AvailabilityStatus = {
       timeKey: "",
@@ -150,6 +148,7 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
 function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
   const popupRef = useRef<HTMLDivElement>(null);
   const { timeKey, available, unavailable, clientX } = availabilityStatus;
+  console.log(unavailable);
   const dateString = timeKey.split(":")[0] as string;
   const [startTime, endTime] = parseRange(timeKey) as [string, string];
   const [start, end] = getFormattedHours(

@@ -21,12 +21,7 @@ const AvailabilityGridRead = memo(function AvailabilityGridRead({
     const users: string[] = [];
     attendees.forEach((attendee) => {
       const name = attendee.name;
-
-      typeof name === "string"
-        ? users.push(name)
-        : users.push(
-            `${name.firstName}${name.lastName ? ` ${name.lastName}` : ""}`
-          );
+      users.push(name);
     });
     setAllUsers([...users]);
   }, [attendees]);

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { SubmitHandler } from "react-hook-form";
+import { createGzip } from "zlib";
 import { z } from "zod";
 import {
   CalendarContainer,
@@ -21,19 +22,33 @@ import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 import { notice } from "./schedule/[slug]";
 
+const MAX_SCHEDULE_RANGE = 30;
+
 type CreateScheduleInputs = {
   scheduleName: string;
-  description: string;
+  description?: string;
   dateRange: {
     startDate: Date | null;
     endDate: Date | null;
+    isOneDay: boolean;
   };
   startTime: string;
   endTime: string;
-  timeZone: string;
   deadline?: Date | null;
   numberOfEvents: number;
   lengthOfEvents: string;
+};
+
+/** These are the only inputs that should be set by date pickers or set by default. */
+type ControlledScheduleInputs = {
+  dateRange: {
+    startDate: Date | null;
+    endDate: Date | null;
+    isOneDay: boolean;
+  };
+  startTime: string;
+  endTime: string;
+  deadline?: Date | null;
 };
 
 const CreateScheduleSchema = z.object({
@@ -44,12 +59,45 @@ const CreateScheduleSchema = z.object({
       startDate: z
         .date({ invalid_type_error: "Start date must be set!" })
         .min(new Date(), { message: "Start date must not be in the past!" }),
-      endDate: z
-        .date({ invalid_type_error: "End date must be set!" })
-        .min(new Date(), { message: "End date must not be in the past!" }),
+      endDate: z.date().nullish(),
+      isOneDay: z.boolean(),
     })
-    .refine((data) => data.endDate > data.startDate, {
-      message: "End date must be after start date!",
+    .superRefine((data, ctx) => {
+      if (data.endDate && data.endDate < data.startDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.invalid_date,
+          message: "End date must be later than the start date!",
+        });
+        return;
+      }
+
+      if (
+        (data.endDate === null ||
+          data.endDate?.toDateString() === data.startDate.toDateString()) &&
+        !data.isOneDay
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.invalid_date,
+          message: "Check the 'One Day Schedule?' option or set an end date!",
+          path: ["isOneDay"],
+        });
+        return;
+      }
+
+      const timeDifferenceMs = Math.abs(
+        (data.endDate?.getTime() ?? 0) - data.startDate.getTime()
+      );
+      const dayDifference = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
+      if (dayDifference > MAX_SCHEDULE_RANGE && !data.isOneDay) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_big,
+          message: "The max range for a schedule is 30 days!",
+          type: "date",
+          inclusive: true,
+          maximum: dayDifference,
+          path: ["endDate"],
+        });
+      }
     }),
   startTime: z.string({ required_error: "Start time is required!" }),
   endTime: z.string({ required_error: "End time must be set!" }),
@@ -65,16 +113,14 @@ const CreateScheduleSchema = z.object({
 
 function Create() {
   const { status, data: sessionData } = useSession();
-  const createSchedule = trpc.schedule.createSchedule.useMutation();
+  const { mutateAsync } = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
-  const [defaultValues, setDefaultValues] = useState<Record<string, any>>({
-    dateRange: { startDate: new Date(), endDate: null },
+  const [defaultValues, setDefaultValues] = useState<ControlledScheduleInputs>({
+    dateRange: { startDate: new Date(), endDate: null, isOneDay: false },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
-    numberOfEvents: 1,
-    lengthOfEvents: "1 hour",
   });
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (data) => {
@@ -87,13 +133,17 @@ function Create() {
       numberOfEvents,
       lengthOfEvents,
     } = data;
-    const { startDate, endDate } = data.dateRange as {
+    let { startDate, endDate, isOneDay } = data.dateRange as {
       startDate: Date;
       endDate: Date;
+      isOneDay: boolean;
     };
-    const userId = sessionData?.user?.id as string;
 
-    const res = await createSchedule.mutateAsync({
+    if (isOneDay) {
+      endDate = startDate;
+    }
+
+    const res = await mutateAsync({
       name,
       description,
       startDate,
@@ -103,7 +153,6 @@ function Create() {
       deadline,
       numberOfEvents,
       lengthOfEvents,
-      userId,
     });
 
     if (res) {
@@ -114,19 +163,39 @@ function Create() {
     }
   };
 
+  const handleOneDayChange = () => {
+    console.log(defaultValues);
+    const { startDate, endDate, isOneDay } = defaultValues.dateRange;
+    if (isOneDay) {
+      setDefaultValues({
+        ...defaultValues,
+        dateRange: {
+          ...defaultValues.dateRange,
+          isOneDay: false,
+        },
+      });
+    } else {
+      setDefaultValues({
+        ...defaultValues,
+        dateRange: {
+          startDate: startDate,
+          endDate: null,
+          isOneDay: true,
+        },
+      });
+    }
+  };
+
   const getEventLengthOptions = () => {
     const mins = [...MINUTES];
-    console.log(mins);
 
     const options = mins.map((min) => {
-      console.log(min / 60);
       if (min >= 60) {
         return `${min / 60} ${min / 60 === 1 ? "hour" : "hours"}`;
       } else {
         return `${min} mins`;
       }
     });
-    console.log(options);
     return options;
   };
 
@@ -158,16 +227,21 @@ function Create() {
         {/* TODO: add tinymce integration */}
         <Form.Input name="description" displayName="Description" type="text" />
 
-        <div className="relative mt-2 mb-4 rounded-lg bg-neutral-700 p-4 pb-3">
-          {/* uncomment for disabled if we need this functionality */}
-          {/* <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" /> */}
+        <div className="relative rounded-lg bg-neutral-700 p-4">
+          {defaultValues.dateRange.isOneDay && (
+            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" />
+          )}
           <DatePicker
             id="calendarDatePicker"
             selected={defaultValues.dateRange.startDate}
             onChange={(dates) =>
               setDefaultValues({
                 ...defaultValues,
-                dateRange: { startDate: dates[0], endDate: dates[1] },
+                dateRange: {
+                  startDate: dates[0],
+                  endDate: dates[1],
+                  isOneDay: false,
+                },
               })
             }
             startDate={defaultValues.dateRange.startDate}
@@ -176,8 +250,26 @@ function Create() {
             inline
             dayClassName={(_) => "p-1 m-1 rounded-lg"}
             renderCustomHeader={CalendarHeader}
+            disabled={defaultValues.dateRange.isOneDay}
+            disabledKeyboardNavigation={defaultValues.dateRange.isOneDay}
+            ariaInvalid={defaultValues.dateRange.isOneDay ? "true" : "false"}
           />
         </div>
+        <Form.Input
+          type="hidden"
+          name="dateRange.endDate"
+          displayName="End Date"
+        />
+        {!defaultValues.dateRange.isOneDay &&
+          defaultValues.dateRange.endDate && (
+            <span>{`Current Schedule Range: ${defaultValues.dateRange.startDate?.toLocaleDateString()} — ${defaultValues.dateRange.endDate?.toLocaleDateString()}`}</span>
+          )}
+        <Form.Checkbox
+          name="dateRange.isOneDay"
+          label="One Day Schedule?"
+          className="-mt-2 mb-2"
+          onClick={() => handleOneDayChange()}
+        />
 
         <div className="flex justify-between gap-4">
           <Form.Select

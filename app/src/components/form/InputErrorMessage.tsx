@@ -10,7 +10,7 @@ function InputErrorMessage({
 }) {
   return (
     <span role="alert" className={`text-sm text-red-500 ${className}`}>
-      <FontAwesomeIcon className="mr-1" icon={faCircleExclamation} />
+      <FontAwesomeIcon className="mr-2" icon={faCircleExclamation} />
       {error}
     </span>
   );
