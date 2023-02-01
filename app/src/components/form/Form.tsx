@@ -67,7 +67,6 @@ Form.Input = function Input({
     register,
     formState: { isSubmitting, errors },
   } = useFormContext();
-  console.log(errors);
   const error = parseDeepErrors(errors, name);
 
   return (

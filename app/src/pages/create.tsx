@@ -39,6 +39,18 @@ type CreateScheduleInputs = {
   lengthOfEvents: string;
 };
 
+/** These are the only inputs that should be set by date pickers or set by default. */
+type ControlledScheduleInputs = {
+  dateRange: {
+    startDate: Date | null;
+    endDate: Date | null;
+    isOneDay: boolean;
+  };
+  startTime: string;
+  endTime: string;
+  deadline?: Date | null;
+};
+
 const CreateScheduleSchema = z.object({
   scheduleName: z.string().min(1, "Schedule name is required!"),
   description: z.string().optional(),
@@ -106,13 +118,10 @@ function Create() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
-  const [defaultValues, setDefaultValues] = useState<CreateScheduleInputs>({
-    scheduleName: "",
+  const [defaultValues, setDefaultValues] = useState<ControlledScheduleInputs>({
     dateRange: { startDate: new Date(), endDate: null, isOneDay: false },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
-    numberOfEvents: 1,
-    lengthOfEvents: "1 hour",
   });
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (data) => {
@@ -156,6 +165,7 @@ function Create() {
   };
 
   const handleOneDayChange = () => {
+    console.log(defaultValues);
     const { startDate, endDate, isOneDay } = defaultValues.dateRange;
     if (isOneDay) {
       setDefaultValues({
