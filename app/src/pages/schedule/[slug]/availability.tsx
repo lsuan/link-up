@@ -10,11 +10,10 @@ import { trpc } from "../../../utils/trpc";
 function Availability() {
   const router = useRouter();
   const slug = router.asPath.split("/")[2];
-  console.log(router.asPath.split("/"));
   const { name, scheduleIdPart } = slug
     ? parseSlug(slug)
     : { name: "", scheduleIdPart: "" };
-  const schedule = trpc.schedule.getScheduleFromSlugId.useQuery(
+  const { data: schedule } = trpc.schedule.getScheduleFromSlugId.useQuery(
     {
       name: name,
       id: scheduleIdPart,
@@ -33,14 +32,9 @@ function Availability() {
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
 
         <h1 className="mb-12 text-3xl font-semibold">Add/Edit Availability</h1>
-        {schedule?.data && (
-          <AvailabilityInput
-            scheduleQuery={schedule}
-            schedule={schedule.data}
-          />
-        )}
+        {schedule && <AvailabilityInput schedule={schedule} />}
         <h2 className="mt-8 text-xl font-semibold">Responses</h2>
-        {schedule?.data && <AvailabilityResponses schedule={schedule.data} />}
+        {schedule && <AvailabilityResponses schedule={schedule} />}
       </div>
     </section>
   );

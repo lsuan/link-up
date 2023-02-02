@@ -5,7 +5,6 @@ import Link from "next/link";
 import AvailabilityResponses from "./AvailabilityResponses";
 
 export type AvailabilityProps = {
-  scheduleQuery?: any;
   schedule: Schedule;
   slug?: string;
   mode?: "read" | "write";

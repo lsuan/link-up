@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
+    "@tanstack/react-query-devtools": "^4.24.4",
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
     "@types/react-datepicker": "^4.8.0",

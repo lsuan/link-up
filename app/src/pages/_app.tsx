@@ -1,11 +1,12 @@
-import { type AppType } from "next/app";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { type AppType } from "next/app";
 
 import { trpc } from "../utils/trpc";
 
-import "../styles/globals.css";
 import Layout from "../layouts/Layout";
+import "../styles/globals.css";
 
 import "@fortawesome/fontawesome-svg-core/styles.css";
 // Prevent fontawesome from adding its CSS since we did it manually above:
@@ -21,6 +22,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Layout>
         <Component {...pageProps} />
       </Layout>
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </SessionProvider>
   );
 };
