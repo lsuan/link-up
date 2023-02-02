@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { notice } from "../../pages/schedule/[slug]";
 import { disabled, selected } from "./AvailabilityInput";
 
@@ -10,7 +10,7 @@ type StartCoordinates = {
   col: number;
 };
 
-function AvailabilityGridWrite({
+const AvailabilityGridWrite = memo(function AvailabilityGridWrite({
   dates,
   hours,
 }: {
@@ -178,6 +178,6 @@ function AvailabilityGridWrite({
       })}
     </div>
   );
-}
+});
 
 export default AvailabilityGridWrite;

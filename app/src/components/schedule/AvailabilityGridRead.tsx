@@ -1,6 +1,8 @@
+import { useAtom } from "jotai";
 import { memo, useEffect, useState } from "react";
 import { UserAvailability } from "../../utils/availabilityUtils";
 import AvailabilityGridReadCell from "./AvailabilityGridReadCell";
+import { updated } from "./AvailabilityInput";
 
 const AvailabilityGridRead = memo(function AvailabilityGridRead({
   dates,

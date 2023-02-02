@@ -1,5 +1,7 @@
-import { memo } from "react";
+import { useAtom } from "jotai";
+import { memo, useEffect } from "react";
 import AvailabilityGrid from "./AvailabilityGrid";
+import { updated } from "./AvailabilityInput";
 import AvailabilityKey from "./AvailabilityKey";
 import { AvailabilityProps } from "./AvailabilitySection";
 

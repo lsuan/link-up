@@ -23,7 +23,7 @@ function Schedule() {
   const router = useRouter();
   // this is needed since it is different from the actual user
   // users can still browse this page even if they are not logged in
-  const { data: sessionData } = useSession();
+  const { status, data: sessionData } = useSession();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
   const { data: schedule, isLoading } =
@@ -49,7 +49,7 @@ function Schedule() {
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
-  if (isLoading) {
+  if (isLoading || status === "loading") {
     return <Loading />;
   }
 

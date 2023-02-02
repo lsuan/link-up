@@ -1,12 +1,15 @@
+import { Schedule } from "@prisma/client";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { type } from "os";
 import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
-import { z } from "zod";
+import { string, z } from "zod";
 import { notice } from "../../pages/schedule/[slug]";
 import { UserAvailability } from "../../utils/availabilityUtils";
-import { trpc } from "../../utils/trpc";
+import { RouterInputs, RouterOutputs, trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
@@ -19,12 +22,52 @@ const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
 
 export const disabled = atom<boolean>(true);
 export const selected = atom<string[]>([]);
+export const updated = atom<boolean>(false);
 
-function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
+const updateSchedule = (
+  variables: {
+    id: string;
+    attendee: string;
+  },
+  newData: RouterOutputs["schedule"]["getScheduleFromSlugId"]
+) => {
+  const prevAttendees = newData?.attendees as UserAvailability[];
+  const updatedAvailability = JSON.parse(
+    variables.attendee
+  ) as UserAvailability;
+  const newAttendees = prevAttendees.map((attendee) => {
+    if (attendee.user === updatedAvailability.user) {
+      return updatedAvailability;
+    }
+    return attendee;
+  });
+
+  return { ...newData, attendees: newAttendees };
+};
+
+function AvailabilityInput({ schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
   const { startDate, endDate } = schedule;
   const attendees = schedule.attendees as UserAvailability[];
-  const setScheduleAvailability = trpc.schedule.setAvailability.useMutation();
+  const queryClient = useQueryClient();
+  const setScheduleAvailability = trpc.schedule.setAvailability.useMutation({
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(
+        [
+          ["schedule", "getScheduleFromSlugId"],
+          {
+            name: "30 days 24 hours long",
+            id: "kmavxw9n",
+          } as RouterInputs["schedule"]["getScheduleFromSlugId"],
+        ],
+        (prevData) => {
+          const newData =
+            prevData as RouterOutputs["schedule"]["getScheduleFromSlugId"];
+          return updateSchedule(variables, newData);
+        }
+      );
+    },
+  });
   const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [selectedCells, setSelectedCells] = useAtom(selected);
@@ -32,6 +75,7 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
   // might not need this copy, need to double check expected functionality
   // const [selectedCellsCopy, setSelectedCellsCopy] = useState<string[]>([]);
   const [isDisabled, setIsDisabled] = useAtom(disabled);
+  const [isUpdated, setIsUpated] = useAtom(updated);
 
   const userFullName = trpc.user.getUserFullName.useQuery(
     sessionData?.user?.id as string,
@@ -87,15 +131,19 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
       availability: Object.fromEntries(times),
     };
 
-    const res = await setScheduleAvailability.mutateAsync({
-      id: schedule.id,
-      attendee: JSON.stringify(attendee),
-    });
-    if (res) {
-      setNoticeMessage("Availability has been saved!");
-      setIsDisabled(true);
-      scheduleQuery.refetch();
-    }
+    const res = await setScheduleAvailability.mutateAsync(
+      {
+        id: schedule.id,
+        attendee: JSON.stringify(attendee),
+      },
+      {
+        onSuccess: () => {
+          setIsUpated(true);
+          setNoticeMessage("Availability has been saved!");
+          setIsDisabled(true);
+        },
+      }
+    );
   };
 
   const handleGuestUserSubmit: SubmitHandler<AnonAvailabilityInputs> = (
@@ -130,11 +178,7 @@ function AvailabilityInput({ scheduleQuery, schedule }: AvailabilityProps) {
       )}
       {(guestUser || sessionData?.user) && (
         <>
-          <AvailabilityGrid
-            schedule={schedule}
-            scheduleQuery={scheduleQuery}
-            mode="write"
-          />
+          <AvailabilityGrid schedule={schedule} mode="write" />
           {selectedCells.length > 0 && (
             <AvailabilityGridWriteApplyCheckbox
               startDate={startDate}
