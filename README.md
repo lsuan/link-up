@@ -25,3 +25,6 @@ A scheduling app that allows users to create events and share them to users to f
   - <a href="https://docs.google.com/document/d/1gtinLUJ8_xG6R5DKCDB5MzPpNjzMcxEEopntYCEavew/edit?usp=sharing">Google Doc</a>
 - 01/25/23: More Updates to Design + Functionality
   - <a href="https://docs.google.com/document/d/1JUkXtMBfMjUDQurvoLF0DoeiyAtTbP-IXIV0IZ1YKOo/edit?usp=sharing">Google Doc</a>
+- 02/02/23: Iterated Mid-Fidelity Wireframe using Testing Results + Updated User Testing Plan
+  - <a href="https://docs.google.com/document/d/1BLALLjez4W5DhexJ9zQqJAoSXBpvTGazOdkNO-5UNmY/edit?usp=sharing">User Testing Guide</a>
+  - <img src="/app/readme-assets/mid-fi%20wireframe%20v3.png" alt="Mid-Fidelity Wireframe" width="80%" height="80%"></img>
