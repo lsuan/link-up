@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
+import { EMAIL_REGEX, PASSWORD_REGEX } from "../../utils/formUtils";
 import { trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
 import ServerSideErrorMessage from "../form/ServerSideErrorMessage";
@@ -25,7 +26,6 @@ type SignUpResponse =
     }
   | undefined;
 
-// TODO: add password regex (/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%#?&]{8,}$/)
 const SignUpSchema = z.object({
   firstName: z.string().min(1, "First name is required!"),
   lastName: z.string(),
@@ -33,15 +33,22 @@ const SignUpSchema = z.object({
     .string()
     .min(1, "Email is required!")
     .email("Invalid email!")
-    .refine((email) => email.match(/[\w]+@[a-z]+[\.][a-z]+/)),
+    .refine((email) => email.match(EMAIL_REGEX)),
   passwords: z
     .object({
-      password: z.string().min(1, "Password is required!"),
+      password: z
+        .string()
+        .min(1, "Password is required!")
+        .refine(
+          (data) => data.match(PASSWORD_REGEX),
+          "Password conditions are not met!"
+        ),
       confirmPassword: z.string().min(1, "Password is required!"),
     })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords don't match!",
-    }),
+    .refine(
+      (data) => data.password === data.confirmPassword,
+      "Passwords don't match!"
+    ),
 });
 
 function SignUpForm({ email }: { email: string }) {
@@ -90,12 +97,7 @@ function SignUpForm({ email }: { email: string }) {
         />
         <Form.Input name="lastName" displayName="Last Name" type="text" />
         <Form.Input name="email" displayName="Email" type="email" />
-        <Form.Input
-          name="passwords.password"
-          displayName="Password"
-          type="password"
-          required={true}
-        />
+        <Form.Password name="passwords.password" required={true} />
         <Form.Input
           name="passwords.confirmPassword"
           displayName="Confirm Password"

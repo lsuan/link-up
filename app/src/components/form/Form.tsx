@@ -1,10 +1,18 @@
-import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faCircleNotch,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { parseDeepErrors } from "../../utils/formUtils";
+import {
+  parseDeepErrors,
+  PasswordCondition,
+  PASSWORD_REGEX_CONDITIONS,
+} from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
 
 type GenericOnSubmit = (
@@ -34,6 +42,7 @@ export function Form<
   });
   const handleSubmit = methods.handleSubmit;
   const reset = methods.reset;
+  const watch = methods.watch;
 
   useEffect(() => {
     reset(defaultValues);
@@ -67,6 +76,7 @@ Form.Input = function Input({
     register,
     formState: { isSubmitting, errors },
   } = useFormContext();
+
   const error = parseDeepErrors(errors, name);
 
   return (
@@ -79,8 +89,9 @@ Form.Input = function Input({
                 className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-white placeholder:text-transparent"
                 placeholder={displayName}
                 type={type}
-                {...register(name)}
+                {...register(name, {})}
                 disabled={isSubmitting}
+                aria-invalid={error ? "true" : "false"}
               />
               <label
                 className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
@@ -103,6 +114,69 @@ Form.Input = function Input({
           )}
         </>
       )}
+    </>
+  );
+};
+
+/** A special password input field that displays the conditions on top of the input. */
+Form.Password = function Input({
+  name,
+  required,
+}: {
+  name: string;
+  required: boolean;
+}) {
+  const {
+    getValues,
+    formState: { errors },
+  } = useFormContext();
+
+  const password = getValues(name);
+  const [conditions, setConditions] = useState<PasswordCondition[]>([
+    ...PASSWORD_REGEX_CONDITIONS,
+  ]);
+
+  const error = parseDeepErrors(errors, name);
+
+  useEffect(() => {
+    const currentConditions = conditions.map((condition) => {
+      if (password?.match(condition.regex)) {
+        return { ...condition, isFulFilled: true };
+      } else {
+        return { ...condition, isFulFilled: false };
+      }
+    });
+    setConditions(currentConditions);
+  }, [password]);
+
+  return (
+    <>
+      <ul className="rounded-lg bg-neutral-700 p-4 text-sm">
+        {conditions.map((condition, index) => {
+          return (
+            <li
+              key={index}
+              className={`flex items-center gap-2${
+                condition.isFulFilled ? " text-green-300" : " text-red-300"
+              }`}
+            >
+              {condition.isFulFilled ? (
+                <FontAwesomeIcon icon={faCheckCircle} />
+              ) : (
+                <FontAwesomeIcon icon={faExclamationCircle} />
+              )}
+              <p>{condition.message}</p>
+            </li>
+          );
+        })}
+      </ul>
+
+      <Form.Input
+        name={name}
+        displayName="Password"
+        type="password"
+        required={required}
+      />
     </>
   );
 };

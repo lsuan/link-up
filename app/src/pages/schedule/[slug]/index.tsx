@@ -138,6 +138,7 @@ function Schedule() {
             isHost && <PublishSection slug={slug} />
           )}
         </div>
+
         <AvailabilitySection schedule={schedule!} slug={slug} />
       </section>
     </>

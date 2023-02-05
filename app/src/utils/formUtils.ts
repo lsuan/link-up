@@ -1,5 +1,37 @@
 import { FieldError, FieldErrorsImpl } from "react-hook-form";
 
+export type PasswordCondition = {
+  regex: RegExp;
+  message: string;
+  isFulFilled: boolean;
+};
+export const EMAIL_REGEX = /[\w]+@[a-z]+[\.][a-z]+/;
+export const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*])[a-zA-Z\d!@#\$%\^&\*]{8,}$/g;
+export const PASSWORD_REGEX_CONDITIONS: PasswordCondition[] = [
+  {
+    regex: /^.{8,}$/g,
+    message: "A minimum length of 8 characters",
+    isFulFilled: false,
+  },
+  {
+    regex: /^.*[a-z].*$/g,
+    message: "At least 1 lowercase letter",
+    isFulFilled: false,
+  },
+  {
+    regex: /^.*[A-Z].*$/g,
+    message: "At least 1 uppercase letter",
+    isFulFilled: false,
+  },
+  { regex: /^.*\d.*$/g, message: "At least 1 number", isFulFilled: false },
+  {
+    regex: /^.*[!@#\$%\^&\*].*$/g,
+    message: "At least 1 special character",
+    isFulFilled: false,
+  },
+];
+
 /** Gets the detailed errors from input fields that are objects. */
 export const parseDeepErrors = (
   errors: Partial<
