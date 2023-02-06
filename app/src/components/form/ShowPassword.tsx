@@ -9,7 +9,6 @@ import {
   UseFormRegisterReturn,
 } from "react-hook-form";
 
-// FIXME: there is a bug in which typing the password doesn't rerender the password conditions
 function ShowPassword({
   name,
   displayName,

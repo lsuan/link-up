@@ -6,7 +6,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import {
+  FormProvider,
+  useForm,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { z } from "zod";
 import {
   parseDeepErrors,
@@ -24,6 +29,7 @@ type GenericOnSubmit = (
   event?: React.BaseSyntheticEvent
 ) => void;
 
+/** Generic form component that abstracts the implementation of React-Hook-Form and allows for custom reusable child components. */
 export function Form<
   DataSchema extends Record<string, any>,
   Schema extends z.Schema<any, any>
@@ -38,6 +44,7 @@ export function Form<
   onSubmit: (data: DataSchema, event?: React.BaseSyntheticEvent) => void;
   children: any;
   defaultValues?: Record<string, any>;
+  watchFields?: string[];
   className?: string;
 }) {
   const methods = useForm({
@@ -132,7 +139,10 @@ Form.Input = function Input({
   );
 };
 
-/** A special password input field that displays the conditions on top of the input. */
+/**
+ * A special password input field that displays the conditions on top of the input.
+ * For "Confirm Password" fields, use the Form.Input component.
+ */
 Form.Password = function Input({
   name,
   required,
@@ -141,15 +151,13 @@ Form.Password = function Input({
   required: boolean;
 }) {
   const {
-    getValues,
     formState: { errors },
   } = useFormContext();
 
-  const password = getValues(name);
+  const password = useWatch({ name });
   const [conditions, setConditions] = useState<PasswordCondition[]>([
     ...PASSWORD_REGEX_CONDITIONS,
   ]);
-
   const error = parseDeepErrors(errors, name);
 
   useEffect(() => {
