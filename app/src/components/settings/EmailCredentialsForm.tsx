@@ -2,6 +2,7 @@ import { User } from "prisma/prisma-client";
 import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
+import { EMAIL_REGEX } from "../../utils/formUtils";
 import { trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
 import ServerSideErrorMessage from "../form/ServerSideErrorMessage";
@@ -24,7 +25,7 @@ const EmailCredentialsSchema = z.object({
     .string()
     .min(1, "Email is required!")
     .email("Invalid email!")
-    .refine((email) => email.match(/[\w]+@[a-z]+[\.][a-z]+/)),
+    .refine((email) => email.match(EMAIL_REGEX)),
   passwords: z
     .object({
       password: z.string().min(1, "Password is required!"),
@@ -88,12 +89,13 @@ function EmailCredentialsForm(user: User) {
 
         <Form.Input name="email" displayName="Email" type="email" required />
 
-        <Form.Input
+        {/* <Form.Input
           name="passwords.password"
           displayName="Password"
           type="password"
           required
-        />
+        /> */}
+        <Form.Password name="passwords.password" required />
         <Form.Input
           name="passwords.confirmPassword"
           displayName="Confirm Password"

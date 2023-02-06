@@ -11,7 +11,7 @@ import ServerSideErrorMessage from "../form/ServerSideErrorMessage";
 
 type SignUpInputs = {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   passwords: {
     password: string;
@@ -97,7 +97,7 @@ function SignUpForm({ email }: { email: string }) {
         />
         <Form.Input name="lastName" displayName="Last Name" type="text" />
         <Form.Input name="email" displayName="Email" type="email" />
-        <Form.Password name="passwords.password" required={true} />
+        <Form.Password name="passwords.password" required />
         <Form.Input
           name="passwords.confirmPassword"
           displayName="Confirm Password"

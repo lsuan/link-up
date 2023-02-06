@@ -5,7 +5,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RefObject, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -14,6 +14,10 @@ import {
   PASSWORD_REGEX_CONDITIONS,
 } from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
+import {
+  default as ShowPassword,
+  default as UseShowPassword,
+} from "./ShowPassword";
 
 type GenericOnSubmit = (
   data: Record<string, any>,
@@ -42,7 +46,6 @@ export function Form<
   });
   const handleSubmit = methods.handleSubmit;
   const reset = methods.reset;
-  const watch = methods.watch;
 
   useEffect(() => {
     reset(defaultValues);
@@ -85,14 +88,25 @@ Form.Input = function Input({
         <div className="flex flex-col gap-1">
           {type !== "hidden" && (
             <fieldset className="relative">
-              <input
-                className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-white placeholder:text-transparent"
-                placeholder={displayName}
-                type={type}
-                {...register(name, {})}
-                disabled={isSubmitting}
-                aria-invalid={error ? "true" : "false"}
-              />
+              {type === "password" ? (
+                <ShowPassword
+                  name={name}
+                  displayName={displayName}
+                  isSubmitting={isSubmitting}
+                  error={error}
+                  register={register}
+                />
+              ) : (
+                <input
+                  className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-white placeholder:text-transparent"
+                  placeholder={displayName}
+                  type={type}
+                  {...register(name)}
+                  disabled={isSubmitting}
+                  aria-invalid={error ? "true" : "false"}
+                />
+              )}
+
               <label
                 className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
               peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0 
