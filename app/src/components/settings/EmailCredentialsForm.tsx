@@ -86,15 +86,7 @@ function EmailCredentialsForm(user: User) {
           required
         />
         <Form.Input name="lastName" displayName="Last Name" type="text" />
-
         <Form.Input name="email" displayName="Email" type="email" required />
-
-        {/* <Form.Input
-          name="passwords.password"
-          displayName="Password"
-          type="password"
-          required
-        /> */}
         <Form.Password name="passwords.password" required />
         <Form.Input
           name="passwords.confirmPassword"
@@ -103,7 +95,7 @@ function EmailCredentialsForm(user: User) {
           required
         />
 
-        {/* add light/dark mode toggle here */}
+        {/* TODO: add light/dark mode toggle here */}
 
         <Form.Button name="Save Changes" type="submit" />
       </Form>

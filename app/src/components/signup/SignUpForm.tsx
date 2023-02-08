@@ -102,7 +102,7 @@ function SignUpForm({ email }: { email: string }) {
           name="passwords.confirmPassword"
           displayName="Confirm Password"
           type="password"
-          required={true}
+          required
         />
         <Form.Button name="Sign Up" type="submit" />
       </Form>

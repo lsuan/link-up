@@ -5,6 +5,7 @@ import GoogleProvider from "next-auth/providers/google";
 import TwitterProvider from "next-auth/providers/twitter";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { comparePassword, hashPassword } from "../../../utils/passwordUtils";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
@@ -47,11 +48,16 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findFirst({
           where: {
             email: email,
-            password: password,
           },
         });
 
-        return user;
+        const isValid =
+          user?.password && (await comparePassword(password, user?.password));
+
+        if (isValid) {
+          return user;
+        }
+        return null;
       },
     }),
     DiscordProvider({
