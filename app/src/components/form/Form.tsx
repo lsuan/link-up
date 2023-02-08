@@ -1,17 +1,35 @@
-import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faCircleNotch,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import {
+  FormProvider,
+  useForm,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { z } from "zod";
-import { parseDeepErrors } from "../../utils/formUtils";
+import {
+  parseDeepErrors,
+  PasswordCondition,
+  PASSWORD_REGEX_CONDITIONS,
+} from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
+import {
+  default as ShowPassword,
+  default as UseShowPassword,
+} from "./ShowPassword";
 
 type GenericOnSubmit = (
   data: Record<string, any>,
   event?: React.BaseSyntheticEvent
 ) => void;
 
+/** Generic form component that abstracts the implementation of React-Hook-Form and allows for custom reusable child components. */
 export function Form<
   DataSchema extends Record<string, any>,
   Schema extends z.Schema<any, any>
@@ -26,6 +44,7 @@ export function Form<
   onSubmit: (data: DataSchema, event?: React.BaseSyntheticEvent) => void;
   children: any;
   defaultValues?: Record<string, any>;
+  watchFields?: string[];
   className?: string;
 }) {
   const methods = useForm({
@@ -67,6 +86,7 @@ Form.Input = function Input({
     register,
     formState: { isSubmitting, errors },
   } = useFormContext();
+
   const error = parseDeepErrors(errors, name);
 
   return (
@@ -75,13 +95,25 @@ Form.Input = function Input({
         <div className="flex flex-col gap-1">
           {type !== "hidden" && (
             <fieldset className="relative">
-              <input
-                className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-white placeholder:text-transparent"
-                placeholder={displayName}
-                type={type}
-                {...register(name)}
-                disabled={isSubmitting}
-              />
+              {type === "password" ? (
+                <ShowPassword
+                  name={name}
+                  displayName={displayName}
+                  isSubmitting={isSubmitting}
+                  error={error}
+                  register={register}
+                />
+              ) : (
+                <input
+                  className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-white placeholder:text-transparent"
+                  placeholder={displayName}
+                  type={type}
+                  {...register(name)}
+                  disabled={isSubmitting}
+                  aria-invalid={error ? "true" : "false"}
+                />
+              )}
+
               <label
                 className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
               peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0 
@@ -103,6 +135,70 @@ Form.Input = function Input({
           )}
         </>
       )}
+    </>
+  );
+};
+
+/**
+ * A special password input field that displays the conditions on top of the input.
+ * For "Confirm Password" fields, use the Form.Input component.
+ */
+Form.Password = function Input({
+  name,
+  required,
+}: {
+  name: string;
+  required: boolean;
+}) {
+  const {
+    formState: { errors },
+  } = useFormContext();
+
+  const password = useWatch({ name });
+  const [conditions, setConditions] = useState<PasswordCondition[]>([
+    ...PASSWORD_REGEX_CONDITIONS,
+  ]);
+  const error = parseDeepErrors(errors, name);
+
+  useEffect(() => {
+    const currentConditions = conditions.map((condition) => {
+      if (password?.match(condition.regex)) {
+        return { ...condition, isFulFilled: true };
+      } else {
+        return { ...condition, isFulFilled: false };
+      }
+    });
+    setConditions(currentConditions);
+  }, [password]);
+
+  return (
+    <>
+      <ul className="rounded-lg bg-neutral-700 p-4 text-sm">
+        {conditions.map((condition, index) => {
+          return (
+            <li
+              key={index}
+              className={`flex items-center gap-2${
+                condition.isFulFilled ? " text-green-300" : " text-red-300"
+              }`}
+            >
+              {condition.isFulFilled ? (
+                <FontAwesomeIcon icon={faCheckCircle} />
+              ) : (
+                <FontAwesomeIcon icon={faExclamationCircle} />
+              )}
+              <p>{condition.message}</p>
+            </li>
+          );
+        })}
+      </ul>
+
+      <Form.Input
+        name={name}
+        displayName="Password"
+        type="password"
+        required={required}
+      />
     </>
   );
 };

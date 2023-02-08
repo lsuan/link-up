@@ -63,7 +63,7 @@ function OAuthForm(user: UserWithAccount) {
         className="flex flex-col gap-4"
         defaultValues={defaultValues}
       >
-        <div className="flex items-center gap-2 rounded-lg bg-indigo-500 p-4">
+        <div className="flex items-center gap-2 rounded-lg bg-indigo-500 p-2">
           <FontAwesomeIcon icon={providers[provider]} />
           <p>{`Your account has been linked with ${provider
             .charAt(0)

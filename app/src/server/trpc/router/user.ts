@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
+import { hashPassword } from "../../../utils/passwordUtils";
 
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
@@ -66,8 +67,9 @@ export const userRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       try {
+        const hashed = await hashPassword(input.password);
         const newUser = await ctx.prisma.user.create({
-          data: { ...input },
+          data: { ...input, password: hashed },
         });
         return { user: newUser };
       } catch (error) {

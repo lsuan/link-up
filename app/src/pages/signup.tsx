@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { useState } from "react";
+import { SubmitHandler } from "react-hook-form";
 import { z } from "zod";
+import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
 import { Form } from "../components/form/Form";
 import SignUpForm from "../components/signup/SignUpForm";
-import { SubmitHandler } from "react-hook-form";
-import AuthDivider from "../components/auth/AuthDivider";
 
 type GetStartedInputs = {
   email: string;

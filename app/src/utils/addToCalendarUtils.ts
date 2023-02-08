@@ -1,6 +1,7 @@
 import { getHourNumber } from "./availabilityUtils";
 
-/** Adds a specific event with its attributes as parameters with the user's access token to Google Calendar.
+/**
+ * Adds a specific event with its attributes as parameters with the user's access token to Google Calendar.
  * Date is in ISO format. Times are in TT:TT XM format.
  */
 export const handleGoogleCalendar = (

@@ -23,6 +23,7 @@
     "@trpc/next": "10.0.0-rc.4",
     "@trpc/react-query": "10.0.0-rc.4",
     "@trpc/server": "10.0.0-rc.4",
+    "bcrypt": "^5.1.0",
     "jotai": "^1.12.0",
     "next": "13.0.2",
     "next-auth": "^4.15.1",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tanstack/react-query-devtools": "^4.24.4",
+    "@types/bcrypt": "^5.0.0",
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
     "@types/react-datepicker": "^4.8.0",
