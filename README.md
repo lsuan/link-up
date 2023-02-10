@@ -29,3 +29,5 @@ A scheduling app that allows users to create events and share them to users to f
   - <a href="https://docs.google.com/document/d/10FhXHF33tG59mbtuE_ITAwijJRK2dtMoxkKo3EaUxtk/edit?usp=sharing">Google Doc</a>
   - <a href="https://docs.google.com/document/d/1BLALLjez4W5DhexJ9zQqJAoSXBpvTGazOdkNO-5UNmY/edit?usp=sharing">User Testing Guide</a>
   - <img src="/app/readme-assets/mid-fi%20wireframe%20v3.png" alt="Mid-Fidelity Wireframe" width="80%" height="80%"></img>
+- 02/08/23: Reviewed User Testing 2 Responses
+  - <a href="https://docs.google.com/document/d/1RKsanTpXXaqowOV5O_GWmMP2F2q-kP6drDJhXuQYGR0/edit?usp=sharing">Google Doc</a>
