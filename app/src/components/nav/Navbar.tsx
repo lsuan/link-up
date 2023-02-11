@@ -12,8 +12,12 @@ function Navbar() {
 
   return (
     <nav className="dark-puple flex justify-between border-b-2 border-b-gray-500 bg-neutral-900 px-8 py-4 text-white">
-      <Link href="/" onClick={() => setIsMenuOpen(false)}>
-        <div className="text-3xl">Link Up!</div>
+      <Link
+        href={status === "authenticated" ? "/dashboard" : "/"}
+        onClick={() => setIsMenuOpen(false)}
+      >
+        {/* TODO: add logo here */}
+        <span className="text-3xl">Link Up!</span>
       </Link>
       <MobileNavbar />
 
