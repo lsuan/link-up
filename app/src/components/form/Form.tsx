@@ -179,7 +179,7 @@ Form.Password = function Input({
             <li
               key={index}
               className={`flex items-center gap-2${
-                condition.isFulFilled ? " text-green-300" : " text-red-300"
+                condition.isFulFilled ? " text-green-300" : " text-white"
               }`}
             >
               {condition.isFulFilled ? (
