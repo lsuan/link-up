@@ -1,10 +1,10 @@
 import { useAtom } from "jotai";
+import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { SubmitHandler } from "react-hook-form";
-import { createGzip } from "zlib";
 import { z } from "zod";
 import {
   CalendarContainer,
@@ -112,7 +112,7 @@ const CreateScheduleSchema = z.object({
 });
 
 function Create() {
-  const { status, data: sessionData } = useSession();
+  const { status } = useSession();
   const { mutateAsync } = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   const [, setNoticeMessage] = useAtom(notice);
