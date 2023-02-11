@@ -18,6 +18,7 @@ import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import Unauthenticated from "../../../components/shared/Unauthenticated";
+import { useSchedule } from "../../../hooks/scheduleHooks";
 import {
   categorizeUsers,
   getBestTimeBlock,
@@ -28,7 +29,6 @@ import {
   TimeBlock,
   UserAvailability,
 } from "../../../utils/availabilityUtils";
-import { parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
 export type InitialEventInfo = {
@@ -47,21 +47,10 @@ export type InitialEventInfo = {
 function Publish() {
   const { status } = useSession();
   const router = useRouter();
-  const { slug } = router.query as { slug: string };
-  const { name, scheduleIdPart } = parseSlug(slug);
-  const { data: schedule, isLoading: isScheduleLoading } =
-    trpc.schedule.getScheduleFromSlugId.useQuery(
-      {
-        name: name,
-        id: scheduleIdPart,
-      },
-      {
-        enabled: status === "authenticated",
-        refetchOnWindowFocus: false,
-        onSuccess: (data) => initializeEvents(data),
-      }
-    );
-
+  const { schedule, isScheduleLoading, slug } = useSchedule(
+    router,
+    initializeEvents
+  );
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
   const [saveWarning, setSaveWarning] = useState<string>("");
@@ -74,24 +63,8 @@ function Publish() {
     }
   }, [events]);
 
-  const setErrorBorder = () => {
-    const eventsWithUnsavedEdits = events.map((event) => {
-      if (event.isEditing) {
-        return {
-          ...event,
-          className: "border border-red-500",
-        };
-      } else {
-        return {
-          ...event,
-          className: "",
-        };
-      }
-    });
-    setEvents([...eventsWithUnsavedEdits]);
-  };
-
-  const initializeEvents = (data: Schedule | null) => {
+  // using function hoisting here for the onSuccess method in the `useSchedule` hook
+  function initializeEvents(data: Schedule | null) {
     if (!data) {
       return;
     }
@@ -138,6 +111,23 @@ function Publish() {
     }
 
     setEvents([...initialEvents]);
+  }
+
+  const setErrorBorder = () => {
+    const eventsWithUnsavedEdits = events.map((event) => {
+      if (event.isEditing) {
+        return {
+          ...event,
+          className: "border border-red-500",
+        };
+      } else {
+        return {
+          ...event,
+          className: "",
+        };
+      }
+    });
+    setEvents([...eventsWithUnsavedEdits]);
   };
 
   const handlePublish = async () => {

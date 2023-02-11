@@ -1,7 +1,9 @@
 import { Schedule } from "@prisma/client";
 import { type SessionContextValue } from "next-auth/react";
+import { type NextRouter } from "next/router";
 import { useState } from "react";
 import { UserAvailability } from "../utils/availabilityUtils";
+import { parseSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
 type SessionStatus = Pick<SessionContextValue, "status">["status"];
@@ -35,4 +37,26 @@ export const useUserAvailability = (
     }
   );
   return { title, isLoading };
+};
+
+export const useSchedule = (
+  router: NextRouter,
+  onSuccess?: (data: Schedule | null) => void
+) => {
+  const { slug } = router.query as { slug: string };
+  const { name, scheduleIdPart } = parseSlug(slug);
+  const { data: schedule, isLoading: isScheduleLoading } =
+    trpc.schedule.getScheduleFromSlugId.useQuery(
+      {
+        name: name,
+        id: scheduleIdPart,
+      },
+      {
+        enabled: router.isReady,
+        refetchOnWindowFocus: false,
+        onSuccess: onSuccess ? (data) => onSuccess(data) : undefined,
+      }
+    );
+
+  return { schedule, isScheduleLoading, slug };
 };

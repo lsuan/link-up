@@ -13,29 +13,18 @@ import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { useUserAvailability } from "../../../hooks/scheduleHooks";
-import { getHost, parseSlug } from "../../../utils/scheduleUtils";
-import { trpc } from "../../../utils/trpc";
+import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import { getHost } from "../../../utils/scheduleUtils";
 
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
 function Schedule() {
   const router = useRouter();
+  const { status, data: sessionData } = useSession();
   // this is needed since the host is different from the actual user
   // and users can still browse this page even if they are not logged in
-  const { status, data: sessionData } = useSession();
-  const { slug } = router.query as { slug: string };
-  const { name, scheduleIdPart } = parseSlug(slug);
-  const { data: schedule, isLoading } =
-    trpc.schedule.getScheduleFromSlugId.useQuery(
-      {
-        name: name,
-        id: scheduleIdPart,
-      },
-      { enabled: router.isReady, refetchOnWindowFocus: false }
-    );
-
+  const { schedule, isScheduleLoading, slug } = useSchedule(router);
   const host = schedule?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule?.events;
@@ -55,7 +44,7 @@ function Schedule() {
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
-  if (status === "loading" || isLoading || isUserAvailabilityLoading) {
+  if (status === "loading" || isScheduleLoading || isUserAvailabilityLoading) {
     return <Loading />;
   }
 
