@@ -138,31 +138,23 @@ export const scheduleRouter = router({
     }),
 
   /**
-   * Gets the availability for only user.
-   * Used for filling in the response table if they wish to edit their times.
-   * */
+   * Gets the availability of the current logged in user.
+   */
   getUserAvailability: publicProcedure
-    .input(z.object({ id: z.string(), user: z.string() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
+      const userId = ctx.session?.user?.id;
       const schedule = await ctx.prisma.schedule.findFirst({
         where: {
           id: input.id,
-          attendees: { path: "$[*].user", array_contains: input.user },
+          attendees: { path: "$[*].user", array_contains: userId },
         },
       });
 
-      const user = await ctx.prisma.user.findFirst({
-        where: {
-          id: input.user,
-        },
-      });
-      const userFullName = user
-        ? { firstName: user.firstName, lastName: user.lastName }
-        : input.user;
-      const convertedAvailability =
-        (schedule?.attendees as UserAvailability[]) ?? [];
-      return convertedAvailability.filter(
-        (userAvailability) => userAvailability.user === input.user
+      const attendees = schedule?.attendees as UserAvailability[];
+      const userAvailability = attendees.filter(
+        (attendee) => attendee.user === userId
       );
+      return userAvailability;
     }),
 });

@@ -13,6 +13,7 @@ import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
+import { useUserAvailability } from "../../../hooks/scheduleHooks";
 import { getHost, parseSlug } from "../../../utils/scheduleUtils";
 import { trpc } from "../../../utils/trpc";
 
@@ -21,8 +22,8 @@ export const shareModalShown = atom(false);
 
 function Schedule() {
   const router = useRouter();
-  // this is needed since it is different from the actual user
-  // users can still browse this page even if they are not logged in
+  // this is needed since the host is different from the actual user
+  // and users can still browse this page even if they are not logged in
   const { status, data: sessionData } = useSession();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
@@ -43,13 +44,18 @@ function Schedule() {
     boolean[]
   >([]);
 
+  const {
+    title: availabilityButtonTitle,
+    isLoading: isUserAvailabilityLoading,
+  } = useUserAvailability(status, schedule);
+
   useEffect(() => {
     const modalsShown: boolean[] = [];
-    events?.forEach((event) => modalsShown.push(false));
+    events?.forEach((_event) => modalsShown.push(false));
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
-  if (isLoading || status === "loading") {
+  if (status === "loading" || isLoading || isUserAvailabilityLoading) {
     return <Loading />;
   }
 
@@ -139,7 +145,11 @@ function Schedule() {
           )}
         </div>
 
-        <AvailabilitySection schedule={schedule!} slug={slug} />
+        <AvailabilitySection
+          schedule={schedule!}
+          slug={slug}
+          buttonTitle={availabilityButtonTitle}
+        />
       </section>
     </>
   );

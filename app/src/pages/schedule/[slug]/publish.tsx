@@ -1,4 +1,8 @@
-import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleNotch,
+  faListCheck,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Schedule } from "@prisma/client";
 import { useAtom } from "jotai";
@@ -10,6 +14,7 @@ import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMess
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
+import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import Unauthenticated from "../../../components/shared/Unauthenticated";
@@ -44,7 +49,7 @@ function Publish() {
   const router = useRouter();
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
-  const { data: schedule, isLoading } =
+  const { data: schedule, isLoading: isScheduleLoading } =
     trpc.schedule.getScheduleFromSlugId.useQuery(
       {
         name: name,
@@ -60,7 +65,8 @@ function Publish() {
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
   const [saveWarning, setSaveWarning] = useState<string>("");
-  const createEvents = trpc.event.createEvents.useMutation();
+  const { mutateAsync, isLoading: isCreateEventsLoading } =
+    trpc.event.createEvents.useMutation();
 
   useEffect(() => {
     if (events.every((event) => !event.isEditing)) {
@@ -141,26 +147,26 @@ function Publish() {
     } else {
       setNoticeMessage("Your events have been successfully published!");
       const eventData = events.map((event) => {
-        delete event.isEditing;
-        delete event.className;
+        type NewEvent = Omit<InitialEventInfo, "isEditing" & "className">;
+        const newEvent: NewEvent = event;
 
         // needed so we can use a more accurate comparison for seeing upcoming events in `eventRouter.getUpcoming`
         // events will stay on upcoming until event ends
-        const endHour = getHourNumber(event.endTime);
+        const endHour = getHourNumber(newEvent.endTime);
         const startMins = Number.isInteger(endHour) ? "00" : "30";
         const eventDate = new Date(
-          `${event.date?.toISOString().split("T")[0]}T${Math.floor(endHour)
+          `${newEvent.date?.toISOString().split("T")[0]}T${Math.floor(endHour)
             .toString()
             .padStart(2, "0")}:${startMins}:00`
         );
 
         return {
-          ...event,
+          ...newEvent,
           scheduleId: schedule?.id as string,
           date: eventDate,
         };
       });
-      const res = await createEvents.mutateAsync(eventData);
+      const res = await mutateAsync(eventData);
 
       if (res) {
         router.push(`/schedule/${slug}`);
@@ -186,7 +192,7 @@ function Publish() {
     setEvents([...events, newEvent]);
   };
 
-  if (status === "loading" || isLoading) {
+  if (status === "loading" || isScheduleLoading) {
     return <Loading />;
   }
 
@@ -198,7 +204,10 @@ function Publish() {
     <>
       <section className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
-        <h1 className="mb-12 text-3xl font-semibold">Publish Event(s)</h1>
+        <ScheduleHeader
+          title="Publish Event(s)"
+          scheduleName={schedule?.name!}
+        />
         <AvailabilityResponses schedule={schedule!} />
         <h3 className="mt-8 mb-4 font-semibold">
           {`These are the best times based on your preferences (${
@@ -252,8 +261,20 @@ function Publish() {
             className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
             onClick={() => handlePublish()}
           >
-            <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-            Confirm and Publish
+            {isCreateEventsLoading ? (
+              <>
+                <FontAwesomeIcon
+                  icon={faCircleNotch}
+                  className="animate-spin"
+                />
+                <span>Submitting...</span>
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faListCheck} className="mr-2" />
+                <span>Confirm and Publish</span>
+              </>
+            )}
           </button>
         </div>
       </section>
