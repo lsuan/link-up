@@ -5,7 +5,7 @@ import GoogleProvider from "next-auth/providers/google";
 import TwitterProvider from "next-auth/providers/twitter";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { comparePassword, hashPassword } from "../../../utils/passwordUtils";
+import { comparePassword } from "../../../utils/passwordUtils";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
@@ -35,7 +35,6 @@ export const authOptions: NextAuthOptions = {
   },
 
   providers: [
-    // TODO: check for hashed password
     CredentialsProvider({
       name: "credentials",
       credentials: {},

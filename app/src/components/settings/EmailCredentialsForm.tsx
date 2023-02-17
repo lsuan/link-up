@@ -12,10 +12,10 @@ type EmailCredentialsInputs = {
   firstName: string;
   lastName?: string;
   email: string;
-  passwords: {
-    password: string;
-    confirmPassword: string;
-  };
+  // passwords: {
+  //   password: string;
+  //   confirmPassword: string;
+  // };
 };
 
 const EmailCredentialsSchema = z.object({
@@ -26,14 +26,14 @@ const EmailCredentialsSchema = z.object({
     .min(1, "Email is required!")
     .email("Invalid email!")
     .refine((email) => email.match(EMAIL_REGEX)),
-  passwords: z
-    .object({
-      password: z.string().min(1, "Password is required!"),
-      confirmPassword: z.string().min(1, "Password is required!"),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords don't match!",
-    }),
+  // passwords: z
+  //   .object({
+  //     password: z.string().min(1, "Password is required!"),
+  //     confirmPassword: z.string().min(1, "Password is required!"),
+  //   })
+  //   .refine((data) => data.password === data.confirmPassword, {
+  //     message: "Passwords don't match!",
+  //   }),
 });
 
 function EmailCredentialsForm(user: User) {
@@ -55,7 +55,7 @@ function EmailCredentialsForm(user: User) {
   const onSubmit: SubmitHandler<EmailCredentialsInputs> = async (data) => {
     const res = await mutateAsync({
       ...data,
-      password: data.passwords.password,
+      // password: data.passwords.password,
     });
     if (res.trpcError) {
       setInvalidEmailMessage(res.trpcError.message);
@@ -87,13 +87,14 @@ function EmailCredentialsForm(user: User) {
         />
         <Form.Input name="lastName" displayName="Last Name" type="text" />
         <Form.Input name="email" displayName="Email" type="email" required />
-        <Form.Password name="passwords.password" required />
+        {/* TODO: add a different flow for changing password */}
+        {/* <Form.Password name="passwords.password" required />
         <Form.Input
           name="passwords.confirmPassword"
           displayName="Confirm Password"
           type="password"
           required
-        />
+        /> */}
 
         {/* TODO: add light/dark mode toggle here */}
 

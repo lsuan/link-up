@@ -13,28 +13,18 @@ import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { getHost, parseSlug } from "../../../utils/scheduleUtils";
-import { trpc } from "../../../utils/trpc";
+import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import { getHost } from "../../../utils/scheduleUtils";
 
 export const notice = atom("");
 export const shareModalShown = atom(false);
 
 function Schedule() {
   const router = useRouter();
-  // this is needed since it is different from the actual user
-  // users can still browse this page even if they are not logged in
   const { status, data: sessionData } = useSession();
-  const { slug } = router.query as { slug: string };
-  const { name, scheduleIdPart } = parseSlug(slug);
-  const { data: schedule, isLoading } =
-    trpc.schedule.getScheduleFromSlugId.useQuery(
-      {
-        name: name,
-        id: scheduleIdPart,
-      },
-      { enabled: router.isReady, refetchOnWindowFocus: false }
-    );
-
+  // this is needed since the host is different from the actual user
+  // and users can still browse this page even if they are not logged in
+  const { schedule, isScheduleLoading, slug } = useSchedule(router);
   const host = schedule?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule?.events;
@@ -43,13 +33,18 @@ function Schedule() {
     boolean[]
   >([]);
 
+  const {
+    title: availabilityButtonTitle,
+    isLoading: isUserAvailabilityLoading,
+  } = useUserAvailability(status, schedule);
+
   useEffect(() => {
     const modalsShown: boolean[] = [];
-    events?.forEach((event) => modalsShown.push(false));
+    events?.forEach((_event) => modalsShown.push(false));
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
-  if (isLoading || status === "loading") {
+  if (status === "loading" || isScheduleLoading || isUserAvailabilityLoading) {
     return <Loading />;
   }
 
@@ -139,7 +134,11 @@ function Schedule() {
           )}
         </div>
 
-        <AvailabilitySection schedule={schedule!} slug={slug} />
+        <AvailabilitySection
+          schedule={schedule!}
+          slug={slug}
+          buttonTitle={availabilityButtonTitle}
+        />
       </section>
     </>
   );

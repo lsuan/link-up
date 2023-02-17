@@ -52,13 +52,13 @@ const SignUpSchema = z.object({
 });
 
 function SignUpForm({ email }: { email: string }) {
-  const createUser = trpc.user.createUser.useMutation();
+  const { mutateAsync } = trpc.user.createUser.useMutation();
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
     const { email, firstName, lastName } = data;
     const { password } = data.passwords;
-    const res: SignUpResponse = await createUser.mutateAsync({
+    const res: SignUpResponse = await mutateAsync({
       email,
       firstName,
       lastName,
@@ -72,7 +72,7 @@ function SignUpForm({ email }: { email: string }) {
     } else if (res.user) {
       signIn("credentials", {
         email: res.user.email,
-        password: res.user.password,
+        password,
         callbackUrl: "/dashboard",
       });
     }
