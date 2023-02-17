@@ -1,6 +1,5 @@
-import { Input } from "postcss";
 import { z } from "zod";
-import { UserAvailability } from "../../../utils/availabilityUtils";
+import { type UserAvailability } from "../../../utils/availabilityUtils";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
@@ -119,7 +118,7 @@ export const scheduleRouter = router({
           id: input.id,
         },
       });
-      let prevData = schedule?.attendees as UserAvailability[];
+      const prevData = schedule?.attendees as UserAvailability[];
       let dataToStore;
 
       if (prevData?.length > 0) {

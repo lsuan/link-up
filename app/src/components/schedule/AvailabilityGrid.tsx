@@ -1,27 +1,30 @@
-import { useEffect, useRef, useState } from "react";
-import { getHourNumber, UserAvailability } from "../../utils/availabilityUtils";
+import { useRef } from "react";
+import {
+  getHourNumber,
+  type UserAvailability,
+} from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
 import { getShortenedDateWithDay } from "../../utils/timeUtils";
-import Loading from "../shared/Loading";
+// import Loading from "../shared/Loading";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
-import { AvailabilityProps } from "./AvailabilitySection";
+import { type AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
   const { startDate, endDate, startTime, endTime, attendees } = schedule;
   const gridRef = useRef<HTMLDivElement>(null);
-  const [isGridLoading, setIsGridLoading] = useState<boolean>(false);
+  // const [isGridLoading, setIsGridLoading] = useState<boolean>(false);
 
   // TODO: reimplement the loading state for rendering the grid
-  useEffect(() => {
-    const grid = gridRef?.current;
-    if (grid) {
-      setIsGridLoading(false);
-    }
-  }, [gridRef]);
+  // useEffect(() => {
+  //   const grid = gridRef?.current;
+  //   if (grid) {
+  //     setIsGridLoading(false);
+  //   }
+  // }, [gridRef]);
 
   const getAllDates = () => {
-    let dates = [];
+    const dates: Date[] = [];
     for (
       let date = new Date(startDate), colIndex = 0;
       date <= endDate;
@@ -39,11 +42,12 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
     const hours = [...Array(endHour - startHour + 1).keys()].map(
       (i) => i + startHour
     );
-    let timeSlots: number[] = [];
+    const timeSlots: number[] = [];
     hours.slice(0, hours.length - 1).forEach((hour) => {
       timeSlots.push(hour, hour + 0.5);
     });
-    timeSlots.push(hours[hours.length - 1]!);
+    const endHourRange = hours[hours.length - 1] as number;
+    timeSlots.push(endHourRange);
     return timeSlots;
   };
 

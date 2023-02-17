@@ -1,7 +1,7 @@
 import {
   categorizeUsers,
   getHourNumber,
-  UserAvailability,
+  type UserAvailability,
 } from "../../../utils/availabilityUtils";
 import { getFormattedHours } from "../../../utils/formUtils";
 

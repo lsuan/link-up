@@ -39,7 +39,7 @@ const AvailabilityGridWrite = memo(function AvailabilityGridWrite({
 
   // FIXME: need to be able to get rid of previous cells while editing
   // keep track of when the mouse direction goes the opposite way
-  const onMouseOver = (e: React.MouseEvent, timeKey: string) => {
+  const onMouseOver = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!isEditing || !startCoordinates) {
       return;
@@ -161,14 +161,7 @@ const AvailabilityGridWrite = memo(function AvailabilityGridWrite({
                       : ""
                   }`}
                   onMouseDown={(e) => initializeSave(e)}
-                  onMouseOver={(e) =>
-                    onMouseOver(
-                      e,
-                      `${date.toISOString().split("T")[0]}:${hour}-${
-                        hour + 0.5
-                      }`
-                    )
-                  }
+                  onMouseOver={(e) => onMouseOver(e)}
                   onMouseUp={() => onMouseUp()}
                 />
               );

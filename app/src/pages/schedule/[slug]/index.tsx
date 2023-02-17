@@ -40,7 +40,7 @@ function Schedule() {
 
   useEffect(() => {
     const modalsShown: boolean[] = [];
-    events?.forEach((_event) => modalsShown.push(false));
+    events?.forEach(() => modalsShown.push(false));
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
@@ -83,7 +83,7 @@ function Schedule() {
           )}
           <p className="my-4">{schedule?.description}</p>
           <p className="z-10 mb-4 font-semibold">
-            {getHost(sessionData?.user?.id!, schedule!)}
+            {schedule && getHost(sessionData?.user?.id ?? "", schedule)}
           </p>
 
           {events?.length && events.length > 0 ? (
@@ -134,11 +134,13 @@ function Schedule() {
           )}
         </div>
 
-        <AvailabilitySection
-          schedule={schedule!}
-          slug={slug}
-          buttonTitle={availabilityButtonTitle}
-        />
+        {schedule && (
+          <AvailabilitySection
+            schedule={schedule}
+            slug={slug}
+            buttonTitle={availabilityButtonTitle}
+          />
+        )}
       </section>
     </>
   );

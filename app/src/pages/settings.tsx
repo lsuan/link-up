@@ -20,16 +20,17 @@ function Settings() {
   if (status === "unauthenticated") {
     return <Unauthenticated />;
   }
+  const hasAccount = user.data?.accounts.length ?? 0 > 0;
 
   // TODO: add a way to update profile pic
   return (
     <section className="px-8">
       <BackArrow href="/dashboard" page="Dashboard" />
       <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
-      {user.data?.accounts.length! > 0 ? (
-        <OAuthForm {...user.data!} />
+      {hasAccount ? (
+        <>{user.data && <OAuthForm {...user.data} />}</>
       ) : (
-        <EmailCredentialsForm {...user.data!} />
+        <>{user.data && <EmailCredentialsForm {...user.data} />}</>
       )}
     </section>
   );

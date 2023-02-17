@@ -12,7 +12,7 @@ function NavbarItem({
   onClick?: () => void;
 }) {
   return (
-    <li className="hover:text-blue-300">
+    <li className={`hover:text-blue-300${className ? ` ${className}` : ""}`}>
       <Link onClick={onClick} href={href}>
         {name}
       </Link>

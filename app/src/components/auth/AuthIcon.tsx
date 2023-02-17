@@ -1,6 +1,6 @@
 import {
   FontAwesomeIcon,
-  FontAwesomeIconProps,
+  type FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
 import { signIn } from "next-auth/react";
 

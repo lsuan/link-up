@@ -63,12 +63,12 @@ function Dashboard() {
       </div>
       {active === "upcoming" ? (
         <div className="flex flex-col gap-4">
-          {upcoming?.map((event, index) => {
+          {upcoming?.map((event) => {
             return (
               <DashboardEventCard
                 key={event.id}
                 scheduleName={event.schedule.name}
-                host={getHost(sessionData?.user?.id!, event.schedule)}
+                host={getHost(sessionData?.user?.id ?? "", event.schedule)}
                 {...event}
               />
             );
@@ -83,7 +83,7 @@ function Dashboard() {
                 id={schedule.id}
                 name={schedule.name}
                 description={schedule.description}
-                host={getHost(sessionData?.user?.id!, schedule)}
+                host={getHost(sessionData?.user?.id ?? "", schedule)}
               />
             );
           })}

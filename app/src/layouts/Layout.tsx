@@ -1,11 +1,16 @@
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { type ReactNode } from "react";
 import Navbar, { menuOpen } from "../components/nav/Navbar";
 import SignedInNavMenu from "../components/nav/SignedInNavMenu";
 import SignedOutNavMenu from "../components/nav/SignedOutNavMenu";
 
-function Layout({ children }: any) {
+type LayoutProps = {
+  children: ReactNode;
+  rest?: unknown;
+};
+function Layout({ children }: LayoutProps) {
   const [isMenuOpen] = useAtom(menuOpen);
   const { status } = useSession();
   return (

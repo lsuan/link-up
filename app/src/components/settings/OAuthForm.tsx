@@ -4,9 +4,9 @@ import {
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Account, User } from "@prisma/client";
+import { type Account, type User } from "@prisma/client";
 import { useState } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import { Form } from "../form/Form";
@@ -33,7 +33,7 @@ const providers = {
 };
 
 function OAuthForm(user: UserWithAccount) {
-  const { id, firstName, lastName, accounts } = user;
+  const { firstName, lastName, accounts } = user;
   // users can only have 1 account
   const provider = accounts[0]?.provider as keyof typeof providers;
   const [defaultValues, setDefaultValues] = useState<OAuthFormInputs>({

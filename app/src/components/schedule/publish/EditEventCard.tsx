@@ -2,13 +2,12 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { z } from "zod";
-import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
+import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { getHourNumber } from "../../../utils/availabilityUtils";
 import { getTimeOptions } from "../../../utils/formUtils";
-import {
+import CustomDatePicker, {
   CalendarContainer,
   CalendarHeader,
-  CustomDatePicker,
   datePickerOpen,
 } from "../../form/DatePickerHelpers";
 import { Form } from "../../form/Form";
@@ -118,7 +117,7 @@ function EditEventCard({
             )}
             onCalendarOpen={() => setIsDatePickerOpen(true)}
             onCalendarClose={() => setIsDatePickerOpen(false)}
-            dayClassName={(_) => "p-1 m-1 rounded-lg"}
+            dayClassName={() => "p-1 m-1 rounded-lg"}
             renderCustomHeader={CalendarHeader}
             showDisabledMonthNavigation
           />

@@ -1,31 +1,25 @@
 import {
-  faClose,
   faAngleLeft,
   faAngleRight,
   faCalendarDay,
+  faClose,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
-import { forwardRef } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { MONTHS } from "../../utils/formUtils";
 
 export const datePickerOpen = atom(false);
 
-export const CustomDatePicker = forwardRef(
-  (
-    {
-      value,
-      onClick,
-      label,
-      star,
-    }: {
-      value?: string;
-      onClick?: () => void;
-      label: string;
-      star?: boolean;
-    },
-    ref: any
-  ) => (
+type CustomDatePickerProps = {
+  value?: string;
+  onClick?: () => void;
+  label: string;
+  star?: boolean;
+};
+
+const CustomDatePicker = forwardRef<HTMLButtonElement, CustomDatePickerProps>(
+  ({ value, onClick, label, star }, ref) => (
     <div className="flex flex-col">
       <div className="relative">
         <button
@@ -51,6 +45,8 @@ export const CustomDatePicker = forwardRef(
     </div>
   )
 );
+CustomDatePicker.displayName = "CustomDatePicker";
+export default CustomDatePicker;
 
 export const CalendarContainer = ({
   title,
@@ -61,7 +57,7 @@ export const CalendarContainer = ({
   title: string;
   className?: string;
   required?: boolean;
-  children: any;
+  children: ReactNode;
 }) => {
   const handleClose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const element = e.target as HTMLButtonElement;

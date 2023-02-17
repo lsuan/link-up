@@ -14,8 +14,8 @@ export type TimeBlock = {
 
 /** Takes a time in the format tt:X0 XM and returns its numerical value */
 export const getHourNumber = (time: string) => {
-  const [timeValue, meridiem] = time.split(" ");
-  const [hour, half] = timeValue!.split(":");
+  const [timeValue, meridiem] = time.split(" ") as [string, string];
+  const [hour, half] = timeValue.split(":");
   let hourNumber = Number(hour || "");
 
   if (hour === "11:59") {
@@ -67,7 +67,7 @@ export const getMostUsers = (
   categorizedUsers: Map<string, string[]> | undefined
 ) => {
   let max = 0;
-  categorizedUsers?.forEach((users, _timeKey) => {
+  categorizedUsers?.forEach((users) => {
     if (users.length > max) {
       max = users.length;
     }
@@ -81,7 +81,7 @@ export const getLeastUsers = (
   totalUsers: number
 ) => {
   let min = totalUsers;
-  categorizedUsers?.forEach((users, _timeKey) => {
+  categorizedUsers?.forEach((users) => {
     if (users.length < min) {
       min = users.length;
     }
@@ -266,16 +266,15 @@ export const getBestTimeBlock = (
   let dayIndex = 0;
   bestTimes.forEach((blocks, date) => {
     const blockMap = new Map<string, number[]>();
+    const bestValuesPerDay = [...heuristics.values()][dayIndex] as number[];
+    const maxValuePerDay = maxValuesPerDay[dayIndex] as number;
     blocks.forEach((block, blockIndex) => {
-      if (
-        [...heuristics.values()][dayIndex]![blockIndex] ===
-        maxValuesPerDay[dayIndex]
-      ) {
+      if (bestValuesPerDay[blockIndex] === maxValuePerDay) {
         blockMap.set(
           `${date}:${block[0]?.split("-")[0]}-${
             block[block.length - 1]?.split("-")[1]
           }`,
-          [maxValuesPerDay[dayIndex]!, block.length]
+          [maxValuePerDay, block.length]
         );
         chosenBlocks.push(blockMap);
       }
@@ -285,13 +284,17 @@ export const getBestTimeBlock = (
 
   // sort the chosen blocks by heuristic in descending order
   chosenBlocks.sort((firstMap, secondMap) => {
-    const values1: number[][] = [...firstMap.values()];
-    const values2: number[][] = [...secondMap.values()];
-    return values2[0]![0]! - values1[0]![0]!;
+    const values1: number[][] = [...firstMap.values()] as number[][];
+    const values2: number[][] = [...secondMap.values()] as number[][];
+    const numberOfUsers1 = (values1[0] as number[])[0] ?? 0;
+    const numberOfUsers2 = (values2[0] as number[])[0] ?? 0;
+    return numberOfUsers2 - numberOfUsers1;
   });
 
-  let bestBlock = [...chosenBlocks[0]!.keys()][0] as string;
-  const bestBlockLength = [...chosenBlocks[0]!.values()][0]![1] as number;
+  const chosen = chosenBlocks[0] as Map<string, number[]>;
+  let bestBlock = [...chosen.keys()][0] as string;
+  const blockData = [...chosen.values()][0] as number[];
+  const bestBlockLength = blockData[1] as number;
   const date = bestBlock.split(":")[0] as string;
 
   // if length of the best block doesn't fulfill the length of the event,
@@ -303,10 +306,11 @@ export const getBestTimeBlock = (
     ];
     const prevHour = `${date}:${getPrevHour(lower)}-${lower}`;
     const nextHour = `${date}:${upper}-${getNextHour(upper)}`;
+    const prevBlock = categorizedUsers.get(prevHour) as string[];
+    const nextBlock = categorizedUsers.get(nextHour) as string[];
     if (
-      (categorizedUsers.has(prevHour) &&
-        categorizedUsers.get(prevHour)!.length) <
-      (categorizedUsers.has(nextHour) && categorizedUsers.get(nextHour)!.length)
+      (categorizedUsers.has(prevHour) && prevBlock.length) <
+      (categorizedUsers.has(nextHour) && nextBlock.length)
     ) {
       const newUpper = nextHour.split(":")[1] as string;
       bestBlock = bestBlock.replace(`-${upper}`, `-${newUpper}:`);

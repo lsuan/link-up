@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { ChangeEvent, memo, SyntheticEvent, useRef, useState } from "react";
+import { memo, useRef, useState, type SyntheticEvent } from "react";
 import { getShortenedDateWithDay } from "../../utils/timeUtils";
 import { selected } from "./AvailabilityInput";
 
@@ -16,7 +16,7 @@ const AvailabilityGridWriteApplyCheckbox = memo(
       useState<boolean>(false);
     const selectRef = useRef<HTMLSelectElement>(null);
 
-    const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleCheck = () => {
       const day = selectRef.current?.value;
       if (!isAvailabilityApplied && day && day !== "Select Day") {
         resetSelectedCells(day);
@@ -48,15 +48,15 @@ const AvailabilityGridWriteApplyCheckbox = memo(
         date.setDate(date.getDate() + 1)
       ) {
         const dateString = date.toISOString().split("T")[0];
-        selectedTimes.forEach((time) => {
+        selectedTimes?.forEach((time) => {
           newSelectedCells.push(`${dateString}:${time}`);
         });
       }
       setSelectedCells(newSelectedCells);
     };
-    const days = [...selectedCells].map((day) => day.split(":")[0]!);
+    const days = [...selectedCells].map((day) => day.split(":")[0]) as string[];
     const daysSet: Set<string> = new Set(days);
-    const uniqueDays = [...daysSet].sort((a, b) => {
+    const uniqueDays = [...daysSet]?.sort((a, b) => {
       return new Date(a).getTime() - new Date(b).getTime();
     });
 
@@ -67,7 +67,7 @@ const AvailabilityGridWriteApplyCheckbox = memo(
           name="applyAvailability"
           className="border border-neutral-500"
           checked={isAvailabilityApplied}
-          onChange={handleCheck}
+          onChange={() => handleCheck()}
         />
         <label htmlFor="applyAvailability" className="text-sm">
           Autofill availability from

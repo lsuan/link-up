@@ -5,17 +5,8 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { User } from "@prisma/client";
-import { time } from "console";
-import { atRule } from "postcss";
-import { InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
-import {
-  categorizeUsers,
-  getHourNumber,
-  getMostUsers,
-  UserAvailability,
-} from "../../../utils/availabilityUtils";
-import { getFormattedHours } from "../../../utils/formUtils";
+import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
+import { type UserAvailability } from "../../../utils/availabilityUtils";
 import PublishCardMetadata from "./PublishCardMetadata";
 
 function PublishEventCard({
@@ -76,12 +67,14 @@ function PublishEventCard({
           <p className="font-semibold">{event.endTime}</p>
         </div>
       </div>
-      <PublishCardMetadata
-        attendees={attendees}
-        date={event.date!}
-        startTime={event.startTime}
-        endTime={event.endTime}
-      />
+      {event.date && (
+        <PublishCardMetadata
+          attendees={attendees}
+          date={event.date}
+          startTime={event.startTime}
+          endTime={event.endTime}
+        />
+      )}
       <ul>
         <li className="flex items-start gap-2">
           <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />

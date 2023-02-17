@@ -2,12 +2,12 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { env } from "../../env/client.mjs";
 import { googleAccessToken } from "../../pages/schedule/google-oauth-redirect";
 import { notice } from "../../pages/schedule/[slug]/index";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
-import { ScheduleEventCardProps } from "../schedule/ScheduleEventCard";
+import { type ScheduleEventCardProps } from "../schedule/ScheduleEventCard";
 
 const GOOGLE_CLIENT_ID = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 const GOOGLE_SCOPE = "https://www.googleapis.com/auth/calendar";
@@ -15,9 +15,20 @@ const GOOGLE_SCRIPT_SOURCE = "https://accounts.google.com/gsi/client";
 const GOOGLE_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
 
 // to prevent typescript error
+type GoogleInitializeParams = {
+  client_id: string;
+  callback: Promise<void>;
+};
 declare const window: Window &
   typeof globalThis & {
-    google: any;
+    google: {
+      accounts: {
+        id: {
+          initialize: (params: GoogleInitializeParams) => void;
+          prompt: () => void;
+        };
+      };
+    };
   };
 
 function AddToCalendarModal({
@@ -35,11 +46,11 @@ function AddToCalendarModal({
   const [googleAccessTokenValue] = useAtom(googleAccessToken);
   const [, setNoticeMessage] = useAtom(notice);
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     const prev = isAddToCalendarModalShown.slice(0, index);
     const rest = isAddToCalendarModalShown.slice(index + 1);
     setIsAddToCalendarModalShown([...prev, false, ...rest]);
-  };
+  }, [index, setIsAddToCalendarModalShown, isAddToCalendarModalShown]);
 
   useEffect(() => {
     window.onkeyup = (e) => {
@@ -47,7 +58,7 @@ function AddToCalendarModal({
         handleModalClose();
       }
     };
-  }, [isAddToCalendarModalShown]);
+  }, [handleModalClose, isAddToCalendarModalShown]);
 
   useEffect(() => {
     const script = document.createElement("script");

@@ -3,9 +3,9 @@ import {
   getLeastUsers,
   getMostUsers,
   setColors,
-  UserAvailability,
+  type UserAvailability,
 } from "../../utils/availabilityUtils";
-import { AvailabilityProps } from "./AvailabilitySection";
+import { type AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityKey({ schedule }: AvailabilityProps) {
   const allAvailability = schedule?.attendees as UserAvailability[];

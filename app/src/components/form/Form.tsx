@@ -5,34 +5,33 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   FormProvider,
   useForm,
   useFormContext,
   useWatch,
+  type DeepPartial,
+  type FieldValues,
 } from "react-hook-form";
-import { z } from "zod";
+import { type z } from "zod";
 import {
   parseDeepErrors,
-  PasswordCondition,
   PASSWORD_REGEX_CONDITIONS,
+  type PasswordCondition,
 } from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
-import {
-  default as ShowPassword,
-  default as UseShowPassword,
-} from "./ShowPassword";
+import ShowPassword from "./ShowPassword";
 
 type GenericOnSubmit = (
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   event?: React.BaseSyntheticEvent
 ) => void;
 
 /** Generic form component that abstracts the implementation of React-Hook-Form and allows for custom reusable child components. */
 export function Form<
-  DataSchema extends Record<string, any>,
-  Schema extends z.Schema<any, any>
+  DataSchema extends Record<string, unknown>,
+  Schema extends z.Schema<unknown>
 >({
   schema,
   onSubmit,
@@ -42,8 +41,8 @@ export function Form<
 }: {
   schema: Schema;
   onSubmit: (data: DataSchema, event?: React.BaseSyntheticEvent) => void;
-  children: any;
-  defaultValues?: Record<string, any>;
+  children: ReactNode;
+  defaultValues?: DeepPartial<FieldValues>;
   watchFields?: string[];
   className?: string;
 }) {
@@ -56,7 +55,7 @@ export function Form<
 
   useEffect(() => {
     reset(defaultValues);
-  }, [defaultValues]);
+  }, [reset, defaultValues]);
 
   return (
     <FormProvider {...methods}>
@@ -150,15 +149,15 @@ Form.Password = function Input({
   name: string;
   required: boolean;
 }) {
-  const {
-    formState: { errors },
-  } = useFormContext();
+  // const {
+  //   formState: { errors },
+  // } = useFormContext();
 
   const password = useWatch({ name });
   const [conditions, setConditions] = useState<PasswordCondition[]>([
     ...PASSWORD_REGEX_CONDITIONS,
   ]);
-  const error = parseDeepErrors(errors, name);
+  // const error = parseDeepErrors(errors, name);
 
   useEffect(() => {
     const currentConditions = conditions.map((condition) => {
@@ -169,7 +168,7 @@ Form.Password = function Input({
       }
     });
     setConditions(currentConditions);
-  }, [password]);
+  }, [conditions, password]);
 
   return (
     <>
@@ -212,7 +211,7 @@ Form.Select = function Select({
 }: {
   name: string;
   displayName: string;
-  options: any[];
+  options: string[] | number[];
   required?: boolean;
   className?: string;
 }) {
@@ -292,7 +291,7 @@ Form.Checkbox = function Input({
 }) {
   const {
     register,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = useFormContext();
   const error = parseDeepErrors(errors, name);
 

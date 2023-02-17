@@ -1,4 +1,3 @@
-import { isSuspensePromiseAlreadyCancelled } from "jotai/core/suspensePromise";
 import React, {
   memo,
   useCallback,
@@ -13,7 +12,7 @@ import {
   getMostUsers,
   parseRange,
   setColors,
-  UserAvailability,
+  type UserAvailability,
 } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
 import { getShortenedDateWithDay } from "../../utils/timeUtils";
@@ -73,8 +72,6 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
   );
 
   const onMouseOver = (e: React.MouseEvent, date: Date, hour: string) => {
-    const cell = e.target as HTMLDivElement;
-
     const availabilityStatus: AvailabilityStatus = {
       timeKey: "",
       available: [],
@@ -115,7 +112,7 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
 
   const users = useMemo(
     () => getUsers(date, `${hour}-${hour + 0.5}`)?.length,
-    [date, hour]
+    [date, hour, getUsers]
   );
   const colors = useMemo(() => setColors(mostUsers), [mostUsers]);
 
@@ -158,10 +155,10 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
   const [positions, setPositions] = useState<PopupPosition>();
 
   useEffect(() => {
-    const popup = popupRef.current;
-    if (!popup) {
+    if (!popupRef) {
       return;
     }
+    const popup = popupRef.current as HTMLDivElement;
 
     const positions = {
       vertical: "top-4",
@@ -208,7 +205,7 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
     }
 
     setPositions({ ...positions });
-  }, [popupRef.current]);
+  }, [clientX, popupRef]);
 
   return (
     <div

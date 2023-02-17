@@ -6,7 +6,7 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Event } from "@prisma/client";
+import { type Event } from "@prisma/client";
 import Link from "next/link";
 import { createSlug } from "../../utils/scheduleUtils";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
