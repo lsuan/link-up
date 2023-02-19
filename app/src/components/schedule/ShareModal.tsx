@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { notice, shareModalShown } from "../../pages/schedule/[slug]";
 
 function Share() {
-  const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
+  const [, setIsShareModalShown] = useAtom(shareModalShown);
   const [, setNoticeMessage] = useAtom(notice);
   const scheduleLink = window.location.toString();
 
@@ -15,7 +15,7 @@ function Share() {
         setIsShareModalShown(false);
       }
     };
-  }, [isShareModalShown]);
+  }, [setIsShareModalShown]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(scheduleLink);

@@ -1,6 +1,6 @@
-import { User } from "prisma/prisma-client";
+import { type User } from "prisma/prisma-client";
 import { useState } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { EMAIL_REGEX } from "../../utils/formUtils";
 import { trpc } from "../../utils/trpc";
@@ -39,7 +39,7 @@ const EmailCredentialsSchema = z.object({
 function EmailCredentialsForm(user: User) {
   const { id, firstName, lastName, email, password } = user;
   const { mutateAsync } = trpc.user.updateUserEmailCredentials.useMutation();
-  const [formValues, setFormValues] = useState<Record<string, any>>({
+  const [formValues, setFormValues] = useState<Record<string, unknown>>({
     id,
     firstName,
     lastName,

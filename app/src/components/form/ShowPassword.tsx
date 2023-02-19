@@ -2,11 +2,11 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import {
-  FieldError,
-  FieldErrorsImpl,
-  Merge,
-  RegisterOptions,
-  UseFormRegisterReturn,
+  type FieldError,
+  type FieldErrorsImpl,
+  type Merge,
+  type RegisterOptions,
+  type UseFormRegisterReturn,
 } from "react-hook-form";
 
 function ShowPassword({
@@ -19,11 +19,7 @@ function ShowPassword({
   name: string;
   displayName: string;
   isSubmitting: boolean;
-  error:
-    | string
-    | FieldError
-    | Merge<FieldError, FieldErrorsImpl<any>>
-    | undefined;
+  error: string | FieldError | Merge<FieldError, FieldErrorsImpl> | undefined;
   register: (name: string, options?: RegisterOptions) => UseFormRegisterReturn;
 }) {
   const [isShown, setIsShown] = useState<boolean>(false);

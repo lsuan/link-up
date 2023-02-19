@@ -1,8 +1,8 @@
-import { User } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
+import { type User } from "@prisma/client";
+import { type TRPCError } from "@trpc/server";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { EMAIL_REGEX, PASSWORD_REGEX } from "../../utils/formUtils";
 import { trpc } from "../../utils/trpc";

@@ -5,7 +5,7 @@ import {
   faNoteSticky,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Event } from "@prisma/client";
+import { type Event } from "@prisma/client";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
 
 export type ScheduleEventCardProps = {

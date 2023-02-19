@@ -1,19 +1,17 @@
-import { Schedule } from "@prisma/client";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { atom, useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { type } from "os";
 import { useState } from "react";
-import { SubmitHandler } from "react-hook-form";
-import { string, z } from "zod";
+import { type SubmitHandler } from "react-hook-form";
+import { z } from "zod";
 import { notice } from "../../pages/schedule/[slug]";
-import { UserAvailability } from "../../utils/availabilityUtils";
-import { RouterInputs, RouterOutputs, trpc } from "../../utils/trpc";
+import { type UserAvailability } from "../../utils/availabilityUtils";
+import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
 import { Form } from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
-import { AvailabilityProps } from "./AvailabilitySection";
+import { type AvailabilityProps } from "./AvailabilitySection";
 
 type AnonAvailabilityInputs = {
   name: string;
@@ -35,7 +33,7 @@ const updateSchedule = (
   const updatedAvailability = JSON.parse(
     variables.attendee
   ) as UserAvailability;
-  const newAttendees = prevAttendees.map((attendee) => {
+  const newAttendees = prevAttendees?.map((attendee) => {
     if (attendee.user === updatedAvailability.user) {
       return updatedAvailability;
     }
@@ -52,12 +50,13 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   const queryClient = useQueryClient();
   const setScheduleAvailability = trpc.schedule.setAvailability.useMutation({
     onSuccess: (data, variables) => {
+      const { name, id } = data;
       queryClient.setQueryData(
         [
           ["schedule", "getScheduleFromSlugId"],
           {
-            name: "30 days 24 hours long",
-            id: "kmavxw9n",
+            name,
+            id: id.substring(id.length - 8),
           } as RouterInputs["schedule"]["getScheduleFromSlugId"],
         ],
         (prevData) => {
@@ -75,7 +74,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   // might not need this copy, need to double check expected functionality
   // const [selectedCellsCopy, setSelectedCellsCopy] = useState<string[]>([]);
   const [isDisabled, setIsDisabled] = useAtom(disabled);
-  const [isUpdated, setIsUpated] = useAtom(updated);
+  const [, setIsUpated] = useAtom(updated);
 
   const userFullName = trpc.user.getUserFullName.useQuery(
     sessionData?.user?.id as string,
@@ -131,7 +130,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
       availability: Object.fromEntries(times),
     };
 
-    const res = await setScheduleAvailability.mutateAsync(
+    await setScheduleAvailability.mutateAsync(
       {
         id: schedule.id,
         attendee: JSON.stringify(attendee),

@@ -1,4 +1,4 @@
-import { FieldError, FieldErrorsImpl } from "react-hook-form";
+import { type FieldError, type FieldErrorsImpl } from "react-hook-form";
 
 export type PasswordCondition = {
   regex: RegExp;
@@ -36,7 +36,7 @@ export const PASSWORD_REGEX_CONDITIONS: PasswordCondition[] = [
 export const parseDeepErrors = (
   errors: Partial<
     FieldErrorsImpl<{
-      [x: string]: any;
+      [x: string]: unknown;
     }>
   >,
   name: string
@@ -57,7 +57,7 @@ export const parseDeepErrors = (
       }
       let innerObject = { message: "" };
       if (root.hasOwnProperty(children)) {
-        innerObject = root[children as keyof FieldError] as any;
+        innerObject = root[children as keyof FieldError] as { message: string };
       }
       return root.message ? root.message : innerObject.message;
     }
@@ -68,7 +68,7 @@ export const parseDeepErrors = (
  * Takes optional parameters to specify the range of times for a given select element.
  */
 export const getTimeOptions = (
-  start: number = 0,
+  start = 0,
   end: number | undefined = undefined
 ) => {
   const startIndex = HOURS.findIndex((hour) => hour === start);

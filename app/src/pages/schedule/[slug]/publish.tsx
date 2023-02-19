@@ -4,7 +4,7 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Schedule } from "@prisma/client";
+import { type Schedule } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -26,8 +26,8 @@ import {
   getHeuristics,
   getHourNumber,
   getMostUsers,
-  TimeBlock,
-  UserAvailability,
+  type TimeBlock,
+  type UserAvailability,
 } from "../../../utils/availabilityUtils";
 import { trpc } from "../../../utils/trpc";
 
@@ -196,9 +196,9 @@ function Publish() {
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <ScheduleHeader
           title="Publish Event(s)"
-          scheduleName={schedule?.name!}
+          scheduleName={schedule?.name ?? ""}
         />
-        <AvailabilityResponses schedule={schedule!} />
+        {schedule && <AvailabilityResponses schedule={schedule} />}
         <h3 className="mt-8 mb-4 font-semibold">
           {`These are the best times based on your preferences (${
             schedule?.numberOfEvents

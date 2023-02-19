@@ -17,7 +17,7 @@ function SuccessNotice() {
         clearInterval(interval);
       };
     }
-  }, [noticeMessage]);
+  }, [noticeMessage, setNoticeMessage]);
 
   return (
     <>

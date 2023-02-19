@@ -12,7 +12,7 @@ function GoogleCalendarRedirect() {
   const [, setNoticeMessage] = useAtom(notice);
 
   useEffect(() => {
-    const [path, response] = router.asPath.split("#");
+    const response = router.asPath.split("#")[1];
     const params = response?.split("&");
     const paramsMap = new Map<string, string>();
     params?.forEach((field) => {
@@ -60,7 +60,7 @@ function GoogleCalendarRedirect() {
       setNoticeMessage(`Event "${name}" was saved to Google Calendar.`);
       router.replace(`/schedule/${slug}`);
     }
-  }, []);
+  });
 
   return <div>Adding event to Google Calendar...</div>;
 }

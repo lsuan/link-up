@@ -26,8 +26,8 @@ function Availability() {
       <SuccessNotice />
       <div className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
-        <ScheduleHeader title={title} scheduleName={schedule?.name!} />
-        <AvailabilityInput schedule={schedule!} />
+        <ScheduleHeader title={title} scheduleName={schedule?.name ?? ""} />
+        {schedule && <AvailabilityInput schedule={schedule} />}
         <h3 className="mt-8 text-xl font-semibold">Responses</h3>
         {schedule && <AvailabilityResponses schedule={schedule} />}
       </div>

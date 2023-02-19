@@ -1,15 +1,13 @@
 import { useAtom } from "jotai";
-import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
-import {
+import CustomDatePicker, {
   CalendarContainer,
   CalendarHeader,
-  CustomDatePicker,
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
 import { Form } from "../components/form/Form";
@@ -133,10 +131,13 @@ function Create() {
       numberOfEvents,
       lengthOfEvents,
     } = data;
-    let { startDate, endDate, isOneDay } = data.dateRange as {
+    const { startDate, isOneDay } = data.dateRange as {
       startDate: Date;
-      endDate: Date;
       isOneDay: boolean;
+    };
+
+    let { endDate } = data.dateRange as {
+      endDate: Date;
     };
 
     if (isOneDay) {
@@ -164,8 +165,7 @@ function Create() {
   };
 
   const handleOneDayChange = () => {
-    console.log(defaultValues);
-    const { startDate, endDate, isOneDay } = defaultValues.dateRange;
+    const { startDate, isOneDay } = defaultValues.dateRange;
     if (isOneDay) {
       setDefaultValues({
         ...defaultValues,
@@ -248,7 +248,7 @@ function Create() {
             endDate={defaultValues.dateRange.endDate}
             selectsRange
             inline
-            dayClassName={(_) => "p-1 m-1 rounded-lg"}
+            dayClassName={() => "p-1 m-1 rounded-lg"}
             renderCustomHeader={CalendarHeader}
             disabled={defaultValues.dateRange.isOneDay}
             disabledKeyboardNavigation={defaultValues.dateRange.isOneDay}
@@ -303,7 +303,7 @@ function Create() {
           )}
           onCalendarOpen={() => setIsDatePickerOpen(true)}
           onCalendarClose={() => setIsDatePickerOpen(false)}
-          dayClassName={(_) => "p-1 m-1 rounded-lg"}
+          dayClassName={() => "p-1 m-1 rounded-lg"}
           renderCustomHeader={CalendarHeader}
           showDisabledMonthNavigation
         />

@@ -1,8 +1,8 @@
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
@@ -45,7 +45,7 @@ function Login() {
     <section className="w-full max-w-md self-center px-8">
       <h1 className="mb-2 text-3xl font-semibold">Log In</h1>
       <p className="mb-10">
-        Don't have an account?
+        Don&apos;t have an account?
         <span className="ml-2">
           <Link href="/signup">Sign Up</Link>
         </span>

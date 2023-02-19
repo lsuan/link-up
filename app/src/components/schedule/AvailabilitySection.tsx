@@ -1,6 +1,6 @@
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Schedule } from "@prisma/client";
+import { type Schedule } from "@prisma/client";
 import Link from "next/link";
 import AvailabilityResponses from "./AvailabilityResponses";
 

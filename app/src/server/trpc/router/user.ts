@@ -1,10 +1,14 @@
-import { Prisma, PrismaClient, PrismaPromise, User } from "@prisma/client";
+import {
+  Prisma,
+  type PrismaClient,
+  type PrismaPromise,
+  type User,
+} from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { TRPCError } from "@trpc/server";
+import { type TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
 import { hashPassword } from "../../../utils/passwordUtils";
-
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 /** Updates all submitted availabilities with the user's updated name */
@@ -25,10 +29,10 @@ const updateScheduleAttendees = async (
     },
   });
 
-  const updatedAttendeesQueries: PrismaPromise<any>[] = [];
+  const updatedAttendeesQueries: PrismaPromise<unknown>[] = [];
   schedules.forEach((schedule) => {
     const attendees = schedule.attendees as Prisma.JsonArray;
-    attendees.forEach((attendee, index) => {
+    attendees.forEach((attendee) => {
       const newAttendee = attendee as UserAvailability;
       if (newAttendee["user"] === user.id) {
         newAttendee["name"] = `${user.firstName}${

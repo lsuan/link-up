@@ -1,8 +1,8 @@
-import { Schedule } from "@prisma/client";
+import { type Schedule } from "@prisma/client";
 import { type SessionContextValue } from "next-auth/react";
 import { type NextRouter } from "next/router";
 import { useState } from "react";
-import { UserAvailability } from "../utils/availabilityUtils";
+import { type UserAvailability } from "../utils/availabilityUtils";
 import { parseSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
@@ -25,10 +25,10 @@ export const useUserAvailability = (
   const [title, setPageTitle] = useState<string>("");
   const { isLoading } = trpc.schedule.getUserAvailability.useQuery(
     {
-      id: schedule?.id!,
+      id: schedule?.id ?? "",
     },
     {
-      enabled: schedule !== undefined && schedule !== null,
+      enabled: schedule !== undefined,
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         const title = getPageTitle(status, data);

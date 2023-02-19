@@ -17,7 +17,7 @@ function Landing() {
         place.
       </p>
       <Link
-        href={status === "authenticated" ? "/dashboard" : "/login"}
+        href={status === "authenticated" ? "/dashboard" : "/signup"}
         className="rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
       >
         Get Started

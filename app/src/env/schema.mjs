@@ -32,9 +32,10 @@ export const serverSchema = z.object({
  * This way you can ensure the app isn't built with invalid env vars.
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
+// TODO: get rid of next env client variables + move google calendar functionality to backend
 export const clientSchema = z.object({
   // NEXT_PUBLIC_BAR: z.string(),
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string(),
+  // NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string(),
 });
 
 /**
@@ -44,6 +45,6 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  // NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   // NEXT_PUBLIC_BAR: process.env.NEXT_PUBLIC_BAR,
 };
