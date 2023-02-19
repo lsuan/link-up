@@ -143,17 +143,22 @@ export const scheduleRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const userId = ctx.session?.user?.id;
-      const schedule = await ctx.prisma.schedule.findFirst({
-        where: {
-          id: input.id,
-          attendees: { path: "$[*].user", array_contains: userId },
-        },
-      });
 
-      const attendees = schedule?.attendees as UserAvailability[];
-      const userAvailability = attendees.filter(
-        (attendee) => attendee.user === userId
-      );
-      return userAvailability;
+      try {
+        const schedule = await ctx.prisma.schedule.findFirst({
+          where: {
+            id: input.id,
+            attendees: { path: "$[*].user", array_contains: userId },
+          },
+        });
+        const attendees = schedule?.attendees as UserAvailability[];
+        const userAvailability = attendees.filter(
+          (attendee) => attendee.user === userId
+        );
+        return userAvailability;
+      } catch (e) {
+        // if user is not logged in, just an empty array
+        return [];
+      }
     }),
 });

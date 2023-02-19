@@ -145,7 +145,6 @@ const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
 function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
   const popupRef = useRef<HTMLDivElement>(null);
   const { timeKey, available, unavailable, clientX } = availabilityStatus;
-  console.log(unavailable);
   const dateString = timeKey.split(":")[0] as string;
   const [startTime, endTime] = parseRange(timeKey) as [string, string];
   const [start, end] = getFormattedHours(

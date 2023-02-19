@@ -33,7 +33,7 @@ const updateSchedule = (
   const updatedAvailability = JSON.parse(
     variables.attendee
   ) as UserAvailability;
-  const newAttendees = prevAttendees.map((attendee) => {
+  const newAttendees = prevAttendees?.map((attendee) => {
     if (attendee.user === updatedAvailability.user) {
       return updatedAvailability;
     }
@@ -50,12 +50,13 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   const queryClient = useQueryClient();
   const setScheduleAvailability = trpc.schedule.setAvailability.useMutation({
     onSuccess: (data, variables) => {
+      const { name, id } = data;
       queryClient.setQueryData(
         [
           ["schedule", "getScheduleFromSlugId"],
           {
-            name: "30 days 24 hours long",
-            id: "kmavxw9n",
+            name,
+            id: id.substring(id.length - 8),
           } as RouterInputs["schedule"]["getScheduleFromSlugId"],
         ],
         (prevData) => {

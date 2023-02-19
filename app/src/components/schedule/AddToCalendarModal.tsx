@@ -9,7 +9,9 @@ import { notice } from "../../pages/schedule/[slug]/index";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
 import { type ScheduleEventCardProps } from "../schedule/ScheduleEventCard";
 
-const GOOGLE_CLIENT_ID = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+// TODO: move google calendar functionality to the backend
+const GOOGLE_CLIENT_ID = "";
+// const GOOGLE_CLIENT_ID = env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 const GOOGLE_SCOPE = "https://www.googleapis.com/auth/calendar";
 const GOOGLE_SCRIPT_SOURCE = "https://accounts.google.com/gsi/client";
 const GOOGLE_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
