@@ -27,15 +27,13 @@ function Layout({ children }: LayoutProps) {
       </Head>
       <Navbar />
       <main className="relative my-auto flex h-full flex-col bg-neutral-900 py-8 text-white">
-        <>
-          {isMenuOpen &&
-            (status === "authenticated" ? (
-              <SignedInNavMenu />
-            ) : (
-              <SignedOutNavMenu />
-            ))}
-          {children}
-        </>
+        {isMenuOpen &&
+          (status === "authenticated" ? (
+            <SignedInNavMenu />
+          ) : (
+            <SignedOutNavMenu />
+          ))}
+        {children}
       </main>
     </>
   );

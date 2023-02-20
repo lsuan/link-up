@@ -9,12 +9,12 @@ import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { notice } from ".";
 import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMessage";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
+import { notice } from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import Unauthenticated from "../../../components/shared/Unauthenticated";
@@ -47,24 +47,11 @@ export type InitialEventInfo = {
 function Publish() {
   const { status } = useSession();
   const router = useRouter();
-  const { schedule, isScheduleLoading, slug } = useSchedule(
-    router,
-    initializeEvents
-  );
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
   const [saveWarning, setSaveWarning] = useState<string>("");
-  const { mutateAsync, isLoading: isCreateEventsLoading } =
-    trpc.event.createEvents.useMutation();
 
-  useEffect(() => {
-    if (events.every((event) => !event.isEditing)) {
-      setSaveWarning("");
-    }
-  }, [events]);
-
-  // using function hoisting here for the onSuccess method in the `useSchedule` hook
-  function initializeEvents(data: Schedule | null) {
+  const initializeEvents = (data: Schedule | null) => {
     if (!data) {
       return;
     }
@@ -74,7 +61,7 @@ function Publish() {
       lengthOfEvents = 0.5;
     }
     const categorizedUsers = categorizeUsers(
-      schedule?.attendees as UserAvailability[]
+      data.attendees as UserAvailability[]
     );
     const blockLength = lengthOfEvents * 2;
     const mostUsers = getMostUsers(categorizedUsers);
@@ -111,7 +98,20 @@ function Publish() {
     }
 
     setEvents([...initialEvents]);
-  }
+  };
+
+  const { schedule, isScheduleLoading, slug } = useSchedule(
+    router,
+    initializeEvents
+  );
+  const { mutateAsync, isLoading: isCreateEventsLoading } =
+    trpc.event.createEvents.useMutation();
+
+  useEffect(() => {
+    if (events.every((event) => !event.isEditing)) {
+      setSaveWarning("");
+    }
+  }, [events]);
 
   const setErrorBorder = () => {
     const eventsWithUnsavedEdits = events.map((event) => {
@@ -120,12 +120,11 @@ function Publish() {
           ...event,
           className: "border border-red-500",
         };
-      } else {
-        return {
-          ...event,
-          className: "",
-        };
       }
+      return {
+        ...event,
+        className: "",
+      };
     });
     setEvents([...eventsWithUnsavedEdits]);
   };
@@ -140,7 +139,7 @@ function Publish() {
         type NewEvent = Omit<InitialEventInfo, "isEditing" & "className">;
         const newEvent: NewEvent = event;
 
-        // needed so we can use a more accurate comparison for seeing upcoming events in `eventRouter.getUpcoming`
+        // needed for a more accurate comparison for upcoming events in `eventRouter.getUpcoming`
         // events will stay on upcoming until event ends
         const endHour = getHourNumber(newEvent.endTime);
         const startMins = Number.isInteger(endHour) ? "00" : "30";
@@ -191,84 +190,80 @@ function Publish() {
   }
 
   return (
-    <>
-      <section className="px-8">
-        <BackArrow href={`/schedule/${slug}`} page="Schedule" />
-        <ScheduleHeader
-          title="Publish Event(s)"
-          scheduleName={schedule?.name ?? ""}
-        />
-        {schedule && <AvailabilityResponses schedule={schedule} />}
-        <h3 className="mt-8 mb-4 font-semibold">
-          {`These are the best times based on your preferences (${
-            schedule?.numberOfEvents
-          } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
-            schedule?.lengthOfEvents
-          } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
-        </h3>
-        <div className="flex flex-col items-center gap-4">
-          {events.map((event, index) => {
-            return (
-              <div key={index} className="w-full">
-                {events[index]?.isEditing ? (
-                  <EditEventCard
-                    index={index}
-                    events={events}
-                    scheduleStartTime={schedule?.startTime ?? ""}
-                    scheduleEndTime={schedule?.endTime ?? ""}
-                    setEvents={setEvents}
-                    deleteEvent={deleteEvent}
-                    className={
-                      event.className && event.className !== ""
-                        ? ` ${event.className}`
-                        : ""
-                    }
-                  />
-                ) : (
-                  <PublishEventCard
-                    index={index}
-                    events={events}
-                    setEvents={setEvents}
-                    deleteEvent={deleteEvent}
-                    attendees={schedule?.attendees as UserAvailability[]}
-                  />
-                )}
-              </div>
-            );
-          })}
-          <button
-            className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-            onClick={() => addEvent()}
+    <section className="px-8">
+      <BackArrow href={`/schedule/${slug}`} page="Schedule" />
+      <ScheduleHeader
+        title="Publish Event(s)"
+        scheduleName={schedule?.name ?? ""}
+      />
+      {schedule && <AvailabilityResponses schedule={schedule} />}
+      <h3 className="mt-8 mb-4 font-semibold">
+        {`These are the best times based on your preferences (${
+          schedule?.numberOfEvents
+        } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
+          schedule?.lengthOfEvents
+        } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
+      </h3>
+      <div className="flex flex-col items-center gap-4">
+        {events.map((event, index) => (
+          <div
+            key={`${event.date}, ${event.startTime}-${event.endTime}`}
+            className="w-full"
           >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-          {saveWarning !== "" && (
-            <div className="-mb-6 w-full">
-              <ServerSideErrorMessage error={saveWarning} />
-            </div>
-          )}
-          <button
-            className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
-            onClick={() => handlePublish()}
-          >
-            {isCreateEventsLoading ? (
-              <>
-                <FontAwesomeIcon
-                  icon={faCircleNotch}
-                  className="animate-spin"
-                />
-                <span>Submitting...</span>
-              </>
+            {events[index]?.isEditing ? (
+              <EditEventCard
+                index={index}
+                events={events}
+                scheduleStartTime={schedule?.startTime ?? ""}
+                scheduleEndTime={schedule?.endTime ?? ""}
+                setEvents={setEvents}
+                deleteEvent={deleteEvent}
+                className={
+                  event.className && event.className !== ""
+                    ? ` ${event.className}`
+                    : ""
+                }
+              />
             ) : (
-              <>
-                <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-                <span>Confirm and Publish</span>
-              </>
+              <PublishEventCard
+                index={index}
+                events={events}
+                setEvents={setEvents}
+                deleteEvent={deleteEvent}
+                attendees={schedule?.attendees as UserAvailability[]}
+              />
             )}
-          </button>
-        </div>
-      </section>
-    </>
+          </div>
+        ))}
+        <button
+          className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+          onClick={() => addEvent()}
+        >
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
+        {saveWarning !== "" && (
+          <div className="-mb-6 w-full">
+            <ServerSideErrorMessage error={saveWarning} />
+          </div>
+        )}
+        <button
+          className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
+          onClick={() => handlePublish()}
+        >
+          {isCreateEventsLoading ? (
+            <>
+              <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
+              <span>Submitting...</span>
+            </>
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faListCheck} className="mr-2" />
+              <span>Confirm and Publish</span>
+            </>
+          )}
+        </button>
+      </div>
+    </section>
   );
 }
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
-export const scheduleRouter = router({
+const scheduleRouter = router({
   /** Creates a new schedule with the specified inputs. */
   createSchedule: protectedProcedure
     .input(
@@ -56,7 +56,7 @@ export const scheduleRouter = router({
           id: {
             endsWith: id,
           },
-          name: name,
+          name,
         },
         include: {
           host: true,
@@ -67,14 +67,17 @@ export const scheduleRouter = router({
       return schedule;
     }),
 
-  /** Finds all unpublished schedules that the user is hosting and ones in which the user has submitted availability. */
+  /**
+   * Finds all unpublished schedules that the user is hosting
+   * and ones in which the user has submitted availability.
+   */
   getUnstartedSchedules: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
     const unstarted = await ctx.prisma.schedule.findMany({
       where: {
         OR: [
           {
-            userId: userId,
+            userId,
           },
           {
             attendees: {
@@ -123,7 +126,7 @@ export const scheduleRouter = router({
 
       if (prevData?.length > 0) {
         const otherData = prevData.filter(
-          (entry) => entry["user"] !== jsonData["user"]
+          (entry) => entry.user !== jsonData.user
         );
         dataToStore = otherData.concat([jsonData]);
       } else {
@@ -162,3 +165,5 @@ export const scheduleRouter = router({
       }
     }),
 });
+
+export default scheduleRouter;

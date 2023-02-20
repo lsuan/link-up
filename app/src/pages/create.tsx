@@ -10,7 +10,8 @@ import CustomDatePicker, {
   CalendarHeader,
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
-import { Form } from "../components/form/Form";
+import Form from "../components/form/Form";
+import { notice } from "../components/schedule/SuccessNotice";
 import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
@@ -18,7 +19,6 @@ import Unauthenticated from "../components/shared/Unauthenticated";
 import { getTimeOptions, MINUTES } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
-import { notice } from "./schedule/[slug]";
 
 const MAX_SCHEDULE_RANGE = 30;
 
@@ -157,8 +157,8 @@ function Create() {
     });
 
     if (res) {
-      const { name, id } = res.schedule;
-      const slug = createSlug(name, id);
+      const { name: currentName, id } = res.schedule;
+      const slug = createSlug(currentName, id);
       setNoticeMessage("Your schedule has successfully been created!");
       router.push(`schedule/${slug}`);
     }
@@ -178,7 +178,7 @@ function Create() {
       setDefaultValues({
         ...defaultValues,
         dateRange: {
-          startDate: startDate,
+          startDate,
           endDate: null,
           isOneDay: true,
         },
@@ -192,9 +192,8 @@ function Create() {
     const options = mins.map((min) => {
       if (min >= 60) {
         return `${min / 60} ${min / 60 === 1 ? "hour" : "hours"}`;
-      } else {
-        return `${min} mins`;
       }
+      return `${min} mins`;
     });
     return options;
   };
@@ -222,7 +221,7 @@ function Create() {
           name="scheduleName"
           displayName="Name"
           type="text"
-          required={true}
+          required
         />
         {/* TODO: add tinymce integration */}
         <Form.Input name="description" displayName="Description" type="text" />
@@ -249,7 +248,21 @@ function Create() {
             selectsRange
             inline
             dayClassName={() => "p-1 m-1 rounded-lg"}
-            renderCustomHeader={CalendarHeader}
+            renderCustomHeader={({
+              date,
+              decreaseMonth,
+              increaseMonth,
+              prevMonthButtonDisabled,
+              nextMonthButtonDisabled,
+            }) => (
+              <CalendarHeader
+                date={date}
+                decreaseMonth={decreaseMonth}
+                increaseMonth={increaseMonth}
+                prevMonthButtonDisabled={prevMonthButtonDisabled}
+                nextMonthButtonDisabled={nextMonthButtonDisabled}
+              />
+            )}
             disabled={defaultValues.dateRange.isOneDay}
             disabledKeyboardNavigation={defaultValues.dateRange.isOneDay}
             ariaInvalid={defaultValues.dateRange.isOneDay ? "true" : "false"}
@@ -285,22 +298,14 @@ function Create() {
             required
           />
         </div>
+        {/* TODO: add custom header with custom title */}
         <DatePicker
           selected={defaultValues.deadline}
           onChange={(date) =>
             setDefaultValues({ ...defaultValues, deadline: date })
           }
-          customInput={
-            <CustomDatePicker label="Deadline to fill by"></CustomDatePicker>
-          }
-          calendarContainer={({ children }) => (
-            <CalendarContainer
-              title={"When should attendees send their availability by?"}
-              className="border border-neutral-500"
-            >
-              {children}
-            </CalendarContainer>
-          )}
+          customInput={<CustomDatePicker label="Deadline to fill by" />}
+          calendarContainer={CalendarContainer}
           onCalendarOpen={() => setIsDatePickerOpen(true)}
           onCalendarClose={() => setIsDatePickerOpen(false)}
           dayClassName={() => "p-1 m-1 rounded-lg"}

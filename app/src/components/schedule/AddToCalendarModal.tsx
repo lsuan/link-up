@@ -3,11 +3,10 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
-import { env } from "../../env/client.mjs";
 import { googleAccessToken } from "../../pages/schedule/google-oauth-redirect";
-import { notice } from "../../pages/schedule/[slug]/index";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
-import { type ScheduleEventCardProps } from "../schedule/ScheduleEventCard";
+import { type ScheduleEventCardProps } from "./ScheduleEventCard";
+import { notice } from "./SuccessNotice";
 
 // TODO: move google calendar functionality to the backend
 const GOOGLE_CLIENT_ID = "";
@@ -88,7 +87,7 @@ function AddToCalendarModal({
       );
 
       if (Object.keys(googleResponse).includes("error")) {
-        console.log("error", googleResponse);
+        console.error("error", googleResponse);
       } else {
         setNoticeMessage(`Event ${name} has been saved to Google Calendar`);
       }
@@ -97,7 +96,7 @@ function AddToCalendarModal({
 
     const params = {
       client_id: GOOGLE_CLIENT_ID,
-      redirect_uri: `http://localhost:3000/schedule/google-oauth-redirect`,
+      redirect_uri: "http://localhost:3000/schedule/google-oauth-redirect",
       response_type: "token",
       scope: GOOGLE_SCOPE,
       include_granted_scopes: "true",
@@ -107,18 +106,19 @@ function AddToCalendarModal({
     };
 
     const form = document.getElementById("google-auth") as HTMLFormElement;
-    for (const field in params) {
+    Object.keys(params).forEach((field) => {
       const input = document.createElement("input");
       input.setAttribute("type", "hidden");
       input.setAttribute("name", field);
       input.setAttribute("value", params[field as keyof typeof params]);
       form.appendChild(input);
-    }
+    });
+
     form.submit();
   };
 
   const handleAddToGoogleCalendar = () => {
-    const google = window.google;
+    const { google } = window;
     google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: handleGoogleSignIn(),

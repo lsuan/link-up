@@ -1,12 +1,41 @@
 import { type FieldError, type FieldErrorsImpl } from "react-hook-form";
 
+export const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
+const HOURS: readonly number[] = [
+  0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9,
+  9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16, 16.5, 17,
+  17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21, 21.5, 22, 22.5, 23, 23.5, 24,
+] as const;
+
 export type PasswordCondition = {
   regex: RegExp;
   message: string;
   isFulFilled: boolean;
 };
+
+export const MINUTES = [
+  30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900,
+  960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440,
+] as const;
+
+// eslint-disable-next-line no-useless-escape
 export const EMAIL_REGEX = /[\w]+@[a-z]+[\.][a-z]+/;
 export const PASSWORD_REGEX =
+  // eslint-disable-next-line no-useless-escape
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*])[a-zA-Z\d!@#\$%\^&\*]{8,}$/g;
 export const PASSWORD_REGEX_CONDITIONS: PasswordCondition[] = [
   {
@@ -26,6 +55,7 @@ export const PASSWORD_REGEX_CONDITIONS: PasswordCondition[] = [
   },
   { regex: /^.*\d.*$/g, message: "At least 1 number", isFulFilled: false },
   {
+    // eslint-disable-next-line no-useless-escape
     regex: /^.*[!@#\$%\^&\*].*$/g,
     message: "At least 1 special character",
     isFulFilled: false,
@@ -45,41 +75,23 @@ export const parseDeepErrors = (
   const parsedName = name.split(".");
   if (parsedName.length <= 1) return errors[name]?.message;
 
-  if (parsedName[0] && errors.hasOwnProperty(parsedName[0])) {
+  if (parsedName[0] && Object.keys(errors).includes(parsedName[0])) {
     const root = errors[parsedName[0]];
     if (root) {
       let children = "";
       for (let i = 1; i < parsedName.length; i++) {
         const child = parsedName[i] as string;
-        if (root.hasOwnProperty(child)) {
+        if (Object.keys(root).includes(parsedName[0])) {
           children += child;
         }
       }
       let innerObject = { message: "" };
-      if (root.hasOwnProperty(children)) {
+      if (Object.keys(root).includes(parsedName[0])) {
         innerObject = root[children as keyof FieldError] as { message: string };
       }
       return root.message ? root.message : innerObject.message;
     }
   }
-};
-
-/** Returns all the available time options from 12 AM to 11:59 PM.
- * Takes optional parameters to specify the range of times for a given select element.
- */
-export const getTimeOptions = (
-  start = 0,
-  end: number | undefined = undefined
-) => {
-  const startIndex = HOURS.findIndex((hour) => hour === start);
-  const endIndex = end
-    ? HOURS.findIndex((hour) => hour === end) + 1
-    : undefined;
-  const formattedHours = getFormattedHours(
-    HOURS.slice(startIndex, endIndex),
-    "long"
-  );
-  return formattedHours;
 };
 
 /** Converts an array of numbers representing hours into a formatted string.
@@ -116,28 +128,20 @@ export const getFormattedHours = (hours: number[], style: "long" | "short") => {
   return formattedHours;
 };
 
-export const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-] as const;
-
-const HOURS: readonly number[] = [
-  0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9,
-  9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16, 16.5, 17,
-  17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21, 21.5, 22, 22.5, 23, 23.5, 24,
-] as const;
-
-export const MINUTES = [
-  30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900,
-  960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440,
-] as const;
+/** Returns all the available time options from 12 AM to 11:59 PM.
+ * Takes optional parameters to specify the range of times for a given select element.
+ */
+export const getTimeOptions = (
+  start = 0,
+  end: number | undefined = undefined
+) => {
+  const startIndex = HOURS.findIndex((hour) => hour === start);
+  const endIndex = end
+    ? HOURS.findIndex((hour) => hour === end) + 1
+    : undefined;
+  const formattedHours = getFormattedHours(
+    HOURS.slice(startIndex, endIndex),
+    "long"
+  );
+  return formattedHours;
+};

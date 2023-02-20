@@ -30,118 +30,6 @@ type PopupPosition = {
   translate: string;
 };
 
-const AvailabilityGridReadCell = memo(function AvailabilityGridReadCell({
-  attendees,
-  allUsers,
-  dates,
-  date,
-  dateIndex,
-  hours,
-  hour,
-  hourIndex,
-}: {
-  attendees: UserAvailability[];
-  allUsers: string[];
-  dates: Date[];
-  date: Date;
-  dateIndex: number;
-  hours: number[];
-  hour: number;
-  hourIndex: number;
-}) {
-  const [status, setStatus] = useState<AvailabilityStatus>();
-  const categorizedUsers = useMemo(
-    () => categorizeUsers(attendees),
-    [attendees]
-  );
-  const mostUsers = useMemo(
-    () => getMostUsers(categorizedUsers),
-    [categorizedUsers]
-  );
-
-  const getUsers = useCallback(
-    (date: Date, hour: string) => {
-      if (!categorizedUsers) {
-        return;
-      }
-      const formattedDate = date.toISOString().split("T")[0];
-      const timeKey = `${formattedDate}:${hour}`;
-      return categorizedUsers.get(timeKey);
-    },
-    [categorizedUsers]
-  );
-
-  const onMouseOver = (e: React.MouseEvent, date: Date, hour: string) => {
-    const availabilityStatus: AvailabilityStatus = {
-      timeKey: "",
-      available: [],
-      unavailable: [],
-      clientX: e.clientX,
-    };
-
-    setUsersByTime(date, hour, availabilityStatus);
-  };
-
-  const setUsersByTime = (
-    date: Date,
-    hour: string,
-    availabilityStatus: AvailabilityStatus
-  ) => {
-    const users = getUsers(date, hour);
-    if (!users) {
-      return;
-    }
-    const unavailableUsers = allUsers.filter((user) => {
-      return !users?.includes(user);
-    });
-    const formattedDate = date.toISOString().split("T")[0];
-    const timeKey = `${formattedDate}:${hour}`;
-    const updatedAvailabilityStatus = {
-      ...availabilityStatus,
-      timeKey,
-      available: users,
-      unavailable: unavailableUsers,
-    };
-
-    setStatus(
-      updatedAvailabilityStatus?.available.length !== 0
-        ? updatedAvailabilityStatus
-        : undefined
-    );
-  };
-
-  const users = useMemo(
-    () => getUsers(date, `${hour}-${hour + 0.5}`)?.length,
-    [date, hour, getUsers]
-  );
-  const colors = useMemo(() => setColors(mostUsers), [mostUsers]);
-
-  const cellColor = useMemo(
-    () => getCellColor(users ?? 0, mostUsers, colors),
-    [mostUsers, colors, users]
-  );
-
-  return (
-    <section className="relative">
-      {status && status.available.length !== 0 && (
-        <AvailabilityPopUp {...status} />
-      )}
-      <div
-        data-time={`${hour}-${hour + 0.5}`}
-        className={`h-10 w-20 transition-all ${
-          dateIndex !== dates.length - 1 ? "border-r" : ""
-        } ${
-          hourIndex !== hours.length - 1 ? "border-b border-b-neutral-100" : ""
-        } ${users ? `cursor-pointer ${cellColor}` : ""}`}
-        onMouseOver={(e) =>
-          users ? onMouseOver(e, date, `${hour}-${hour + 0.5}`) : null
-        }
-        onMouseLeave={() => setStatus(undefined)}
-      />
-    </section>
-  );
-});
-
 function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
   const popupRef = useRef<HTMLDivElement>(null);
   const { timeKey, available, unavailable, clientX } = availabilityStatus;
@@ -159,7 +47,7 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
     }
     const popup = popupRef.current as HTMLDivElement;
 
-    const positions = {
+    const currentPositions = {
       vertical: "top-4",
       horizontal: "-left-40",
       translate: "-translate-y-4",
@@ -181,14 +69,14 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
 
     // if container is too small
     if (containerWidth - timeLabelsWidth - containerPaddingX < 160) {
-      positions.vertical =
+      currentPositions.vertical =
         topOverflow > gridHeight ? "bottom-full" : "top-full";
-      positions.horizontal =
+      currentPositions.horizontal =
         clientX < (containerWidth + containerPaddingX) / 2
           ? "left-0"
           : "right-0";
-      positions.translate = "";
-      setPositions({ ...positions });
+      currentPositions.translate = "";
+      setPositions({ ...currentPositions });
       return;
     }
 
@@ -196,14 +84,14 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
       clientX - popupWidth - cellWidth / 2 - timeLabelsWidth - borderOffset <=
       0
     ) {
-      positions.horizontal = "-right-40";
+      currentPositions.horizontal = "-right-40";
     }
     if (topOverflow > gridHeight) {
-      positions.vertical = "bottom-4";
-      positions.translate = "translate-y-4";
+      currentPositions.vertical = "bottom-4";
+      currentPositions.translate = "translate-y-4";
     }
 
-    setPositions({ ...positions });
+    setPositions({ ...currentPositions });
   }, [clientX, popupRef]);
 
   return (
@@ -234,5 +122,126 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
     </div>
   );
 }
+
+const AvailabilityGridReadCell = memo(
+  ({
+    attendees,
+    allUsers,
+    dates,
+    date,
+    dateIndex,
+    hours,
+    hour,
+    hourIndex,
+  }: {
+    attendees: UserAvailability[];
+    allUsers: string[];
+    dates: Date[];
+    date: Date;
+    dateIndex: number;
+    hours: number[];
+    hour: number;
+    hourIndex: number;
+  }) => {
+    const [status, setStatus] = useState<AvailabilityStatus>();
+    const categorizedUsers = useMemo(
+      () => categorizeUsers(attendees),
+      [attendees]
+    );
+    const mostUsers = useMemo(
+      () => getMostUsers(categorizedUsers),
+      [categorizedUsers]
+    );
+
+    const getUsers = useCallback(
+      (currentDate: Date, currentHour: string) => {
+        if (!categorizedUsers) {
+          return;
+        }
+        const formattedDate = currentDate.toISOString().split("T")[0];
+        const timeKey = `${formattedDate}:${currentHour}`;
+        return categorizedUsers.get(timeKey);
+      },
+      [categorizedUsers]
+    );
+
+    const setUsersByTime = (
+      currentDate: Date,
+      currentHour: string,
+      availabilityStatus: AvailabilityStatus
+    ) => {
+      const users = getUsers(currentDate, currentHour);
+      if (!users) {
+        return;
+      }
+      const unavailableUsers = allUsers.filter(
+        (user) => !users?.includes(user)
+      );
+      const formattedDate = currentDate.toISOString().split("T")[0];
+      const timeKey = `${formattedDate}:${currentHour}`;
+      const updatedAvailabilityStatus = {
+        ...availabilityStatus,
+        timeKey,
+        available: users,
+        unavailable: unavailableUsers,
+      };
+
+      setStatus(
+        updatedAvailabilityStatus?.available.length !== 0
+          ? updatedAvailabilityStatus
+          : undefined
+      );
+    };
+
+    const onMouseOver = (
+      e: React.MouseEvent,
+      currentDate: Date,
+      currentHour: string
+    ) => {
+      const availabilityStatus: AvailabilityStatus = {
+        timeKey: "",
+        available: [],
+        unavailable: [],
+        clientX: e.clientX,
+      };
+
+      setUsersByTime(currentDate, currentHour, availabilityStatus);
+    };
+
+    const users = useMemo(
+      () => getUsers(date, `${hour}-${hour + 0.5}`)?.length,
+      [date, hour, getUsers]
+    );
+    const colors = useMemo(() => setColors(mostUsers), [mostUsers]);
+
+    const cellColor = useMemo(
+      () => getCellColor(users ?? 0, mostUsers, colors),
+      [mostUsers, colors, users]
+    );
+
+    return (
+      <section className="relative">
+        {status && status.available.length !== 0 && (
+          <AvailabilityPopUp {...status} />
+        )}
+        <div
+          data-time={`${hour}-${hour + 0.5}`}
+          className={`h-10 w-20 transition-all ${
+            dateIndex !== dates.length - 1 ? "border-r" : ""
+          } ${
+            hourIndex !== hours.length - 1
+              ? "border-b border-b-neutral-100"
+              : ""
+          } ${users ? `cursor-pointer ${cellColor}` : ""}`}
+          onPointerOver={(e) =>
+            users && onMouseOver(e, date, `${hour}-${hour + 0.5}`)
+          }
+          onFocus={(e) => e} // TODO: include onFocus for accessibility
+          onPointerLeave={() => setStatus(undefined)}
+        />
+      </section>
+    );
+  }
+);
 
 export default AvailabilityGridReadCell;

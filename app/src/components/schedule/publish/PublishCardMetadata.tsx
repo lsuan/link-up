@@ -16,11 +16,9 @@ const listUsers = (users: string[]) => {
 
   const formatted = users.join(", ");
   const lastCommaIndex = formatted.lastIndexOf(",");
-  return (
-    formatted.slice(0, lastCommaIndex + 1) +
-    " and" +
-    formatted.slice(lastCommaIndex + 1)
-  );
+  return `${formatted.slice(0, lastCommaIndex + 1)} " and" ${formatted.slice(
+    lastCommaIndex + 1
+  )}`;
 };
 
 type Metadata = {
@@ -43,7 +41,6 @@ function PublishCardMetadata({
   const dateString = date.toISOString().split("T")[0];
   const categorizedUsers = categorizeUsers(attendees) as Map<string, string[]>;
   const allUsers = attendees.length;
-  console.log(attendees);
 
   // FIXME: Right now metadata shows old user name.
   // Should fix the mutation in settings to change the user name in every availability entry.
@@ -95,13 +92,11 @@ function PublishCardMetadata({
 
   return (
     <ul className="list-inside list-disc py-4">
-      {metadata.map((entry, index) => {
-        return (
-          <li key={index} className={entry.className}>
-            {entry.message}
-          </li>
-        );
-      })}
+      {metadata.map((entry) => (
+        <li key={entry.message} className={entry.className}>
+          {entry.message}
+        </li>
+      ))}
     </ul>
   );
 }

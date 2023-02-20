@@ -1,9 +1,10 @@
 import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
-import { notice, shareModalShown } from "../../pages/schedule/[slug]";
+import { notice } from "./SuccessNotice";
 
+export const shareModalShown = atom(false);
 function Share() {
   const [, setIsShareModalShown] = useAtom(shareModalShown);
   const [, setNoticeMessage] = useAtom(notice);

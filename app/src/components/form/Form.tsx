@@ -28,8 +28,11 @@ type GenericOnSubmit = (
   event?: React.BaseSyntheticEvent
 ) => void;
 
-/** Generic form component that abstracts the implementation of React-Hook-Form and allows for custom reusable child components. */
-export function Form<
+/**
+ * Generic form component that abstracts the implementation of React-Hook-Form.
+ * It allows for custom reusable child components.
+ */
+export default function Form<
   DataSchema extends Record<string, unknown>,
   Schema extends z.Schema<unknown>
 >({
@@ -50,8 +53,7 @@ export function Form<
     defaultValues,
     resolver: zodResolver(schema),
   });
-  const handleSubmit = methods.handleSubmit;
-  const reset = methods.reset;
+  const { handleSubmit, reset } = methods;
 
   useEffect(() => {
     reset(defaultValues);
@@ -90,7 +92,7 @@ Form.Input = function Input({
 
   return (
     <>
-      {type !== "hidden" ? (
+      {type !== "hidden" && (
         <div className="flex flex-col gap-1">
           {type !== "hidden" && (
             <fieldset className="relative">
@@ -115,7 +117,7 @@ Form.Input = function Input({
 
               <label
                 className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
-              peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0 
+              peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
               peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
               peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-white"
                 htmlFor={name}
@@ -127,13 +129,8 @@ Form.Input = function Input({
           )}
           {error && <InputErrorMessage error={error as string} />}
         </div>
-      ) : (
-        <>
-          {error && (
-            <InputErrorMessage error={error as string} className="-mt-3" />
-          )}
-        </>
       )}
+      {error && <InputErrorMessage error={error as string} className="-mt-3" />}
     </>
   );
 };
@@ -163,9 +160,8 @@ Form.Password = function Input({
     const currentConditions = conditions.map((condition) => {
       if (password?.match(condition.regex)) {
         return { ...condition, isFulFilled: true };
-      } else {
-        return { ...condition, isFulFilled: false };
       }
+      return { ...condition, isFulFilled: false };
     });
     setConditions(currentConditions);
   }, [conditions, password]);
@@ -173,23 +169,21 @@ Form.Password = function Input({
   return (
     <>
       <ul className="rounded-lg bg-neutral-700 p-4 text-sm">
-        {conditions.map((condition, index) => {
-          return (
-            <li
-              key={index}
-              className={`flex items-center gap-2${
-                condition.isFulFilled ? " text-green-300" : " text-white"
-              }`}
-            >
-              {condition.isFulFilled ? (
-                <FontAwesomeIcon icon={faCheckCircle} />
-              ) : (
-                <FontAwesomeIcon icon={faExclamationCircle} />
-              )}
-              <p>{condition.message}</p>
-            </li>
-          );
-        })}
+        {conditions.map((condition) => (
+          <li
+            key={condition.message}
+            className={`flex items-center gap-2${
+              condition.isFulFilled ? " text-green-300" : " text-white"
+            }`}
+          >
+            {condition.isFulFilled ? (
+              <FontAwesomeIcon icon={faCheckCircle} />
+            ) : (
+              <FontAwesomeIcon icon={faExclamationCircle} />
+            )}
+            <p>{condition.message}</p>
+          </li>
+        ))}
       </ul>
 
       <Form.Input
@@ -232,15 +226,15 @@ Form.Select = function Select({
           }`}
           placeholder={displayName}
         >
-          {options.map((option, index) => (
-            <option key={index} value={option}>
+          {options.map((option) => (
+            <option key={option} value={option}>
               {option}
             </option>
           ))}
         </select>
         <label
           className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
-        peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0 
+        peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
         peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
         peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-white"
           htmlFor={name}

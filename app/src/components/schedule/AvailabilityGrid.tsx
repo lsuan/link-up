@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import {
   getHourNumber,
+  type AvailabilityProps,
   type UserAvailability,
 } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
@@ -8,7 +9,6 @@ import { getShortenedDateWithDay } from "../../utils/timeUtils";
 // import Loading from "../shared/Loading";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
-import { type AvailabilityProps } from "./AvailabilitySection";
 
 function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
   const { startDate, endDate, startTime, endTime, attendees } = schedule;
@@ -35,8 +35,8 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
     return dates;
   };
 
-  const startHour = getHourNumber(startTime),
-    endHour = getHourNumber(endTime);
+  const startHour = getHourNumber(startTime);
+  const endHour = getHourNumber(endTime);
 
   const getAllHours = () => {
     const hours = [...Array(endHour - startHour + 1).keys()].map(
@@ -52,12 +52,10 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
   };
 
   const hours = getAllHours();
-  const getAllFormattedHours = () => {
-    return getFormattedHours(hours, "long");
-  };
+  const getAllFormattedHours = () => getFormattedHours(hours, "long");
 
-  const dates = getAllDates(),
-    formattedHours = getAllFormattedHours();
+  const dates = getAllDates();
+  const formattedHours = getAllFormattedHours();
 
   return (
     <section className="availability-container">
@@ -66,33 +64,29 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
         ref={gridRef}
       >
         <div className="relative flex w-full justify-end">
-          {dates.map((date: Date) => {
-            return (
-              <label
-                key={date.toDateString()}
-                className="pointer-events-none w-20 select-none pb-2 text-center text-xs font-semibold"
-              >
-                {getShortenedDateWithDay(date)}
-              </label>
-            );
-          })}
+          {dates.map((date: Date) => (
+            <span
+              key={date.toDateString()}
+              className="pointer-events-none w-20 select-none pb-2 text-center text-xs font-semibold"
+            >
+              {getShortenedDateWithDay(date)}
+            </span>
+          ))}
         </div>
         <div className="border-grey-500 flex w-fit pl-1">
           <div className="sticky left-0 z-10 -mt-2 mr-2 flex flex-col bg-inherit">
-            {formattedHours.map((hour, index) => {
-              return (
-                <label
-                  key={hour}
-                  className={`pointer-events-none mx-auto w-max text-xs font-semibold ${
-                    index < hours.length - 1
-                      ? "h-10"
-                      : "absolute -bottom-[0.45rem] left-1/2 -translate-x-1/2"
-                  }`}
-                >
-                  {hour}
-                </label>
-              );
-            })}
+            {formattedHours.map((hour, index) => (
+              <span
+                key={hour}
+                className={`pointer-events-none mx-auto w-max text-xs font-semibold ${
+                  index < hours.length - 1
+                    ? "h-10"
+                    : "absolute -bottom-[0.45rem] left-1/2 -translate-x-1/2"
+                }`}
+              >
+                {hour}
+              </span>
+            ))}
           </div>
           {mode === "read" ? (
             <AvailabilityGridRead

@@ -1,4 +1,12 @@
+import { type Schedule } from "@prisma/client";
+import { atom } from "jotai";
 import { getFormattedHours } from "./formUtils";
+
+export type AvailabilityProps = {
+  schedule: Schedule;
+  slug?: string;
+  mode?: "read" | "write";
+};
 
 export type UserAvailability = {
   user: string;
@@ -12,6 +20,10 @@ export type TimeBlock = {
   endTime: string;
 };
 
+export const disabled = atom<boolean>(true);
+export const selected = atom<string[]>([]);
+export const updated = atom<boolean>(false);
+
 /** Takes a time in the format tt:X0 XM and returns its numerical value */
 export const getHourNumber = (time: string) => {
   const [timeValue, meridiem] = time.split(" ") as [string, string];
@@ -20,7 +32,9 @@ export const getHourNumber = (time: string) => {
 
   if (hour === "11:59") {
     return 24;
-  } else if (meridiem === "PM" && hourNumber !== 12) {
+  }
+
+  if (meridiem === "PM" && hourNumber !== 12) {
     hourNumber += 12;
   } else if (meridiem === "AM" && hourNumber === 12) {
     return 0;
@@ -44,9 +58,9 @@ export const categorizeUsers = (attendees: UserAvailability[]) => {
   }
   const categorizedUsers = new Map<string, string[]>();
   attendees.forEach((attendee) => {
-    const name = attendee.name;
+    const { name } = attendee;
 
-    for (const [date, times] of Object.entries(attendee.availability)) {
+    Object.entries(attendee.availability).forEach(([date, times]) => {
       times.forEach((time: string) => {
         const timeKey = `${date}:${time}`;
         const users = categorizedUsers.get(timeKey);
@@ -56,13 +70,13 @@ export const categorizeUsers = (attendees: UserAvailability[]) => {
           categorizedUsers.set(timeKey, [name]);
         }
       });
-    }
+    });
   });
 
   return categorizedUsers;
 };
 
-/** Returns the highest number of available users, different from the number of all users which is just the length of attendees. */
+/** Returns the highest number of available users, different from the number of all users. */
 export const getMostUsers = (
   categorizedUsers: Map<string, string[]> | undefined
 ) => {
@@ -134,13 +148,17 @@ export const getCellColor = (
   // ranges go up by 20% since 1/5 === 20%
   if (ratio === 1) {
     return colors[4];
-  } else if (ratio > 0.75 && ratio < 1) {
+  }
+  if (ratio > 0.75 && ratio < 1) {
     return colors[3];
-  } else if (ratio > 0.5 && ratio <= 0.75) {
+  }
+  if (ratio > 0.5 && ratio <= 0.75) {
     return colors[2];
-  } else if (ratio > 0.25 && ratio <= 0.5) {
+  }
+  if (ratio > 0.25 && ratio <= 0.5) {
     return colors[1];
-  } else if (ratio <= 0.25) {
+  }
+  if (ratio <= 0.25) {
     return colors[0];
   }
 };
@@ -172,13 +190,11 @@ export const getBestTimesPerDay = (
   const betterEntries = categorizedEntries.filter(
     (entry) => entry[1].length > Math.round(mostUsers / 2)
   );
-  betterEntries.sort((a, b) => {
-    return b[1].length - a[1].length;
-  });
+  betterEntries.sort((a, b) => b[1].length - a[1].length);
   const bestTimes = new Map(betterEntries);
   const bestTimesPerDay = new Map<string, string[][]>();
 
-  for (const time of bestTimes.keys()) {
+  Array.from(bestTimes.keys()).forEach((time) => {
     const [day, hours] = time.split(":") as [day: string, hours: string];
     const prevHours = bestTimesPerDay.get(day);
 
@@ -204,7 +220,7 @@ export const getBestTimesPerDay = (
     } else {
       bestTimesPerDay.set(day, [[hours]]);
     }
-  }
+  });
   return bestTimesPerDay;
 };
 
@@ -239,13 +255,9 @@ export const getHeuristics = (
   return heuristics;
 };
 
-const getPrevHour = (upper: string) => {
-  return Number(upper) - 0.5;
-};
+const getPrevHour = (upper: string) => Number(upper) - 0.5;
 
-const getNextHour = (lower: string) => {
-  return Number(lower) + 0.5;
-};
+const getNextHour = (lower: string) => Number(lower) + 0.5;
 
 /** Returns the time block that is earliest and closest to the targetValue. */
 export const getBestTimeBlock = (
@@ -279,7 +291,7 @@ export const getBestTimeBlock = (
         chosenBlocks.push(blockMap);
       }
     });
-    dayIndex++;
+    dayIndex += 1;
   });
 
   // sort the chosen blocks by heuristic in descending order

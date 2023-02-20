@@ -9,8 +9,8 @@ export const hashPassword = async (password: string): Promise<string> => {
 
 export const comparePassword = async (
   password: string,
-  hash: string
+  passwordHash: string
 ): Promise<boolean> => {
-  const result = await compare(password, hash);
+  const result = await compare(password, passwordHash);
   return result;
 };

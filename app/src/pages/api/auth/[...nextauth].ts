@@ -7,6 +7,7 @@ import TwitterProvider from "next-auth/providers/twitter";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { comparePassword } from "../../../utils/passwordUtils";
 
+// eslint-disable-next-line import/extensions
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 
@@ -45,9 +46,7 @@ export const authOptions: NextAuthOptions = {
         };
 
         const user = await prisma.user.findFirst({
-          where: {
-            email: email,
-          },
+          where: { email },
         });
 
         const isValid =

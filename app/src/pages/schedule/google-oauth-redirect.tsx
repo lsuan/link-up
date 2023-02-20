@@ -1,8 +1,8 @@
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { notice } from "../../components/schedule/SuccessNotice";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
-import { notice } from "./[slug]";
 
 export const googleAccessToken = atom<string>("");
 
@@ -20,9 +20,12 @@ function GoogleCalendarRedirect() {
       if (name === "state") {
         const decoded = decodeURIComponent(value);
         // state fields are encoded, so they need to be decoded and added back to the map
-        decoded.split("&").forEach((field) => {
-          const [name, value] = field.split("=") as [string, string];
-          paramsMap.set(name, value);
+        decoded.split("&").forEach((currentField) => {
+          const [currentName, currentValue] = currentField.split("=") as [
+            string,
+            string
+          ];
+          paramsMap.set(currentName, currentValue);
         });
       } else {
         paramsMap.set(name, value);
@@ -40,7 +43,7 @@ function GoogleCalendarRedirect() {
     const location = paramsMap.get("location") as string;
 
     const getGoogleCalendarResponse = async () => {
-      const response = await handleGoogleCalendar(
+      const googleResponse = await handleGoogleCalendar(
         accessToken,
         name,
         date,
@@ -50,7 +53,7 @@ function GoogleCalendarRedirect() {
         location
       );
 
-      return response;
+      return googleResponse;
     };
     const googleResponse = getGoogleCalendarResponse();
 

@@ -1,9 +1,4 @@
-import {
-  Prisma,
-  type PrismaClient,
-  type PrismaPromise,
-  type User,
-} from "@prisma/client";
+import { Prisma, type PrismaClient, type User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { type TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -29,13 +24,13 @@ const updateScheduleAttendees = async (
     },
   });
 
-  const updatedAttendeesQueries: PrismaPromise<unknown>[] = [];
+  const updatedAttendeesQueries: Prisma.PrismaPromise<unknown>[] = [];
   schedules.forEach((schedule) => {
     const attendees = schedule.attendees as Prisma.JsonArray;
     attendees.forEach((attendee) => {
       const newAttendee = attendee as UserAvailability;
-      if (newAttendee["user"] === user.id) {
-        newAttendee["name"] = `${user.firstName}${
+      if (newAttendee.user === user.id) {
+        newAttendee.name = `${user.firstName}${
           user.lastName ? ` ${user.lastName}` : ""
         }`;
       }
@@ -59,7 +54,7 @@ const updateScheduleAttendees = async (
   await prisma.$transaction(updatedAttendeesQueries);
 };
 
-export const userRouter = router({
+const userRouter = router({
   createUser: publicProcedure
     .input(
       z.object({
@@ -83,7 +78,7 @@ export const userRouter = router({
             code: "CONFLICT",
             message: "User already exists with this email.",
           };
-          return { trpcError: trpcError };
+          return { trpcError };
         }
       }
     }),
@@ -114,7 +109,7 @@ export const userRouter = router({
       const otherUser = await ctx.prisma.user.findUnique({
         where: { email: input.email },
       });
-      const id = ctx.session.user.id;
+      const { id } = ctx.session.user;
 
       if (otherUser?.id !== id) {
         const trpcError: TRPCError = {
@@ -122,11 +117,11 @@ export const userRouter = router({
           code: "CONFLICT",
           message: "User already exists with this email.",
         };
-        return { user: otherUser, trpcError: trpcError };
+        return { user: otherUser, trpcError };
       }
 
       const user = await ctx.prisma.user.update({
-        where: { id: id },
+        where: { id },
         data: { ...input },
       });
 
@@ -138,9 +133,9 @@ export const userRouter = router({
   updateUserWithAccountProvider: protectedProcedure
     .input(z.object({ firstName: z.string(), lastName: z.string().optional() }))
     .mutation(async ({ input, ctx }) => {
-      const id = ctx.session.user.id;
+      const { id } = ctx.session.user;
       const user = await ctx.prisma.user.update({
-        where: { id: id },
+        where: { id },
         data: {
           ...input,
         },
@@ -165,3 +160,5 @@ export const userRouter = router({
         : null;
     }),
 });
+
+export default userRouter;

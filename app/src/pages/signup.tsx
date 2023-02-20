@@ -4,8 +4,9 @@ import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
-import { Form } from "../components/form/Form";
+import Form from "../components/form/Form";
 import SignUpForm from "../components/signup/SignUpForm";
+import { EMAIL_REGEX } from "../utils/formUtils";
 
 type GetStartedInputs = {
   email: string;
@@ -16,15 +17,15 @@ const GetStartedSchema = z.object({
     .string()
     .min(1, "Email is required!")
     .email("Invalid email!")
-    .refine((email) => email.match(/[\w]+@[a-z]+[\.][a-z]+/)),
+    .refine((email) => email.match(EMAIL_REGEX)),
 });
 
 function SignUp() {
   const [email, setEmail] = useState<string>("");
 
   const onSubmit: SubmitHandler<GetStartedInputs> = (data) => {
-    const { email } = data;
-    setEmail(email);
+    const { email: currentEmail } = data;
+    setEmail(currentEmail);
   };
 
   return (
@@ -48,7 +49,7 @@ function SignUp() {
               name="email"
               displayName="Email"
               type="email"
-              required={true}
+              required
             />
             <Form.Button name="Get Started" type="submit" />
           </Form>

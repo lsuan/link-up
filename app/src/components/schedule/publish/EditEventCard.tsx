@@ -10,7 +10,7 @@ import CustomDatePicker, {
   CalendarHeader,
   datePickerOpen,
 } from "../../form/DatePickerHelpers";
-import { Form } from "../../form/Form";
+import Form from "../../form/Form";
 import ModalBackground from "../../shared/ModalBackground";
 
 const EditEventSchema = z.object({
@@ -105,7 +105,7 @@ function EditEventCard({
           <DatePicker
             selected={eventDate}
             onChange={(date) => setEventDate(date)}
-            customInput={<CustomDatePicker label="Date" star={true} />}
+            customInput={<CustomDatePicker label="Date" star />}
             calendarContainer={({ children }) => (
               <CalendarContainer
                 title="When should this event occur?"

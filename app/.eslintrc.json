@@ -4,8 +4,28 @@
     "project": "./tsconfig.json"
   },
   "plugins": ["@typescript-eslint"],
-  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "extends": ["airbnb", "airbnb-typescript"],
   "rules": {
-    "@typescript-eslint/consistent-type-imports": "warn"
+    "@typescript-eslint/comma-dangle": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@typescript-eslint/quotes": ["error", "double"],
+    "react/button-has-type": "off",
+    "react/jsx-curly-newline": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-props-no-spreading": "off", // this is needed for `register` from react hook form
+    "react/no-unused-prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/require-default-props": "off",
+    "comma-dangle": "off",
+    "consistent-return": "off",
+    "function-paren-newline": "off",
+    "implicit-arrow-linebreak": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "operator-linebreak": "off",
+    "object-curly-newline": "off",
+    "radix": "off"
   }
 }
