@@ -22,7 +22,7 @@ export const useUserAvailability = (
   status: SessionStatus,
   schedule: Schedule | null | undefined
 ): { title: string; isLoading: boolean } => {
-  const [title, setPageTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
   const { isLoading } = trpc.schedule.getUserAvailability.useQuery(
     {
       id: schedule?.id ?? "",
@@ -31,8 +31,8 @@ export const useUserAvailability = (
       enabled: schedule !== undefined,
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
-        const title = getPageTitle(status, data);
-        setPageTitle(title);
+        const currentTitle = getPageTitle(status, data);
+        setTitle(currentTitle);
       },
     }
   );
@@ -48,7 +48,7 @@ export const useSchedule = (
   const { data: schedule, isLoading: isScheduleLoading } =
     trpc.schedule.getScheduleFromSlugId.useQuery(
       {
-        name: name,
+        name,
         id: scheduleIdPart,
       },
       {

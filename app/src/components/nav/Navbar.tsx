@@ -5,6 +5,7 @@ import MobileNavbar from "./MobileNavbar";
 import NavbarItem from "./NavbarItem";
 
 export const menuOpen = atom(false);
+export type MenuOpenAtom = typeof menuOpen;
 
 function Navbar() {
   const [, setIsMenuOpen] = useAtom(menuOpen);
@@ -19,7 +20,7 @@ function Navbar() {
         {/* TODO: add logo here */}
         <span className="text-3xl">Link Up!</span>
       </Link>
-      <MobileNavbar />
+      <MobileNavbar menuOpen={menuOpen} />
 
       <ul className="hidden items-center justify-between gap-8 text-lg text-blue-500 transition-colors sm:flex">
         {status !== "authenticated" ? (

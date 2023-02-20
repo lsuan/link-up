@@ -1,9 +1,9 @@
-import { faClose, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
-import { menuOpen } from "./Navbar";
+import { type MenuOpenAtom } from "./Navbar";
 
-function MobileNavbar() {
+function MobileNavbar({ menuOpen }: { menuOpen: MenuOpenAtom }) {
   const [isMenuOpen, setIsMenuOpen] = useAtom(menuOpen);
 
   return (

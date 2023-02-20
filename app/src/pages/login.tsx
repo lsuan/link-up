@@ -6,8 +6,9 @@ import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
-import { Form } from "../components/form/Form";
+import Form from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
+import { EMAIL_REGEX } from "../utils/formUtils";
 
 type LoginInputs = {
   email: string;
@@ -19,7 +20,7 @@ const LoginFormSchema = z.object({
     .string()
     .min(1, "Email is required!")
     .email("Invalid email!")
-    .refine((email) => email.match(/[\w]+@[a-z]+[\.][a-z]+/)),
+    .refine((email) => email.match(EMAIL_REGEX)),
   password: z.string().min(1, "Password is required!"),
 });
 
@@ -59,17 +60,12 @@ function Login() {
         schema={LoginFormSchema}
         className="flex flex-col gap-4"
       >
-        <Form.Input
-          name="email"
-          displayName="Email"
-          type="email"
-          required={true}
-        />
+        <Form.Input name="email" displayName="Email" type="email" required />
         <Form.Input
           name="password"
           displayName="Password"
           type="password"
-          required={true}
+          required
         />
         <Form.Button name="Log In" type="submit" />
       </Form>

@@ -1,13 +1,11 @@
 import { type NextPage } from "next";
 import Landing from "../components/Landing";
 
-const Home: NextPage = () => {
+const Home: NextPage = function Home() {
   return (
-    <>
-      <section className="flex h-full flex-col justify-center">
-        <Landing />
-      </section>
-    </>
+    <section className="flex h-full flex-col justify-center">
+      <Landing />
+    </section>
   );
 };
 

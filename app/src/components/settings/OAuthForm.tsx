@@ -9,7 +9,7 @@ import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
-import { Form } from "../form/Form";
+import Form from "../form/Form";
 import ServerSideSuccessMessage from "../form/ServerSideSuccessMessage";
 
 type OAuthFormInputs = {
@@ -65,9 +65,11 @@ function OAuthForm(user: UserWithAccount) {
       >
         <div className="flex items-center gap-2 rounded-lg bg-indigo-500 p-2">
           <FontAwesomeIcon icon={providers[provider]} />
-          <p>{`Your account has been linked with ${provider
-            .charAt(0)
-            .toUpperCase()}${provider.slice(1)}.`}</p>
+          <p>
+            {`Your account has been linked with ${provider
+              .charAt(0)
+              .toUpperCase()}${provider.slice(1)}.`}
+          </p>
         </div>
         <Form.Input
           name="firstName"

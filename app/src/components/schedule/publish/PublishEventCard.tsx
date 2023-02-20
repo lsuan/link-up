@@ -59,11 +59,11 @@ function PublishEventCard({
       <h4 className="my-4 text-xl font-semibold">{event.name}</h4>
       <div className="flex justify-between">
         <div className="flex flex-col gap-1 text-left">
-          <label className="text-xs">Start Time</label>
+          <span className="text-xs">Start Time</span>
           <p className="font-semibold">{event.startTime}</p>
         </div>
         <div className="flex flex-col gap-1 text-right">
-          <label className="text-xs">End Time</label>
+          <span className="text-xs">End Time</span>
           <p className="font-semibold">{event.endTime}</p>
         </div>
       </div>

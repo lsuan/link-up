@@ -1,8 +1,10 @@
+/* eslint-disable import/prefer-default-export */
 import { getHourNumber } from "./availabilityUtils";
 
 /**
- * Adds a specific event with its attributes as parameters with the user's access token to Google Calendar.
- * Date is in ISO format. Times are in TT:TT XM format.
+ * Adds a specific event with its attributes as parameters with the user's access token.
+ * Date is in ISO format.
+ * Times are in TT:TT XM format.
  */
 export const handleGoogleCalendar = (
   accessToken: string,
@@ -13,7 +15,7 @@ export const handleGoogleCalendar = (
   endTime: string,
   location: string
 ) => {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
   const startHour = getHourNumber(startTime);
   const endHour = getHourNumber(endTime);
   const convertedStart = !Number.isInteger(startHour)
@@ -29,15 +31,15 @@ export const handleGoogleCalendar = (
   const end = `${date}T${convertedEnd.padEnd(5, "0")}:00`;
   const googleEvent = {
     summary: name,
-    location: location,
-    description: description,
+    location,
+    description,
     start: {
       dateTime: start,
-      timeZone: timeZone,
+      timeZone,
     },
     end: {
       dateTime: end,
-      timeZone: timeZone,
+      timeZone,
     },
     // Id for "Lavender"
     colorId: "1",
@@ -48,11 +50,9 @@ export const handleGoogleCalendar = (
     {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + accessToken,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(googleEvent),
     }
-  ).then((data) => {
-    return data.json();
-  });
+  ).then((data) => data.json());
 };

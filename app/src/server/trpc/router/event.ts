@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { protectedProcedure, router } from "../trpc";
 
-export const eventRouter = router({
+const eventRouter = router({
   /** Creates events based on the input. Used in the publish schedule page. */
   createEvents: protectedProcedure
     .input(
@@ -37,7 +37,7 @@ export const eventRouter = router({
         schedule: {
           OR: [
             {
-              userId: userId,
+              userId,
             },
             {
               attendees: {
@@ -68,3 +68,5 @@ export const eventRouter = router({
     return upcoming;
   }),
 });
+
+export default eventRouter;

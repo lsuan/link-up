@@ -1,26 +1,27 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
-import { notice } from "../../pages/schedule/[slug]";
-import { type UserAvailability } from "../../utils/availabilityUtils";
+import {
+  disabled,
+  selected,
+  updated,
+  type AvailabilityProps,
+  type UserAvailability,
+} from "../../utils/availabilityUtils";
 import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
-import { Form } from "../form/Form";
+import Form from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
-import { type AvailabilityProps } from "./AvailabilitySection";
+import { notice } from "./SuccessNotice";
 
 type AnonAvailabilityInputs = {
   name: string;
 };
 const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
-
-export const disabled = atom<boolean>(true);
-export const selected = atom<string[]>([]);
-export const updated = atom<boolean>(false);
 
 const updateSchedule = (
   variables: {
@@ -76,15 +77,6 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   const [isDisabled, setIsDisabled] = useAtom(disabled);
   const [, setIsUpated] = useAtom(updated);
 
-  const userFullName = trpc.user.getUserFullName.useQuery(
-    sessionData?.user?.id as string,
-    {
-      enabled: sessionData?.user !== undefined,
-      refetchOnWindowFocus: false,
-      onSuccess: () => onSuccess(),
-    }
-  );
-
   const onSuccess = () => {
     if (!attendees) {
       return;
@@ -94,18 +86,28 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
     )[0];
     const oldAvailability: string[] = [];
     const daysOnly: string[] = [];
-    for (const [date, hours] of Object.entries(
-      userAvailability?.availability ?? {}
-    )) {
-      const times = hours as string[];
-      times.forEach((time) => {
-        oldAvailability.push(`${date}:${time}`);
-      });
-      daysOnly.push(date);
-    }
+    Object.entries(userAvailability?.availability ?? {}).forEach(
+      ([date, hours]) => {
+        const times = hours as string[];
+        times.forEach((time) => {
+          oldAvailability.push(`${date}:${time}`);
+        });
+        daysOnly.push(date);
+      }
+    );
+
     setSelectedCells([...oldAvailability]);
     // setSelectedCellsCopy([...oldAvailability]);
   };
+
+  const userFullName = trpc.user.getUserFullName.useQuery(
+    sessionData?.user?.id as string,
+    {
+      enabled: sessionData?.user !== undefined,
+      refetchOnWindowFocus: false,
+      onSuccess: () => onSuccess(),
+    }
+  );
 
   const save = async () => {
     const user = sessionData?.user?.id ?? (guestUser as string);
@@ -125,8 +127,8 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
         : times.set(date, [time]);
     });
     const attendee = {
-      user: user,
-      name: name,
+      user,
+      name,
       availability: Object.fromEntries(times),
     };
 

@@ -20,7 +20,10 @@ function MobileNavMenuItem({
     >
       <Link
         href={href}
-        onClick={onClick ? onClick : () => setIsMenuOpen(false)}
+        onClick={() => {
+          setIsMenuOpen(false);
+          onClick;
+        }}
         className="h-full w-full p-6"
       >
         {name}

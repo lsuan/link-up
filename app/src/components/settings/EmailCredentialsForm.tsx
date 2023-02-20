@@ -1,10 +1,10 @@
-import { type User } from "prisma/prisma-client";
+import { type User } from "@prisma/client";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { EMAIL_REGEX } from "../../utils/formUtils";
 import { trpc } from "../../utils/trpc";
-import { Form } from "../form/Form";
+import Form from "../form/Form";
 import ServerSideErrorMessage from "../form/ServerSideErrorMessage";
 import ServerSideSuccessMessage from "../form/ServerSideSuccessMessage";
 
@@ -45,7 +45,7 @@ function EmailCredentialsForm(user: User) {
     lastName,
     email,
     passwords: {
-      password: password,
+      password,
       confirmPassword: password,
     },
   });
@@ -69,7 +69,7 @@ function EmailCredentialsForm(user: User) {
     <>
       {invalidEmailMessage !== "" && (
         <ServerSideErrorMessage error={invalidEmailMessage} />
-      )}{" "}
+      )}
       {successMessage !== "" && (
         <ServerSideSuccessMessage message={successMessage} />
       )}

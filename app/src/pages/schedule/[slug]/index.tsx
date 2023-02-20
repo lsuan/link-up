@@ -1,25 +1,69 @@
-import { faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faListCheck,
+  faPenToSquare,
+  faShareFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import AddToCalendarModal from "../../../components/schedule/AddToCalendarModal";
-import AvailabilitySection from "../../../components/schedule/AvailabilitySection";
-import PublishSection from "../../../components/schedule/PublishSection";
+import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import ScheduleEventCard from "../../../components/schedule/ScheduleEventCard";
-import Share from "../../../components/schedule/ShareModal";
+import Share, {
+  shareModalShown,
+} from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import { type AvailabilityProps } from "../../../utils/availabilityUtils";
 import { getHost } from "../../../utils/scheduleUtils";
 
-export const notice = atom("");
-export const shareModalShown = atom(false);
+type SchedulePageAvailabilityProps = AvailabilityProps & {
+  buttonTitle: string;
+};
 
-function Schedule() {
+function AvailabilitySection({
+  schedule,
+  slug,
+  buttonTitle,
+}: SchedulePageAvailabilityProps) {
+  return (
+    <div className="my-8 w-full bg-neutral-500 py-8 px-8">
+      <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
+      <AvailabilityResponses schedule={schedule} />
+      <button className="flex w-full rounded-lg border border-white bg-neutral-900 p-2 transition-colors hover:bg-neutral-700">
+        <Link href={`/schedule/${slug}/availability`} className="w-full">
+          <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
+          {buttonTitle}
+        </Link>
+      </button>
+    </div>
+  );
+}
+
+function PublishSection({ slug }: { slug: string }) {
+  return (
+    <div className="my-8 w-full text-center">
+      <h3 className="mb-4 text-xl font-semibold">
+        You&apos;ve received responses!
+      </h3>
+      <h4 className="mb-2">Ready to finalize dates and times?</h4>
+      <button className="flex w-full justify-center rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
+        <Link className="w-full" href={`/schedule/${slug}/publish`}>
+          <FontAwesomeIcon icon={faListCheck} className="mr-2" />
+          Publish Event(s)
+        </Link>
+      </button>
+    </div>
+  );
+}
+
+function SchedulePage() {
   const router = useRouter();
   const { status, data: sessionData } = useSession();
   // this is needed since the host is different from the actual user
@@ -28,6 +72,7 @@ function Schedule() {
   const host = schedule?.host ?? null;
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule?.events;
+  const hasEvents = events?.length ? events.length > 0 : false;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
     boolean[]
@@ -55,7 +100,7 @@ function Schedule() {
         setIsModalOpen={setIsShareModalShown}
       />
       {isAddToCalendarModalShown.some((isShown) => isShown) && (
-        <ModalBackground isModalOpen={true} />
+        <ModalBackground isModalOpen />
       )}
       <section>
         <SuccessNotice />
@@ -86,41 +131,38 @@ function Schedule() {
             {schedule && getHost(sessionData?.user?.id ?? "", schedule)}
           </p>
 
-          {events?.length && events.length > 0 ? (
+          {events && hasEvents && (
             <div className="relative">
               <div className="horizontal-scrollbar overflow-x-scroll pb-4">
                 <div className="flex w-max justify-between gap-4">
-                  {events.map((event, index) => {
-                    return (
-                      <div key={event.id} className="flex justify-start">
-                        {isAddToCalendarModalShown[index] && (
-                          <AddToCalendarModal
-                            {...event}
-                            index={index}
-                            isAddToCalendarModalShown={
-                              isAddToCalendarModalShown
-                            }
-                            setIsAddToCalendarModalShown={
-                              setIsAddToCalendarModalShown
-                            }
-                            slug={slug}
-                          />
-                        )}
-                        <ScheduleEventCard
+                  {events.map((event, index) => (
+                    <div key={event.id} className="flex justify-start">
+                      {isAddToCalendarModalShown[index] && (
+                        <AddToCalendarModal
                           {...event}
                           index={index}
                           isAddToCalendarModalShown={isAddToCalendarModalShown}
                           setIsAddToCalendarModalShown={
                             setIsAddToCalendarModalShown
                           }
+                          slug={slug}
                         />
-                      </div>
-                    );
-                  })}
+                      )}
+                      <ScheduleEventCard
+                        {...event}
+                        index={index}
+                        isAddToCalendarModalShown={isAddToCalendarModalShown}
+                        setIsAddToCalendarModalShown={
+                          setIsAddToCalendarModalShown
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          ) : isHost && !schedule?.attendees ? (
+          )}
+          {isHost && Object.keys(schedule?.attendees ?? {}).length === 0 ? (
             <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
               <h4 className="mb-2 text-xl font-semibold">
                 Waiting for Responses...
@@ -146,4 +188,4 @@ function Schedule() {
   );
 }
 
-export default Schedule;
+export default SchedulePage;

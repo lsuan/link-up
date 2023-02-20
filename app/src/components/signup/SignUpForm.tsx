@@ -6,7 +6,7 @@ import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { EMAIL_REGEX, PASSWORD_REGEX } from "../../utils/formUtils";
 import { trpc } from "../../utils/trpc";
-import { Form } from "../form/Form";
+import Form from "../form/Form";
 import ServerSideErrorMessage from "../form/ServerSideErrorMessage";
 
 type SignUpInputs = {
@@ -56,10 +56,10 @@ function SignUpForm({ email }: { email: string }) {
   const [invalidEmailMessage, setInvalidEmailMessage] = useState<string>("");
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
-    const { email, firstName, lastName } = data;
+    const { email: currentEmail, firstName, lastName } = data;
     const { password } = data.passwords;
     const res: SignUpResponse = await mutateAsync({
-      email,
+      email: currentEmail,
       firstName,
       lastName,
       password,
@@ -86,14 +86,14 @@ function SignUpForm({ email }: { email: string }) {
       <Form<SignUpInputs, typeof SignUpSchema>
         onSubmit={onSubmit}
         schema={SignUpSchema}
-        defaultValues={{ email: email }}
+        defaultValues={{ email }}
         className="flex flex-col gap-4"
       >
         <Form.Input
           name="firstName"
           displayName="First Name"
           type="text"
-          required={true}
+          required
         />
         <Form.Input name="lastName" displayName="Last Name" type="text" />
         <Form.Input name="email" displayName="Email" type="email" />

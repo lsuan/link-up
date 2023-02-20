@@ -42,7 +42,7 @@ function Dashboard() {
           href="/create"
           className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
         >
-          <FontAwesomeIcon size={"sm"} icon={faPlus} />
+          <FontAwesomeIcon size="sm" icon={faPlus} />
           Create
         </Link>
       </header>
@@ -63,30 +63,26 @@ function Dashboard() {
       </div>
       {active === "upcoming" ? (
         <div className="flex flex-col gap-4">
-          {upcoming?.map((event) => {
-            return (
-              <DashboardEventCard
-                key={event.id}
-                scheduleName={event.schedule.name}
-                host={getHost(sessionData?.user?.id ?? "", event.schedule)}
-                {...event}
-              />
-            );
-          })}
+          {upcoming?.map((event) => (
+            <DashboardEventCard
+              key={event.id}
+              scheduleName={event.schedule.name}
+              host={getHost(sessionData?.user?.id ?? "", event.schedule)}
+              {...event}
+            />
+          ))}
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {unstarted?.map((schedule) => {
-            return (
-              <UnstartedCard
-                key={schedule.id}
-                id={schedule.id}
-                name={schedule.name}
-                description={schedule.description}
-                host={getHost(sessionData?.user?.id ?? "", schedule)}
-              />
-            );
-          })}
+          {unstarted?.map((schedule) => (
+            <UnstartedCard
+              key={schedule.id}
+              id={schedule.id}
+              name={schedule.name}
+              description={schedule.description}
+              host={getHost(sessionData?.user?.id ?? "", schedule)}
+            />
+          ))}
         </div>
       )}
     </section>

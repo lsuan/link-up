@@ -1,17 +1,12 @@
 import { memo } from "react";
+import { type AvailabilityProps } from "../../utils/availabilityUtils";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityKey from "./AvailabilityKey";
-import { type AvailabilityProps } from "./AvailabilitySection";
 
-const AvailabilityResponses = memo(function AvailabilityResponses({
-  schedule,
-}: AvailabilityProps) {
-  return (
-    <section>
-      <AvailabilityKey schedule={schedule} />
-
-      <AvailabilityGrid schedule={schedule} mode="read" />
-    </section>
-  );
-});
+const AvailabilityResponses = memo(({ schedule }: AvailabilityProps) => (
+  <section>
+    <AvailabilityKey schedule={schedule} />
+    <AvailabilityGrid schedule={schedule} mode="read" />
+  </section>
+));
 export default AvailabilityResponses;

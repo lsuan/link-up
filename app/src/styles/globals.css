@@ -30,6 +30,10 @@ body {
 .react-datepicker-popper {
   z-index: 100;
 }
+
+.react-datepicker__day--today {
+  background-color: white !important;
+}
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
   background-color: rgb(212 212 212 / var(--tw-bg-opacity));
