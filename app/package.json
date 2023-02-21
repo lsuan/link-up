@@ -25,6 +25,7 @@
     "@trpc/react-query": "10.0.0-rc.4",
     "@trpc/server": "10.0.0-rc.4",
     "bcrypt": "^5.1.0",
+    "cva": "npm:class-variance-authority@^0.4.0",
     "jotai": "^1.12.0",
     "next": "13.0.2",
     "next-auth": "^4.15.1",

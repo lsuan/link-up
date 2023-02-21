@@ -12,6 +12,15 @@ module.exports = {
         inter: ["var(--font-inter)", ...fontFamily.sans],
         montserrat: ["var(--font-montserrat)", ...fontFamily.sans],
       },
+      colors: {
+        "primary-purple": {
+          900: "#1C1C41",
+          700: "#4E4EB2",
+        },
+        disabled: {
+          400: "#C4C4CD",
+        },
+      },
     },
   },
   plugins: [lineClamp],
