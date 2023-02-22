@@ -18,13 +18,11 @@ import "../styles/globals.css";
 config.autoAddCss = false;
 
 const inter = Inter({
-  weight: ["400", "600"],
   subsets: ["latin"],
   variable: "--font-inter",
 });
 const montserrat = Montserrat({
-  weight: ["500", "600"],
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-montserrat",
 });
 

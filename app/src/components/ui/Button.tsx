@@ -6,7 +6,7 @@ import Link from "next/link";
 import { type AnchorHTMLAttributes, type ButtonHTMLAttributes } from "react";
 
 const buttonStyles = cva(
-  "group flex justify-center items-center rounded-lg font-montserrat font-semibold text-lg p-4 text-white transition-all gap-2",
+  "group flex justify-center items-center rounded-lg font-semibold text-lg p-4 text-white transition-all gap-2 font-inter",
   {
     variants: {
       intent: {
