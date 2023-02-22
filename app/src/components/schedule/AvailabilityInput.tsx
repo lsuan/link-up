@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import Button from "@ui/Button";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -186,14 +187,14 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
               endDate={endDate}
             />
           )}
-          <button
+          <Button
+            intent={isDisabled ? "primaryDisabled" : "primary"}
             type="button"
-            className="w-full cursor-pointer rounded-lg bg-neutral-500 p-2 text-center transition-all hover:bg-neutral-300 hover:text-black disabled:cursor-default disabled:bg-neutral-700 disabled:text-neutral-300"
             onClick={() => save()}
-            disabled={isDisabled}
+            fullWidth
           >
             Save Response
-          </button>
+          </Button>
         </>
       )}
     </section>

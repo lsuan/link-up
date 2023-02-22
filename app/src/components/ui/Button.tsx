@@ -1,29 +1,70 @@
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { cva, type VariantProps } from "cva";
-import { type ButtonHTMLAttributes } from "react";
+import Link from "next/link";
+import { type AnchorHTMLAttributes, type ButtonHTMLAttributes } from "react";
 
 const buttonStyles = cva(
-  "flex justify-center items-center rounded-lg font-inter font-semibold text-lg p-4 w-full",
+  "group flex justify-center items-center rounded-lg font-montserrat font-semibold text-lg p-4 text-white transition-all gap-2",
   {
     variants: {
       intent: {
         primary: "bg-primary-purple-900 hover:bg-primary-purple-700",
+        primaryDisabled: "bg-disabled-400",
         secondary:
           "bg-white border border-primary-purple-900 hover:border-primary-purple-700",
-        disabled: "border-disabled-400",
+        secondaryDisabled:
+          "border border-disabled-400 text-disabled-400 cursor-not-allowed",
       },
+      fullWidth: {
+        true: "w-full",
+      },
+    },
+    defaultVariants: {
+      intent: "primary",
     },
   }
 );
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+type ButtonProps = {
+  isLoading?: boolean;
+} & ButtonHTMLAttributes<HTMLButtonElement> &
+  AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof buttonStyles>;
 
-function Button({ intent, children, ...rest }: ButtonProps) {
+function Button({
+  intent,
+  fullWidth,
+  isLoading,
+  children,
+  ...rest
+}: ButtonProps) {
+  const isLink = "href" in rest;
   return (
-    <button className={buttonStyles({ intent })} {...rest}>
-      {children}
-    </button>
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    <>
+      {isLink ? (
+        <Link
+          href={rest.href as string}
+          className={buttonStyles({ intent, fullWidth })}
+          {...rest}
+        >
+          {children}
+        </Link>
+      ) : (
+        <button className={buttonStyles({ intent, fullWidth })} {...rest}>
+          {isLoading ? (
+            <>
+              <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
+              <span>Submitting...</span>
+            </>
+          ) : (
+            children
+          )}
+        </button>
+      )}
+    </>
   );
 }
 

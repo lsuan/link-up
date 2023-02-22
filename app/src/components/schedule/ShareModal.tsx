@@ -1,11 +1,12 @@
 import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "@ui/Button";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 import { notice } from "./SuccessNotice";
 
 export const shareModalShown = atom(false);
-function Share() {
+function ShareModal() {
   const [, setIsShareModalShown] = useAtom(shareModalShown);
   const [, setNoticeMessage] = useAtom(notice);
   const scheduleLink = window.location.toString();
@@ -38,15 +39,12 @@ function Share() {
       <div className="my-4 overflow-x-auto rounded-lg border border-neutral-500 px-4 py-2">
         {scheduleLink}
       </div>
-      <button
-        onClick={() => copyToClipboard()}
-        className="w-full rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black"
-      >
+      <Button onClick={() => copyToClipboard()} fullWidth>
         <FontAwesomeIcon icon={faCopy} className="mr-2" />
         Copy to Clipboard
-      </button>
+      </Button>
     </div>
   );
 }
 
-export default Share;
+export default ShareModal;

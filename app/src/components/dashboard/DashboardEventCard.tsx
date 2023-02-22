@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Event } from "@prisma/client";
-import Link from "next/link";
+import Button from "@ui/Button";
 import { createSlug } from "../../utils/scheduleUtils";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
 
@@ -66,16 +66,13 @@ function DashboardEventCard({
         )}
       </ul>
 
-      <Link
-        href={`/schedule/${slug}`}
-        className="group w-full rounded-lg bg-neutral-500 p-2 text-center text-white transition-all hover:bg-neutral-300 hover:text-black"
-      >
+      <Button href={`/schedule/${slug}`}>
         View
         <FontAwesomeIcon
           icon={faArrowRightLong}
-          className="ml-2 transition-transform group-hover:translate-x-2"
+          className="transition-transform group-hover:translate-x-2"
         />
-      </Link>
+      </Button>
     </div>
   );
 }

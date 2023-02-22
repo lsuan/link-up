@@ -1,10 +1,7 @@
-import {
-  faCircleNotch,
-  faListCheck,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Schedule } from "@prisma/client";
+import Button from "@ui/Button";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -246,22 +243,14 @@ function Publish() {
             <ServerSideErrorMessage error={saveWarning} />
           </div>
         )}
-        <button
-          className="w-full rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
+        <Button
           onClick={() => handlePublish()}
+          isLoading={isCreateEventsLoading}
+          fullWidth
         >
-          {isCreateEventsLoading ? (
-            <>
-              <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
-              <span>Submitting...</span>
-            </>
-          ) : (
-            <>
-              <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-              <span>Confirm and Publish</span>
-            </>
-          )}
-        </button>
+          <FontAwesomeIcon icon={faListCheck} />
+          <span>Confirm and Publish</span>
+        </Button>
       </div>
     </section>
   );

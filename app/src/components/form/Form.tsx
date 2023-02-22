@@ -1,10 +1,10 @@
 import {
   faCheckCircle,
-  faCircleNotch,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Button from "@ui/Button";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   FormProvider,
@@ -106,7 +106,7 @@ Form.Input = function Input({
                 />
               ) : (
                 <input
-                  className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-white placeholder:text-transparent"
+                  className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-black placeholder:text-transparent"
                   placeholder={displayName}
                   type={type}
                   {...register(name)}
@@ -116,10 +116,10 @@ Form.Input = function Input({
               )}
 
               <label
-                className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
+                className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
               peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
               peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-white"
+              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
                 htmlFor={name}
               >
                 {displayName}
@@ -127,7 +127,6 @@ Form.Input = function Input({
               </label>
             </fieldset>
           )}
-          {error && <InputErrorMessage error={error as string} />}
         </div>
       )}
       {error && <InputErrorMessage error={error as string} className="-mt-3" />}
@@ -173,7 +172,7 @@ Form.Password = function Input({
           <li
             key={condition.message}
             className={`flex items-center gap-2${
-              condition.isFulFilled ? " text-green-300" : " text-white"
+              condition.isFulFilled ? " text-green-300" : " text-black"
             }`}
           >
             {condition.isFulFilled ? (
@@ -221,7 +220,7 @@ Form.Select = function Select({
         <select
           key={name}
           {...register(name, { valueAsNumber: typeof options[0] === "number" })}
-          className={`peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-white placeholder:text-transparent ${
+          className={`peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-black placeholder:text-transparent ${
             className || ""
           }`}
           placeholder={displayName}
@@ -233,10 +232,10 @@ Form.Select = function Select({
           ))}
         </select>
         <label
-          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all
+          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
         peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
         peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-white"
+        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
           htmlFor={name}
         >
           {displayName}
@@ -248,7 +247,7 @@ Form.Select = function Select({
   );
 };
 
-Form.Button = function Button({
+Form.Button = function FormButton({
   name,
   type,
 }: {
@@ -259,15 +258,9 @@ Form.Button = function Button({
     formState: { isSubmitting },
   } = useFormContext();
   return (
-    <button
-      type={type}
-      className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-black transition-colors hover:bg-blue-300"
-    >
+    <Button type={type} isLoading={isSubmitting}>
       {name}
-      {isSubmitting && (
-        <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
-      )}
-    </button>
+    </Button>
   );
 };
 
