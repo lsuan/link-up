@@ -1,4 +1,4 @@
-import { type FieldError, type FieldErrorsImpl } from "react-hook-form";
+import { type FieldErrorsImpl } from "react-hook-form";
 
 export const MONTHS = [
   "January",
@@ -62,6 +62,21 @@ export const PASSWORD_REGEX_CONDITIONS: PasswordCondition[] = [
   },
 ];
 
+/** Recurses through the errors object to find the specific error message. */
+const parse = (
+  parsedNames: string[],
+  errors: Record<string, unknown>
+): unknown => {
+  if ("message" in errors) {
+    return errors.message;
+  }
+  const key = parsedNames.filter((name) => name in errors)[0] as string;
+  const root = errors[key] as Record<string, unknown>;
+  if (root) {
+    return parse(parsedNames, root);
+  }
+};
+
 /** Gets the detailed errors from input fields that are objects. */
 export const parseDeepErrors = (
   errors: Partial<
@@ -72,26 +87,8 @@ export const parseDeepErrors = (
   name: string
 ) => {
   if (Object.keys(errors).length === 0) return;
-  const parsedName = name.split(".");
-  if (parsedName.length <= 1) return errors[name]?.message;
-
-  if (parsedName[0] && Object.keys(errors).includes(parsedName[0])) {
-    const root = errors[parsedName[0]];
-    if (root) {
-      let children = "";
-      for (let i = 1; i < parsedName.length; i++) {
-        const child = parsedName[i] as string;
-        if (Object.keys(root).includes(parsedName[0])) {
-          children += child;
-        }
-      }
-      let innerObject = { message: "" };
-      if (Object.keys(root).includes(parsedName[0])) {
-        innerObject = root[children as keyof FieldError] as { message: string };
-      }
-      return root.message ? root.message : innerObject.message;
-    }
-  }
+  const parsedNames = name.split(".");
+  return parse(parsedNames, errors) ?? undefined;
 };
 
 /** Converts an array of numbers representing hours into a formatted string.

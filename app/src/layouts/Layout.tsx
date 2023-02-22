@@ -26,7 +26,7 @@ function Layout({ children }: LayoutProps) {
         <link key="icon" rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <main className="relative my-auto flex h-full flex-col bg-neutral-900 py-8 text-white">
+      <main className="relative my-auto flex h-full flex-col bg-white py-8 text-black">
         {isMenuOpen &&
           (status === "authenticated" ? (
             <SignedInNavMenu />

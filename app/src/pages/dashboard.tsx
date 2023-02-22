@@ -1,7 +1,7 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "@ui/Button";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useState } from "react";
 import DashboardEventCard from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
@@ -38,13 +38,10 @@ function Dashboard() {
     <section className="min-h-screen px-8">
       <header className="mb-12 flex w-full items-center justify-between">
         <h1 className="text-3xl font-semibold">Events</h1>
-        <Link
-          href="/create"
-          className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-        >
+        <Button href="/create">
           <FontAwesomeIcon size="sm" icon={faPlus} />
           Create
-        </Link>
+        </Button>
       </header>
 
       <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">

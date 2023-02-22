@@ -4,15 +4,15 @@ import {
   faShareFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "@ui/Button";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import AddToCalendarModal from "../../../components/schedule/AddToCalendarModal";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import ScheduleEventCard from "../../../components/schedule/ScheduleEventCard";
-import Share, {
+import ShareModal, {
   shareModalShown,
 } from "../../../components/schedule/ShareModal";
 import SuccessNotice from "../../../components/schedule/SuccessNotice";
@@ -36,12 +36,10 @@ function AvailabilitySection({
     <div className="my-8 w-full bg-neutral-500 py-8 px-8">
       <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
       <AvailabilityResponses schedule={schedule} />
-      <button className="flex w-full rounded-lg border border-white bg-neutral-900 p-2 transition-colors hover:bg-neutral-700">
-        <Link href={`/schedule/${slug}/availability`} className="w-full">
-          <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
-          {buttonTitle}
-        </Link>
-      </button>
+      <Button href={`/schedule/${slug}/availability`}>
+        <FontAwesomeIcon icon={faPenToSquare} />
+        {buttonTitle}
+      </Button>
     </div>
   );
 }
@@ -53,12 +51,10 @@ function PublishSection({ slug }: { slug: string }) {
         You&apos;ve received responses!
       </h3>
       <h4 className="mb-2">Ready to finalize dates and times?</h4>
-      <button className="flex w-full justify-center rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black">
-        <Link className="w-full" href={`/schedule/${slug}/publish`}>
-          <FontAwesomeIcon icon={faListCheck} className="mr-2" />
-          Publish Event(s)
-        </Link>
-      </button>
+      <Button href={`/schedule/${slug}/publish`}>
+        <FontAwesomeIcon icon={faListCheck} />
+        Publish Event(s)
+      </Button>
     </div>
   );
 }
@@ -110,14 +106,11 @@ function SchedulePage() {
           )}
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
             <h1 className="text-3xl font-semibold">{schedule?.name}</h1>
-            {isShareModalShown && <Share />}
-            <button
-              className="flex items-center justify-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-              onClick={() => setIsShareModalShown(!isShareModalShown)}
-            >
+            {isShareModalShown && <ShareModal />}
+            <Button onClick={() => setIsShareModalShown(!isShareModalShown)}>
               <FontAwesomeIcon icon={faShareFromSquare} />
               Share
-            </button>
+            </Button>
           </header>
 
           {schedule?.deadline && (

@@ -13,7 +13,7 @@ function SignedInNavMenu() {
     setIsMenuOpen(false);
   };
   return (
-    <ul className="absolute left-0 top-0 z-[999] flex h-full w-full flex-col items-center bg-neutral-900 px-8 text-xl">
+    <ul className="absolute left-0 top-0 z-[999] flex h-full w-full flex-col items-center bg-white px-8 text-xl text-black">
       <MobileNavMenuItem href="/dashboard" name="My Dashboard" />
       <MobileNavMenuItem href="/settings" name="Settings" />
       <MobileNavMenuItem href="/" name="About" />

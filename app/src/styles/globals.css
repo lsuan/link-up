@@ -5,7 +5,7 @@
 /* needed so that scrolling doesn't show a white background */
 /* TODO: come back to this when implementing dark mode / light mode */
 body {
-  background-color: rgb(23 23 23);
+  background-color: white;
 }
 
 .horizontal-scrollbar {

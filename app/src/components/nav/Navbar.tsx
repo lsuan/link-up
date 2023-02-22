@@ -12,7 +12,7 @@ function Navbar() {
   const { status } = useSession();
 
   return (
-    <nav className="dark-puple flex justify-between border-b-2 border-b-gray-500 bg-neutral-900 px-8 py-4 text-white">
+    <nav className="dark-puple flex justify-between border-b-2 border-b-gray-500 bg-white px-8 py-4 text-black">
       <Link
         href={status === "authenticated" ? "/dashboard" : "/"}
         onClick={() => setIsMenuOpen(false)}

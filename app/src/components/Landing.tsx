@@ -1,5 +1,5 @@
+import Button from "@ui/Button";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import Loading from "./shared/Loading";
 
 function Landing() {
@@ -16,12 +16,9 @@ function Landing() {
         Plan big meetings with ease! Manage your schedules and events all in one
         place.
       </p>
-      <Link
-        href={status === "authenticated" ? "/dashboard" : "/signup"}
-        className="rounded-lg bg-neutral-500 p-2 hover:bg-neutral-300 hover:text-black"
-      >
+      <Button href={status === "authenticated" ? "/dashboard" : "/signup"}>
         Get Started
-      </Link>
+      </Button>
     </section>
   );
 }
