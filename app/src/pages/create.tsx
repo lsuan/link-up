@@ -60,43 +60,33 @@ const CreateScheduleSchema = z.object({
       endDate: z.date().nullish(),
       isOneDay: z.boolean(),
     })
-    .superRefine((data, ctx) => {
-      if (data.endDate && data.endDate < data.startDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.invalid_date,
-          message: "End date must be later than the start date!",
-        });
-        return;
+    .refine((data) => data.isOneDay || data.endDate, {
+      path: ["isOneDay"],
+      message: "Check the 'One Day Schedule' or set an end date!",
+    })
+    .refine((data) => (data.endDate ? data.endDate > data.startDate : true), {
+      path: ["endDate"],
+      message: "End date must be later than the start date!",
+    })
+    .refine(
+      (data) => {
+        // pass the check if the end date isn't set yet
+        if (!data.endDate) {
+          return true;
+        }
+        const timeDifferenceMs = Math.abs(
+          data.endDate.getTime() - data.startDate.getTime()
+        );
+        const dayDifference = Math.ceil(
+          timeDifferenceMs / (1000 * 60 * 60 * 24)
+        );
+        return dayDifference < MAX_SCHEDULE_RANGE;
+      },
+      {
+        path: ["endDate"],
+        message: "The max range for a schedule is 30 days!",
       }
-
-      if (
-        (data.endDate === null ||
-          data.endDate?.toDateString() === data.startDate.toDateString()) &&
-        !data.isOneDay
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.invalid_date,
-          message: "Check the 'One Day Schedule?' option or set an end date!",
-          path: ["isOneDay"],
-        });
-        return;
-      }
-
-      const timeDifferenceMs = Math.abs(
-        (data.endDate?.getTime() ?? 0) - data.startDate.getTime()
-      );
-      const dayDifference = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
-      if (dayDifference > MAX_SCHEDULE_RANGE && !data.isOneDay) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.too_big,
-          message: "The max range for a schedule is 30 days!",
-          type: "date",
-          inclusive: true,
-          maximum: dayDifference,
-          path: ["endDate"],
-        });
-      }
-    }),
+    ),
   startTime: z.string({ required_error: "Start time is required!" }),
   endTime: z.string({ required_error: "End time must be set!" }),
   deadline: z
@@ -144,24 +134,27 @@ function Create() {
       endDate = startDate;
     }
 
-    const res = await mutateAsync({
-      name,
-      description,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
-      deadline,
-      numberOfEvents,
-      lengthOfEvents,
-    });
-
-    if (res) {
-      const { name: currentName, id } = res.schedule;
-      const slug = createSlug(currentName, id);
-      setNoticeMessage("Your schedule has successfully been created!");
-      router.push(`schedule/${slug}`);
-    }
+    const res = await mutateAsync(
+      {
+        name,
+        description,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        deadline,
+        numberOfEvents,
+        lengthOfEvents,
+      },
+      {
+        onSuccess: () => {
+          const { name: currentName, id } = res.schedule;
+          const slug = createSlug(currentName, id);
+          setNoticeMessage("Your schedule has successfully been created!");
+          router.push(`schedule/${slug}`);
+        },
+      }
+    );
   };
 
   const handleOneDayChange = () => {
