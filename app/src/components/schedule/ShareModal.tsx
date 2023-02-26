@@ -1,9 +1,9 @@
 import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
+import { notice } from "@ui/Snackbar";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
-import { notice } from "./SuccessNotice";
 
 export const shareModalShown = atom(false);
 function ShareModal() {

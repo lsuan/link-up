@@ -1,8 +1,8 @@
 import { faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import Link from "next/link";
-import { notice } from "../schedule/SuccessNotice";
 
 function BackArrow({ href, page }: { href: string; page: string }) {
   const [, setNoticeMessage] = useAtom(notice);

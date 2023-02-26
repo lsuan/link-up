@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import AvailabilityInput from "../../../components/schedule/AvailabilityInput";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
-import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
@@ -23,7 +22,6 @@ function Availability() {
 
   return (
     <section className="relative">
-      <SuccessNotice />
       <div className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <ScheduleHeader title={title} scheduleName={schedule?.name ?? ""} />

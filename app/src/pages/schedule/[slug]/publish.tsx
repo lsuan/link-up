@@ -2,6 +2,7 @@ import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Schedule } from "@prisma/client";
 import Button from "@ui/Button";
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -11,7 +12,6 @@ import AvailabilityResponses from "../../../components/schedule/AvailabilityResp
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
-import { notice } from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import Unauthenticated from "../../../components/shared/Unauthenticated";

@@ -1,7 +1,7 @@
+import { notice } from "@ui/Snackbar";
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { notice } from "../../components/schedule/SuccessNotice";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
 
 export const googleAccessToken = atom<string>("");

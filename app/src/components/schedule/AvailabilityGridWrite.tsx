@@ -1,7 +1,7 @@
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import React, { memo, useState } from "react";
 import { disabled, selected } from "../../utils/availabilityUtils";
-import { notice } from "./SuccessNotice";
 
 type StartCoordinates = {
   clientX: number;

@@ -1,3 +1,4 @@
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -11,7 +12,6 @@ import CustomDatePicker, {
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
 import Form from "../components/form/Form";
-import { notice } from "../components/schedule/SuccessNotice";
 import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
@@ -111,7 +111,7 @@ function Create() {
     endTime: "5:00 PM",
   });
 
-  const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (data) => {
+  const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {
     const {
       scheduleName: name,
       description,
@@ -120,13 +120,13 @@ function Create() {
       deadline,
       numberOfEvents,
       lengthOfEvents,
-    } = data;
-    const { startDate, isOneDay } = data.dateRange as {
+    } = inputs;
+    const { startDate, isOneDay } = inputs.dateRange as {
       startDate: Date;
       isOneDay: boolean;
     };
 
-    let { endDate } = data.dateRange as {
+    let { endDate } = inputs.dateRange as {
       endDate: Date;
     };
 
@@ -134,7 +134,7 @@ function Create() {
       endDate = startDate;
     }
 
-    const res = await mutateAsync(
+    await mutateAsync(
       {
         name,
         description,
@@ -147,10 +147,10 @@ function Create() {
         lengthOfEvents,
       },
       {
-        onSuccess: () => {
-          const { name: currentName, id } = res.schedule;
+        onSuccess: (data) => {
+          const { name: currentName, id } = data.schedule;
           const slug = createSlug(currentName, id);
-          setNoticeMessage("Your schedule has successfully been created!");
+          setNoticeMessage("Your schedule has been successfully created!");
           router.push(`schedule/${slug}`);
         },
       }

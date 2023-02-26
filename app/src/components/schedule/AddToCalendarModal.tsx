@@ -1,12 +1,12 @@
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 import { googleAccessToken } from "../../pages/schedule/google-oauth-redirect";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
 import { type ScheduleEventCardProps } from "./ScheduleEventCard";
-import { notice } from "./SuccessNotice";
 
 // TODO: move google calendar functionality to the backend
 const GOOGLE_CLIENT_ID = "";

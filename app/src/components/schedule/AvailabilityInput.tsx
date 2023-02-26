@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Button from "@ui/Button";
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -17,7 +18,6 @@ import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
 import Form from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
-import { notice } from "./SuccessNotice";
 
 type AnonAvailabilityInputs = {
   name: string;

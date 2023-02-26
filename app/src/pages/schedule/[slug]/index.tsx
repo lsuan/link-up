@@ -15,7 +15,6 @@ import ScheduleEventCard from "../../../components/schedule/ScheduleEventCard";
 import ShareModal, {
   shareModalShown,
 } from "../../../components/schedule/ShareModal";
-import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
@@ -99,7 +98,6 @@ function SchedulePage() {
         <ModalBackground isModalOpen />
       )}
       <section>
-        <SuccessNotice />
         <div className="px-8">
           {sessionData?.user && (
             <BackArrow href="/dashboard" page="Dashboard" />
