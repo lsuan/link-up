@@ -22,6 +22,7 @@
     "consistent-return": "off",
     "function-paren-newline": "off",
     "implicit-arrow-linebreak": "off",
+    "import/no-extraneous-dependencies": "off",
     "no-param-reassign": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "operator-linebreak": "off",

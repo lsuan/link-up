@@ -1,12 +1,6 @@
-import {
-  faAngleLeft,
-  faAngleRight,
-  faCalendarDay,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { forwardRef, type ReactNode } from "react";
+import { FiCalendar, FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 import { MONTHS } from "../../utils/formUtils";
 
 export const datePickerOpen = atom(false);
@@ -28,7 +22,7 @@ const CustomDatePicker = forwardRef<HTMLButtonElement, CustomDatePickerProps>(
           onClick={onClick}
           ref={ref}
         >
-          <FontAwesomeIcon icon={faCalendarDay} className="mr-2" />
+          <FiCalendar className="mr-2" />
           {value || <span className="text-neutral-500">Select a date...</span>}
         </button>
         <span className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all">
@@ -75,8 +69,7 @@ export function CalendarContainer({
             onClick={handleClose}
             className="absolute right-0 top-0"
           >
-            <FontAwesomeIcon
-              icon={faClose}
+            <FiX
               className="text-neutral-500 transition-colors hover:text-neutral-300"
               onClick={() => setIsDatePickerOpen(false)}
             />
@@ -109,10 +102,7 @@ export function CalendarHeader({
         disabled={prevMonthButtonDisabled}
         className="flex items-center"
       >
-        <FontAwesomeIcon
-          icon={faAngleLeft}
-          className="text-xl text-blue-500 transition-colors hover:text-blue-300"
-        />
+        <FiChevronLeft className="text-xl text-blue-500 transition-colors hover:text-blue-300" />
       </button>
       <h5 className="mx-8 font-semibold">
         {`${MONTHS[date.getMonth()]} ${date.getFullYear()}`}
@@ -124,10 +114,7 @@ export function CalendarHeader({
         disabled={nextMonthButtonDisabled}
         className="flex items-center"
       >
-        <FontAwesomeIcon
-          icon={faAngleRight}
-          className="text-xl text-blue-500 transition-colors hover:text-blue-300"
-        />
+        <FiChevronRight className="text-xl text-blue-500 transition-colors hover:text-blue-300" />
       </button>
     </div>
   );

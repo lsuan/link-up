@@ -1,5 +1,3 @@
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import {
   type FieldError,
@@ -8,6 +6,7 @@ import {
   type RegisterOptions,
   type UseFormRegisterReturn,
 } from "react-hook-form";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function ShowPassword({
   name,
@@ -39,11 +38,7 @@ function ShowPassword({
         onClick={() => setIsShown(!isShown)}
         className="absolute right-4 top-1/2 z-20 -translate-y-1/2"
       >
-        {isShown ? (
-          <FontAwesomeIcon icon={faEyeSlash} />
-        ) : (
-          <FontAwesomeIcon icon={faEye} />
-        )}
+        {isShown ? <FiEyeOff /> : <FiEye />}
       </button>
     </>
   );

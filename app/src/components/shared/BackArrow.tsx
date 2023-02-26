@@ -1,8 +1,7 @@
-import { faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import Link from "next/link";
+import { FiArrowLeft } from "react-icons/fi";
 
 function BackArrow({ href, page }: { href: string; page: string }) {
   const [, setNoticeMessage] = useAtom(notice);
@@ -13,10 +12,7 @@ function BackArrow({ href, page }: { href: string; page: string }) {
         className="group text-blue-500 hover:text-blue-300"
         onClick={() => setNoticeMessage("")}
       >
-        <FontAwesomeIcon
-          className="mr-2 transition-all group-hover:mr-4"
-          icon={faArrowLeftLong}
-        />
+        <FiArrowLeft className="mr-2 transition-all group-hover:mr-4" />
         <span className="transition-colors">{`Back to ${page}`}</span>
       </Link>
     </div>

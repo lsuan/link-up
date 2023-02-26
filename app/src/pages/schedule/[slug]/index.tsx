@@ -1,14 +1,9 @@
-import {
-  faListCheck,
-  faPenToSquare,
-  faShareFromSquare,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FiEdit, FiExternalLink, FiList } from "react-icons/fi";
 import AddToCalendarModal from "../../../components/schedule/AddToCalendarModal";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import ScheduleEventCard from "../../../components/schedule/ScheduleEventCard";
@@ -36,7 +31,7 @@ function AvailabilitySection({
       <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
       <AvailabilityResponses schedule={schedule} />
       <Button href={`/schedule/${slug}/availability`}>
-        <FontAwesomeIcon icon={faPenToSquare} />
+        <FiEdit />
         {buttonTitle}
       </Button>
     </div>
@@ -51,7 +46,7 @@ function PublishSection({ slug }: { slug: string }) {
       </h3>
       <h4 className="mb-2">Ready to finalize dates and times?</h4>
       <Button href={`/schedule/${slug}/publish`}>
-        <FontAwesomeIcon icon={faListCheck} />
+        <FiList />
         Publish Event(s)
       </Button>
     </div>
@@ -106,7 +101,7 @@ function SchedulePage() {
             <h1 className="text-3xl font-semibold">{schedule?.name}</h1>
             {isShareModalShown && <ShareModal />}
             <Button onClick={() => setIsShareModalShown(!isShareModalShown)}>
-              <FontAwesomeIcon icon={faShareFromSquare} />
+              <FiExternalLink />
               Share
             </Button>
           </header>

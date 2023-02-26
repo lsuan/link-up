@@ -1,13 +1,13 @@
-import {
-  faArrowRightLong,
-  faClock,
-  faLocationPin,
-  faNoteSticky,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
+import {
+  FiBookmark,
+  FiChevronsRight,
+  FiClock,
+  FiMapPin,
+  FiUser,
+} from "react-icons/fi";
 import { createSlug } from "../../utils/scheduleUtils";
+import CardListItem from "../shared/CardListItem";
 
 type UnstartedProps = {
   id: string;
@@ -27,34 +27,24 @@ function UnstartedCard({ id, name, description, host }: UnstartedProps) {
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faUser} />
-          <p>{host}</p>
-        </li>
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
-          <p>TBD</p>
-        </li>
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
-          <p>TBD</p>
-        </li>
+        <CardListItem text={host}>
+          <FiUser />
+        </CardListItem>
+        <CardListItem text={host}>
+          <FiClock />
+        </CardListItem>
+        <CardListItem text={host}>
+          <FiMapPin />
+        </CardListItem>
         {description && (
-          <li className="flex items-start gap-2">
-            <FontAwesomeIcon
-              className="mt-[3px] w-[14px]"
-              icon={faNoteSticky}
-            />
-            <p className="line-clamp-2">{description}</p>
-          </li>
+          <CardListItem text={description}>
+            <FiBookmark />
+          </CardListItem>
         )}
       </ul>
       <Button href={`/schedule/${slug}`}>
         View
-        <FontAwesomeIcon
-          icon={faArrowRightLong}
-          className="transition-transform group-hover:translate-x-2"
-        />
+        <FiChevronsRight className="transition-transform group-hover:translate-x-2" />
       </Button>
     </div>
   );

@@ -1,10 +1,4 @@
-import {
-  faEdit,
-  faLocationPin,
-  faNoteSticky,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FiBookmark, FiEdit, FiMapPin, FiTrash2 } from "react-icons/fi";
 import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
 import PublishCardMetadata from "./PublishCardMetadata";
@@ -46,13 +40,13 @@ function PublishEventCard({
             className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
             onClick={() => deleteEvent(index)}
           >
-            <FontAwesomeIcon icon={faTrash} />
+            <FiTrash2 />
           </button>
           <button
             className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
             onClick={() => setCardEditState()}
           >
-            <FontAwesomeIcon icon={faEdit} />
+            <FiEdit />
           </button>
         </div>
       </header>
@@ -77,7 +71,7 @@ function PublishEventCard({
       )}
       <ul>
         <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
+          <FiMapPin className="mt-[3px] w-[14px]" />
           <p className="text-neutral-300">
             {event.location && event.location !== ""
               ? event.location
@@ -85,7 +79,7 @@ function PublishEventCard({
           </p>
         </li>
         <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faNoteSticky} />
+          <FiBookmark className="mt-[3px] w-[14px]" />
           <p className="text-neutral-300">
             {event.description && event.description !== ""
               ? event.description

@@ -1,9 +1,7 @@
-import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { cva, type VariantProps } from "cva";
 import Link from "next/link";
 import { type AnchorHTMLAttributes, type ButtonHTMLAttributes } from "react";
+import { FiRotateCw } from "react-icons/fi";
 
 const buttonStyles = cva(
   "group flex justify-center items-center rounded-lg font-semibold text-lg p-4 text-white transition-all gap-2 font-inter",
@@ -82,7 +80,7 @@ function Button({
     <button className={buttonStyles({ intent, fullWidth })} {...rest}>
       {isLoading ? (
         <>
-          <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
+          <FiRotateCw className="animate-spin" />
           <span>Submitting...</span>
         </>
       ) : (

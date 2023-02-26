@@ -1,9 +1,8 @@
-import { faClose, faCopy } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
 import { notice } from "@ui/Snackbar";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
+import { FiCopy, FiX } from "react-icons/fi";
 
 export const shareModalShown = atom(false);
 function ShareModal() {
@@ -29,8 +28,7 @@ function ShareModal() {
     <div className="absolute top-0 left-1/2 z-40 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-500 bg-neutral-900 p-6 transition-all">
       <header className="flex justify-between">
         <h2 className="text-xl font-semibold">Share Schedule</h2>
-        <FontAwesomeIcon
-          icon={faClose}
+        <FiX
           className="cursor-pointer text-neutral-500 transition-colors hover:text-neutral-300"
           onClick={() => setIsShareModalShown(false)}
         />
@@ -40,7 +38,7 @@ function ShareModal() {
         {scheduleLink}
       </div>
       <Button onClick={() => copyToClipboard()} fullWidth>
-        <FontAwesomeIcon icon={faCopy} className="mr-2" />
+        <FiCopy className="mr-2" />
         Copy to Clipboard
       </Button>
     </div>

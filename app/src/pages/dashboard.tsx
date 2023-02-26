@@ -1,8 +1,7 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { FiPlus } from "react-icons/fi";
 import DashboardEventCard from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
@@ -39,7 +38,7 @@ function Dashboard() {
       <header className="mb-12 flex w-full items-center justify-between">
         <h1 className="text-3xl font-semibold">Events</h1>
         <Button href="/create">
-          <FontAwesomeIcon size="sm" icon={faPlus} />
+          <FiPlus />
           Create
         </Button>
       </header>

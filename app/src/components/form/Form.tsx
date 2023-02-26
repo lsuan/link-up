@@ -1,8 +1,3 @@
-import {
-  faCheckCircle,
-  faExclamationCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@ui/Button";
 import { useEffect, useState, type ReactNode } from "react";
@@ -14,6 +9,7 @@ import {
   type DeepPartial,
   type FieldValues,
 } from "react-hook-form";
+import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { type z } from "zod";
 import {
   parseDeepErrors,
@@ -175,11 +171,7 @@ Form.Password = function Input({
               condition.isFulFilled ? " text-green-300" : " text-black"
             }`}
           >
-            {condition.isFulFilled ? (
-              <FontAwesomeIcon icon={faCheckCircle} />
-            ) : (
-              <FontAwesomeIcon icon={faExclamationCircle} />
-            )}
+            {condition.isFulFilled ? <FiCheckCircle /> : <FiAlertCircle />}
             <p>{condition.message}</p>
           </li>
         ))}

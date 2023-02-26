@@ -1,7 +1,6 @@
-import { faCheckCircle, faClose } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
+import { FiCheckCircle, FiX } from "react-icons/fi";
 
 export const notice = atom("");
 
@@ -15,8 +14,7 @@ function Snackbar({ action }: SnackbarProps) {
 
   const actions = {
     close: (
-      <FontAwesomeIcon
-        icon={faClose}
+      <FiX
         className="cursor-pointer text-base text-brand-200 transition-colors hover:text-white"
         onClick={() => setNoticeMessage("")}
       />
@@ -41,7 +39,7 @@ function Snackbar({ action }: SnackbarProps) {
   return (
     <div className="sticky bottom-6 left-6 z-50 flex w-full max-w-[22rem] items-center justify-between rounded-lg bg-brand-700 p-4 font-medium text-white">
       <span>
-        <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
+        <FiCheckCircle className="mr-2" />
         {noticeMessage}
       </span>
       {actions[action as keyof typeof actions]}

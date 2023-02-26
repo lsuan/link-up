@@ -1,5 +1,3 @@
-import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Schedule } from "@prisma/client";
 import Button from "@ui/Button";
 import { notice } from "@ui/Snackbar";
@@ -7,6 +5,7 @@ import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FiCheckSquare, FiPlus } from "react-icons/fi";
 import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMessage";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
@@ -236,7 +235,7 @@ function Publish() {
           className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
           onClick={() => addEvent()}
         >
-          <FontAwesomeIcon icon={faPlus} />
+          <FiPlus />
         </button>
         {saveWarning !== "" && (
           <div className="-mb-6 w-full">
@@ -248,7 +247,7 @@ function Publish() {
           isLoading={isCreateEventsLoading}
           fullWidth
         >
-          <FontAwesomeIcon icon={faListCheck} />
+          <FiCheckSquare />
           <span>Confirm and Publish</span>
         </Button>
       </div>
