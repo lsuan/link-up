@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 export const notice = atom("");
 
+// add more actions as needed
 type SnackbarProps = {
   action: "close";
 };

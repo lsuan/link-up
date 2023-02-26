@@ -32,6 +32,35 @@ type ButtonProps = {
   AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof buttonStyles>;
 
+type ButtonLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
+  VariantProps<typeof buttonStyles>;
+
+function ButtonLink({ intent, fullWidth, children, ...rest }: ButtonLinkProps) {
+  const isInternal = rest.href?.startsWith("/");
+  return (
+    <>
+      {isInternal && (
+        <Link
+          href={rest.href as string}
+          className={buttonStyles({ intent, fullWidth })}
+          {...rest}
+        >
+          {children}
+        </Link>
+      )}
+      {!isInternal && (
+        <a
+          href={rest.href as string}
+          className={buttonStyles({ intent, fullWidth })}
+          {...rest}
+        >
+          {children}
+        </a>
+      )}
+    </>
+  );
+}
+
 function Button({
   intent,
   fullWidth,
@@ -40,30 +69,26 @@ function Button({
   ...rest
 }: ButtonProps) {
   const isLink = "href" in rest;
+
+  if (isLink) {
+    return (
+      <ButtonLink intent={intent} fullWidth={fullWidth} {...rest}>
+        {children}
+      </ButtonLink>
+    );
+  }
+
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <>
-      {isLink ? (
-        <Link
-          href={rest.href as string}
-          className={buttonStyles({ intent, fullWidth })}
-          {...rest}
-        >
-          {children}
-        </Link>
+    <button className={buttonStyles({ intent, fullWidth })} {...rest}>
+      {isLoading ? (
+        <>
+          <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
+          <span>Submitting...</span>
+        </>
       ) : (
-        <button className={buttonStyles({ intent, fullWidth })} {...rest}>
-          {isLoading ? (
-            <>
-              <FontAwesomeIcon icon={faCircleNotch} className="animate-spin" />
-              <span>Submitting...</span>
-            </>
-          ) : (
-            children
-          )}
-        </button>
+        children
       )}
-    </>
+    </button>
   );
 }
 
