@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0.31
+    restart: always
+    environment:
+      - MYSQL_DATABASE=linkup_dev
+      # - MYSQL_USER=root
+      # - MYSQL_PASSWORD=itsMYsqlN0tur5!
+      # - MYSQL_ROOT_PASSWORD=itsMYsqlN0tur5!
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql/db:/var/lib/mysql
+  app:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    depends_on:
+      - db
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    image: t3-app
+    environment:
+      - DATABASE_URL=${DOCKER_DATABASE_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - TWITTER_CLIENT_ID=
+      - TWITTER_CLIENT_SECRET=

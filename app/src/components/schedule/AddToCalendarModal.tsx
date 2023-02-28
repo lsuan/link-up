@@ -1,8 +1,7 @@
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
+import { BsGoogle } from "react-icons/bs";
 import { FiX } from "react-icons/fi";
 import { googleAccessToken } from "../../pages/schedule/google-oauth-redirect";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
@@ -140,7 +139,7 @@ function AddToCalendarModal({
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black"
         onClick={() => handleAddToGoogleCalendar()}
       >
-        <FontAwesomeIcon icon={faGoogle} />
+        <BsGoogle />
         Google Calendar
       </button>
       <form
