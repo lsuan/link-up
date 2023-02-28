@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import { atom, useAtom } from "jotai";
 import { forwardRef, type ReactNode } from "react";
 import { FiCalendar, FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
@@ -59,10 +60,10 @@ export function CalendarContainer({
   return (
     <div className={`max-w-xs rounded-lg bg-neutral-700 p-4 pb-3 ${className}`}>
       <header className="relative mb-4 pr-6 font-semibold">
-        <h3>
+        <Typography intent="h3">
           {title}
           {required && <span className="ml-1 text-red-500">*</span>}
-        </h3>
+        </Typography>
         {isDatePickerOpen && (
           <button
             type="button"

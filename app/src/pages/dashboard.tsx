@@ -1,4 +1,5 @@
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
@@ -36,7 +37,7 @@ function Dashboard() {
   return (
     <section className="min-h-screen px-8">
       <header className="mb-12 flex w-full items-center justify-between">
-        <h1 className="text-3xl font-semibold">Events</h1>
+        <Typography intent="h1">Events</Typography>
         <Button href="/create">
           <FiPlus />
           Create

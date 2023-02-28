@@ -1,4 +1,5 @@
 import { notice } from "@ui/Snackbar";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -203,7 +204,7 @@ function Create() {
     <section className="px-8">
       <BackArrow href="/dashboard" page="Dashboard" />
       <ModalBackground isModalOpen={isDatePickerOpen} />
-      <h1 className="mb-12 text-3xl">Plan a Schedule</h1>
+      <Typography intent="h1">Plan a Schedule</Typography>
       <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
         onSubmit={handleSubmit}
         schema={CreateScheduleSchema}

@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import React, {
   memo,
   useCallback,
@@ -104,19 +105,20 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
       }`}
     >
       <header className="font-semibold">
-        <h5>{getShortenedDateWithDay(new Date(dateString))}</h5>
-        <h6>{`${start} — ${end}`}</h6>
+        <Typography intent="h4">
+          {`${getShortenedDateWithDay(new Date(dateString))} ${start} — ${end}`}
+        </Typography>
       </header>
       <div className="flex flex-col gap-0">
-        <p>
+        <Typography>
           <span className="font-semibold text-indigo-300">Available</span>
           {` (${available.length}): ${available.join(", ")}`}
-        </p>
+        </Typography>
         {unavailable?.length > 0 && (
-          <p>
+          <Typography>
             <span className="font-semibold text-indigo-500">Unavailable</span>
             {` (${unavailable.length}): ${unavailable.join(", ")}`}
-          </p>
+          </Typography>
         )}
       </div>
     </div>

@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import { type ReactNode } from "react";
 
 function CardListItem({
@@ -10,7 +11,7 @@ function CardListItem({
   return (
     <li className="flex items-center gap-2">
       {children}
-      <p>{text}</p>
+      <Typography>{text}</Typography>
     </li>
   );
 }

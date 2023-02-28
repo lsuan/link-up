@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   FormProvider,
@@ -172,7 +173,7 @@ Form.Password = function Input({
             }`}
           >
             {condition.isFulFilled ? <FiCheckCircle /> : <FiAlertCircle />}
-            <p>{condition.message}</p>
+            <Typography>{condition.message}</Typography>
           </li>
         ))}
       </ul>

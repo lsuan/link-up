@@ -1,5 +1,6 @@
 import { type Event } from "@prisma/client";
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import {
   FiBookmark,
   FiChevronsRight,
@@ -37,7 +38,7 @@ function DashboardEventCard({
       }`}
     >
       <header className="relative flex items-start justify-between gap-2">
-        <h3 className="w-9/12 text-lg">{`${scheduleName}: ${name}`}</h3>
+        <Typography intent="h3">{`${scheduleName}: ${name}`}</Typography>
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">

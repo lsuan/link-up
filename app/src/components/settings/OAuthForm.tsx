@@ -1,4 +1,5 @@
 import { type Account, type User } from "@prisma/client";
+import Typography from "@ui/Typography";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { BsDiscord, BsGoogle } from "react-icons/bs";
@@ -59,11 +60,11 @@ function OAuthForm(user: UserWithAccount) {
       >
         <div className="flex items-center gap-2 rounded-lg bg-indigo-500 p-2">
           {providers[provider]}
-          <p>
+          <Typography>
             {`Your account has been linked with ${provider
               .charAt(0)
               .toUpperCase()}${provider.slice(1)}.`}
-          </p>
+          </Typography>
         </div>
         <Form.Input
           name="firstName"

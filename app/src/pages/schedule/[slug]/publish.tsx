@@ -1,6 +1,7 @@
 import { type Schedule } from "@prisma/client";
 import Button from "@ui/Button";
 import { notice } from "@ui/Snackbar";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -193,13 +194,13 @@ function Publish() {
         scheduleName={schedule?.name ?? ""}
       />
       {schedule && <AvailabilityResponses schedule={schedule} />}
-      <h3 className="mt-8 mb-4 font-semibold">
+      <Typography intent="h4">
         {`These are the best times based on your preferences (${
           schedule?.numberOfEvents
         } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
           schedule?.lengthOfEvents
         } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
-      </h3>
+      </Typography>
       <div className="flex flex-col items-center gap-4">
         {events.map((event, index) => (
           <div

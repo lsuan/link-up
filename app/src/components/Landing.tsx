@@ -1,4 +1,5 @@
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import Loading from "./shared/Loading";
 
@@ -11,11 +12,11 @@ function Landing() {
 
   return (
     <section className="flex flex-col justify-center gap-12 px-8 text-center">
-      <h1 className="text-3xl font-semibold">Ready to LinkUp?</h1>
-      <p className="text-center text-xl">
+      <Typography intent="h1">Ready to LinkUp?</Typography>
+      <Typography>
         Plan big meetings with ease! Manage your schedules and events all in one
         place.
-      </p>
+      </Typography>
       <Button href={status === "authenticated" ? "/dashboard" : "/signup"}>
         Get Started
       </Button>

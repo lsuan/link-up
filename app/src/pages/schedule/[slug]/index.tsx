@@ -1,4 +1,5 @@
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -98,7 +99,7 @@ function SchedulePage() {
             <BackArrow href="/dashboard" page="Dashboard" />
           )}
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
-            <h1 className="text-3xl font-semibold">{schedule?.name}</h1>
+            <Typography intent="h1">{schedule?.name}</Typography>
             {isShareModalShown && <ShareModal />}
             <Button onClick={() => setIsShareModalShown(!isShareModalShown)}>
               <FiExternalLink />
@@ -107,15 +108,15 @@ function SchedulePage() {
           </header>
 
           {schedule?.deadline && (
-            <p>
+            <Typography>
               <span className="underline">Deadline to Fill By</span>
               <span>{`: ${schedule?.deadline.toLocaleDateString()}`}</span>
-            </p>
+            </Typography>
           )}
-          <p className="my-4">{schedule?.description}</p>
-          <p className="z-10 mb-4 font-semibold">
+          <Typography>{schedule?.description}</Typography>
+          <Typography>
             {schedule && getHost(sessionData?.user?.id ?? "", schedule)}
-          </p>
+          </Typography>
 
           {events && hasEvents && (
             <div className="relative">
@@ -149,13 +150,11 @@ function SchedulePage() {
             </div>
           )}
           {isHost && Object.keys(schedule?.attendees ?? {}).length === 0 ? (
-            <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
-              <h4 className="mb-2 text-xl font-semibold">
-                Waiting for Responses...
-              </h4>
-              <div>
+            <div className="my-8 rounded-lg bg-neutral-300 p-4 text-center">
+              <Typography intent="h4">Waiting for Responses...</Typography>
+              <Typography>
                 Click the Share button at the top to share this event to others!
-              </div>
+              </Typography>
             </div>
           ) : (
             isHost && <PublishSection slug={slug} />

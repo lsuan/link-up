@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -44,13 +45,13 @@ function Login() {
 
   return (
     <section className="w-full max-w-md self-center px-8">
-      <h1 className="mb-2 text-3xl font-semibold">Log In</h1>
-      <p className="mb-10">
+      <Typography intent="h1">Log In</Typography>
+      <Typography>
         Don&apos;t have an account?
         <span className="ml-2">
           <Link href="/signup">Sign Up</Link>
         </span>
-      </p>
+      </Typography>
 
       {isInvalid && (
         <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />

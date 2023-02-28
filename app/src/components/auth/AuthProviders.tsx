@@ -5,16 +5,12 @@ import { BsDiscord, BsGoogle } from "react-icons/bs";
 function AuthProviders() {
   return (
     <div className="flex justify-center gap-8">
-      <Button>
-        <BsDiscord
-          onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
-        />
+      <Button onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}>
+        <BsDiscord />
       </Button>
 
-      <Button>
-        <BsGoogle
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-        />
+      <Button onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
+        <BsGoogle />
       </Button>
     </div>
   );
