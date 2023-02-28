@@ -22,7 +22,7 @@ function UnstartedCard({ id, name, description, host }: UnstartedProps) {
 
   // TODO: figure out how to convert time by location
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-neutral-700 p-4">
+    <div className="flex flex-col gap-4 rounded-xl bg-neutral-300 p-4">
       <header className="relative flex items-start justify-between gap-2">
         <Typography intent="h3">{name}</Typography>
       </header>

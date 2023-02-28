@@ -1,3 +1,5 @@
+import Typography from "@ui/Typography";
+
 function ScheduleHeader({
   title,
   scheduleName,
@@ -7,8 +9,8 @@ function ScheduleHeader({
 }) {
   return (
     <header className="mb-12">
-      <h1 className="text-3xl font-semibold">{title}</h1>
-      <h2 className="font-semibold">{`for ${scheduleName}`}</h2>
+      <Typography intent="h1">{title}</Typography>
+      <Typography intent="h4">{`for ${scheduleName}`}</Typography>
     </header>
   );
 }

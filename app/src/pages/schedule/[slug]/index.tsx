@@ -28,7 +28,7 @@ function AvailabilitySection({
   buttonTitle,
 }: SchedulePageAvailabilityProps) {
   return (
-    <div className="my-8 w-full bg-neutral-500 py-8 px-8">
+    <div className="my-8 w-full bg-neutral-300 py-8 px-8">
       <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
       <AvailabilityResponses schedule={schedule} />
       <Button href={`/schedule/${slug}/availability`}>

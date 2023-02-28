@@ -29,7 +29,7 @@ function ScheduleEventCard({
 
   // TODO: figure out how to convert time by location
   return (
-    <div className="flex w-64 flex-col justify-between gap-4 rounded-xl bg-neutral-700 p-4">
+    <div className="flex w-64 flex-col justify-between gap-4 rounded-xl bg-neutral-300 p-4">
       <section className="flex flex-col gap-4">
         <h3 className="w-9/12 text-lg">{name}</h3>
 

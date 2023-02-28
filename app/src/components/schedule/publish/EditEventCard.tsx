@@ -83,7 +83,7 @@ function EditEventCard({
   return (
     <>
       <ModalBackground isModalOpen={isDatePickerOpen} />
-      <div className={`rounded-lg bg-neutral-700 p-4${className}`}>
+      <div className={`rounded-lg bg-neutral-300 p-4${className}`}>
         <Form<EditEventInputs, typeof EditEventSchema>
           schema={EditEventSchema}
           onSubmit={handleEventSave}
@@ -106,15 +106,7 @@ function EditEventCard({
             selected={eventDate}
             onChange={(date) => setEventDate(date)}
             customInput={<CustomDatePicker label="Date" star />}
-            calendarContainer={({ children }) => (
-              <CalendarContainer
-                title="When should this event occur?"
-                className="border border-neutral-500"
-                required
-              >
-                {children}
-              </CalendarContainer>
-            )}
+            calendarContainer={CalendarContainer}
             onCalendarOpen={() => setIsDatePickerOpen(true)}
             onCalendarClose={() => setIsDatePickerOpen(false)}
             dayClassName={() => "p-1 m-1 rounded-lg"}

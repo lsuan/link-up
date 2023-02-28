@@ -33,7 +33,7 @@ function DashboardEventCard({
   // TODO: figure out how to convert time by location
   return (
     <div
-      className={`flex flex-col rounded-xl bg-neutral-700 p-4 ${
+      className={`flex flex-col rounded-xl bg-neutral-300 p-4 ${
         scheduleName ? "gap-4" : "gap-2"
       }`}
     >

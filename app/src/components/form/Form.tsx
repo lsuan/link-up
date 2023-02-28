@@ -164,7 +164,7 @@ Form.Password = function Input({
 
   return (
     <>
-      <ul className="rounded-lg bg-neutral-700 p-4 text-sm">
+      <ul className="rounded-lg bg-neutral-300 p-4 text-sm">
         {conditions.map((condition) => (
           <li
             key={condition.message}

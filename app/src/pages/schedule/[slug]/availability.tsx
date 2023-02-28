@@ -27,7 +27,7 @@ function Availability() {
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <ScheduleHeader title={title} scheduleName={schedule?.name ?? ""} />
         {schedule && <AvailabilityInput schedule={schedule} />}
-        <Typography intent="h3">Responses</Typography>
+        <Typography intent="h2">Responses</Typography>
         {schedule && <AvailabilityResponses schedule={schedule} />}
       </div>
     </section>

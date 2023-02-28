@@ -220,9 +220,9 @@ function Create() {
         {/* TODO: add tinymce integration */}
         <Form.Input name="description" displayName="Description" type="text" />
 
-        <div className="relative rounded-lg bg-neutral-700 p-4">
+        <div className="relative rounded-lg bg-neutral-300 p-4">
           {defaultValues.dateRange.isOneDay && (
-            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" />
+            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-300 opacity-50" />
           )}
           <DatePicker
             id="calendarDatePicker"
