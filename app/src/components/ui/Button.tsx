@@ -1,6 +1,10 @@
 import { cva, type VariantProps } from "cva";
 import Link from "next/link";
-import { type AnchorHTMLAttributes, type ButtonHTMLAttributes } from "react";
+import {
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type ClassAttributes,
+} from "react";
 import { FiRotateCw } from "react-icons/fi";
 
 const buttonStyles = cva(
@@ -27,6 +31,7 @@ const buttonStyles = cva(
 type ButtonProps = {
   isLoading?: boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement> &
+  ClassAttributes<HTMLButtonElement> &
   AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof buttonStyles>;
 

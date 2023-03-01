@@ -23,36 +23,55 @@ type TextProps = HTMLAttributes<HTMLParagraphElement> &
   HTMLAttributes<HTMLHeadingElement> &
   VariantProps<typeof typographyStyles>;
 
-function Typography({ intent, brand, children, ...rest }: TextProps) {
+function Typography({
+  intent,
+  brand,
+  children,
+  className,
+  ...rest
+}: TextProps) {
+  // add `className` attribute to the styles to append any custom styles
   switch (intent) {
     case "h1":
       return (
-        <h1 className={typographyStyles({ intent, brand })} {...rest}>
+        <h1
+          className={typographyStyles({ intent, brand, className })}
+          {...rest}
+        >
           {children}
         </h1>
       );
     case "h2":
       return (
-        <h2 className={typographyStyles({ intent, brand })} {...rest}>
+        <h2
+          className={typographyStyles({ intent, brand, className })}
+          {...rest}
+        >
           {children}
         </h2>
       );
     case "h3":
       return (
-        <h3 className={typographyStyles({ intent, brand })} {...rest}>
+        <h3
+          className={typographyStyles({ intent, brand, className })}
+          {...rest}
+        >
           {children}
         </h3>
       );
     case "h4":
       return (
-        <h4 className={typographyStyles({ intent, brand })} {...rest}>
+        <h4
+          className={typographyStyles({ intent, brand, className })}
+          {...rest}
+        >
           {children}
         </h4>
       );
     case "p":
     default:
       return (
-        <p className={typographyStyles({ intent, brand })} {...rest}>
+        <p className={typographyStyles({ intent, brand, className })} {...rest}>
           {children}
         </p>
       );

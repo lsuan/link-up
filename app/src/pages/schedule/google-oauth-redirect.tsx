@@ -60,7 +60,10 @@ function GoogleCalendarRedirect() {
     if (Object.keys(googleResponse).includes("error")) {
       console.log("Error", googleResponse);
     } else {
-      setNoticeMessage(`Event "${name}" was saved to Google Calendar.`);
+      setNoticeMessage({
+        message: `Event "${name}" was saved to Google Calendar.`,
+        icon: "check",
+      });
       router.replace(`/schedule/${slug}`);
     }
   });

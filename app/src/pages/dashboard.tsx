@@ -1,4 +1,5 @@
 import Button from "@ui/Button";
+import Snackbar from "@ui/Snackbar";
 import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -43,6 +44,8 @@ function Dashboard() {
           Create
         </Button>
       </header>
+
+      <Snackbar action="close" />
 
       <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">
         <Pill

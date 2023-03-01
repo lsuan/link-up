@@ -131,7 +131,10 @@ function Publish() {
       setSaveWarning("You have unsaved events!");
       setErrorBorder();
     } else {
-      setNoticeMessage("Your events have been successfully published!");
+      setNoticeMessage({
+        message: "Your events have been successfully published!",
+        icon: "check",
+      });
       const eventData = events.map((event) => {
         type NewEvent = Omit<InitialEventInfo, "isEditing" & "className">;
         const newEvent: NewEvent = event;
@@ -156,7 +159,10 @@ function Publish() {
 
       if (res) {
         router.push(`/schedule/${slug}`);
-        setNoticeMessage("Your events have been successfully published!");
+        setNoticeMessage({
+          message: "Your events have been successfully published!",
+          icon: "check",
+        });
       }
     }
   };
