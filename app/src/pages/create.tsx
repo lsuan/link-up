@@ -51,7 +51,7 @@ type ControlledScheduleInputs = {
 
 const CreateScheduleSchema = z.object({
   scheduleName: z.string().min(1, "Schedule name is required!"),
-  description: z.string().optional(),
+  description: z.string().max(200, "Description cannot be longer than 200 characters.").optional(),
   dateRange: z
     .object({
       startDate: z
@@ -217,7 +217,7 @@ function Create() {
           required
         />
         {/* TODO: add tinymce integration */}
-        <Form.Input name="description" displayName="Description" type="text" />
+        <Form.TextArea name="description" displayName="Description" maxLength={200} />
 
         <div className="relative rounded-lg bg-neutral-700 p-4">
           {defaultValues.dateRange.isOneDay && (
