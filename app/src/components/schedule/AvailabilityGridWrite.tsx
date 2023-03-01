@@ -41,7 +41,7 @@ const AvailabilityGridWrite = memo(
       e.preventDefault();
       setIsEditing(true);
       setIsDisabled(false);
-      setNoticeMessage({ message: "" });
+      setNoticeMessage({ action: "close", message: "" });
       const cell = e.target as HTMLDivElement;
       const row = parseInt(cell.getAttribute("data-row") as string);
       const col = parseInt(cell.getAttribute("data-col") as string);

@@ -143,8 +143,9 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
         onSuccess: () => {
           setIsUpated(true);
           setNoticeMessage({
-            message: "Availability has been saved!",
+            action: "close",
             icon: "check",
+            message: "Availability has been saved!",
           });
           setIsDisabled(true);
         },

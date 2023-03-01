@@ -12,7 +12,7 @@ const buttonStyles = cva(
   {
     variants: {
       intent: {
-        primary: "bg-brand-900 hover:bg-brand-700",
+        primary: "bg-brand-700 hover:bg-brand-900",
         primaryDisabled: "bg-disabled-400",
         secondary: "bg-white border border-brand-900 hover:border-brand-700",
         secondaryDisabled:

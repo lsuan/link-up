@@ -89,8 +89,9 @@ function AddToCalendarModal({
         console.error("error", googleResponse);
       } else {
         setNoticeMessage({
-          message: `Event ${name} has been saved to Google Calendar`,
+          action: "close",
           icon: "check",
+          message: `Event ${name} has been saved to Google Calendar`,
         });
       }
       return;

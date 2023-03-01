@@ -10,7 +10,7 @@ function BackArrow({ href, page }: { href: string; page: string }) {
       <Link
         href={href}
         className="group flex items-center gap-2 text-blue-500 hover:text-blue-300"
-        onClick={() => setNoticeMessage({ message: "" })}
+        onClick={() => setNoticeMessage({ action: "close", message: "" })}
       >
         <FiArrowLeft className="transition-all group-hover:mr-2" />
         <span className="transition-colors">{`Back to ${page}`}</span>

@@ -152,8 +152,9 @@ function Create() {
           const { name: currentName, id } = data.schedule;
           const slug = createSlug(currentName, id);
           setNoticeMessage({
-            message: "Your schedule has been successfully created!",
+            action: "close",
             icon: "check",
+            message: "Your schedule has been successfully created!",
           });
           router.push(`schedule/${slug}`);
         },

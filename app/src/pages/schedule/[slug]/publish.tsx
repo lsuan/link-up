@@ -132,8 +132,9 @@ function Publish() {
       setErrorBorder();
     } else {
       setNoticeMessage({
-        message: "Your events have been successfully published!",
+        action: "close",
         icon: "check",
+        message: "Your events have been successfully published!",
       });
       const eventData = events.map((event) => {
         type NewEvent = Omit<InitialEventInfo, "isEditing" & "className">;
@@ -160,8 +161,9 @@ function Publish() {
       if (res) {
         router.push(`/schedule/${slug}`);
         setNoticeMessage({
-          message: "Your events have been successfully published!",
+          action: "close",
           icon: "check",
+          message: "Your events have been successfully published!",
         });
       }
     }

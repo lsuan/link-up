@@ -22,7 +22,11 @@ function ShareModal() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(scheduleLink);
     setIsShareModalShown(false);
-    setNoticeMessage({ message: "Copied to clipboard.", icon: "check" });
+    setNoticeMessage({
+      action: "close",
+      icon: "check",
+      message: "Copied to clipboard.",
+    });
   };
 
   return (

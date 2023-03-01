@@ -1,42 +1,65 @@
 import { atom, useAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, type MouseEventHandler, type ReactNode } from "react";
 import { FiAlertCircle, FiCheckCircle, FiX } from "react-icons/fi";
 import Typography from "./Typography";
 
-type Notice = {
-  message: string;
-  icon?: "check" | "alert";
-};
-export const notice = atom<Notice>({ message: "" });
-
 // TODO: add more actions as needed
-type SnackbarProps = {
+type Notice = {
   action: "close";
+  message: string;
+  icon?: "check" | "alert" | undefined;
+};
+// defaulting action to 'close'
+export const notice = atom<Notice>({ message: "", action: "close" });
+
+type MessageIconValue = Pick<Notice, "icon">["icon"];
+
+/** Gets the appropriate accompanying icon for the message. */
+const getMessageIcon = (icon: MessageIconValue): ReactNode => {
+  switch (icon) {
+    case "check":
+      return <FiCheckCircle />;
+    case "alert":
+      return <FiAlertCircle />;
+    default:
+      return null;
+  }
 };
 
-function Snackbar({ action }: SnackbarProps) {
+type ActionValue = Pick<Notice, "action">["action"];
+
+/**
+ * Sets the action for the snackbar.
+ * Defaults to closing the snackbar.
+ */
+const getActionComponent = (
+  action: ActionValue,
+  onClick: MouseEventHandler<SVGElement> | undefined
+): ReactNode => {
+  switch (action) {
+    case "close":
+    default:
+      return (
+        <FiX
+          className="cursor-pointer text-base text-brand-200 transition-colors hover:text-white"
+          onClick={onClick}
+        />
+      );
+  }
+};
+
+function Snackbar() {
   const [noticeMessage, setNoticeMessage] = useAtom(notice);
-
-  const icons = {
-    check: <FiCheckCircle />,
-    alert: <FiAlertCircle />,
-  };
-
-  /** Object that acts as a map that gets the appropriate component based on the action */
-  const actions = {
-    close: (
-      <FiX
-        className="cursor-pointer text-base text-brand-200 transition-colors hover:text-white"
-        onClick={() => setNoticeMessage({ message: "" })}
-      />
-    ),
-  };
+  const actionComponent = getActionComponent(noticeMessage.action, () =>
+    setNoticeMessage({ message: "", action: noticeMessage.action })
+  );
+  const messageIcon = getMessageIcon(noticeMessage.icon);
 
   // TODO: add animation on enter + leave
   useEffect(() => {
     if (noticeMessage.message !== "") {
       const interval = setInterval(() => {
-        setNoticeMessage({ message: "" });
+        setNoticeMessage({ message: "", action: noticeMessage.action });
       }, 3000);
       return () => {
         clearInterval(interval);
@@ -50,11 +73,11 @@ function Snackbar({ action }: SnackbarProps) {
 
   return (
     <div className="sticky bottom-6 left-6 z-50 flex w-full max-w-[22rem] items-center justify-between gap-2 rounded-lg bg-brand-700 p-4 font-medium text-white">
-      <span>{icons[noticeMessage.icon as keyof typeof icons]}</span>
+      <span>{messageIcon}</span>
       <Typography className="w-full text-start text-white">
         {noticeMessage.message}
       </Typography>
-      <span>{actions[action as keyof typeof actions]}</span>
+      <span>{actionComponent}</span>
     </div>
   );
 }

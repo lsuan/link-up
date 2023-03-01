@@ -35,7 +35,7 @@ function Layout({ children }: LayoutProps) {
             <SignedOutNavMenu />
           ))}
         {children}
-        <Snackbar action="close" />
+        <Snackbar />
       </main>
     </>
   );
