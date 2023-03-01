@@ -4,7 +4,7 @@ import { FiCheckCircle, FiX } from "react-icons/fi";
 
 export const notice = atom("");
 
-// add more actions as needed
+// TODO: add more actions as needed
 type SnackbarProps = {
   action: "close";
 };
@@ -12,6 +12,7 @@ type SnackbarProps = {
 function Snackbar({ action }: SnackbarProps) {
   const [noticeMessage, setNoticeMessage] = useAtom(notice);
 
+  /** Object that acts as a map that gets the appropriate component based on the action */
   const actions = {
     close: (
       <FiX
@@ -21,6 +22,7 @@ function Snackbar({ action }: SnackbarProps) {
     ),
   };
 
+  // TODO: add animation on enter + leave
   useEffect(() => {
     if (noticeMessage !== "") {
       const interval = setInterval(() => {

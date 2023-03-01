@@ -30,6 +30,7 @@ type ButtonProps = {
   AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof buttonStyles>;
 
+/** Separate props that isolate links only for child component `ButtonLink` */
 type ButtonLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof buttonStyles>;
 
