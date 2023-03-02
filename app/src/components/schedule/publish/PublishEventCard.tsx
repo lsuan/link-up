@@ -1,6 +1,7 @@
-import { FiBookmark, FiEdit, FiMapPin, FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
+import CardListItem from "../../shared/CardListItem";
 import PublishCardMetadata from "./PublishCardMetadata";
 
 function PublishEventCard({
@@ -24,7 +25,7 @@ function PublishEventCard({
     setEvents([...prevEvents]);
   };
   return (
-    <section className="w-full rounded-lg bg-neutral-500 p-6">
+    <section className="w-full rounded-lg bg-neutral-300 p-6">
       <header className="relative">
         <p className="text-sm">
           {event.date &&
@@ -70,22 +71,22 @@ function PublishEventCard({
         />
       )}
       <ul>
-        <li className="flex items-start gap-2">
-          <FiMapPin className="mt-[3px] w-[14px]" />
-          <p className="text-neutral-300">
-            {event.location && event.location !== ""
+        <CardListItem
+          text={
+            event.location && event.location !== ""
               ? event.location
-              : "Add a location..."}
-          </p>
-        </li>
-        <li className="flex items-start gap-2">
-          <FiBookmark className="mt-[3px] w-[14px]" />
-          <p className="text-neutral-300">
-            {event.description && event.description !== ""
+              : "Add a location..."
+          }
+          icon="pin"
+        />
+        <CardListItem
+          text={
+            event.description && event.description !== ""
               ? event.description
-              : "Add a description..."}
-          </p>
-        </li>
+              : "Add a description..."
+          }
+          icon="bookmark"
+        />
       </ul>
     </section>
   );

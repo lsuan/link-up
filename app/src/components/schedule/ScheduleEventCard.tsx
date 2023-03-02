@@ -1,5 +1,5 @@
 import { type Event } from "@prisma/client";
-import { FiBookmark, FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
+import { FiCalendar } from "react-icons/fi";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
 import CardListItem from "../shared/CardListItem";
 
@@ -38,18 +38,11 @@ function ScheduleEventCard({
             text={`${getEventCardDateDisplay(date)} ${
               startTime && endTime ? `| ${startTime} — ${endTime}` : ""
             }`}
-          >
-            <FiClock />
-          </CardListItem>
-          {location && (
-            <CardListItem text={location || "TBD"}>
-              <FiMapPin />
-            </CardListItem>
-          )}
+            icon="clock"
+          />
+          {location && <CardListItem text={location || "TBD"} icon="pin" />}
           {description && (
-            <CardListItem text={location || "TBD"}>
-              <FiBookmark />
-            </CardListItem>
+            <CardListItem text={location || "TBD"} icon="bookmark" />
           )}
         </ul>
       </section>

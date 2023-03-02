@@ -8,14 +8,14 @@ import {
 import { FiRotateCw } from "react-icons/fi";
 
 const buttonStyles = cva(
-  "group flex justify-center items-center rounded-lg text-lg p-4 text-white transition-all gap-2 font-inter leading-none",
+  "group flex justify-center items-center rounded-lg text-lg p-4 transition-all gap-2 font-inter leading-none",
   {
     variants: {
       intent: {
-        primary: "bg-brand-500 hover:bg-brand-800 font-semibold",
-        primaryDisabled: "bg-disabled-400 font-semibold",
+        primary: "bg-brand-500 hover:bg-brand-800 font-semibold text-white",
+        primaryDisabled: "bg-disabled-400 font-semibold text-white",
         secondary:
-          "bg-white border border-brand-500 hover:border-brand-800 font-medium",
+          "bg-white border border-brand-500 hover:border-brand-800 hover:text-brand-800 font-medium text-brand-500",
         secondaryDisabled:
           "border border-disabled-400 text-disabled-400 cursor-not-allowed font-medium",
       },

@@ -1,13 +1,7 @@
 import { type Event } from "@prisma/client";
 import Button from "@ui/Button";
 import Typography from "@ui/Typography";
-import {
-  FiBookmark,
-  FiChevronsRight,
-  FiClock,
-  FiMapPin,
-  FiUser,
-} from "react-icons/fi";
+import { FiChevronsRight } from "react-icons/fi";
 import { createSlug } from "../../utils/scheduleUtils";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
 import CardListItem from "../shared/CardListItem";
@@ -42,22 +36,13 @@ function DashboardEventCard({
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">
-        <CardListItem text={host}>
-          <FiUser />
-        </CardListItem>
+        <CardListItem text={host} icon="user" />
         <CardListItem
           text={`${getEventCardDateDisplay(date)} | ${startTime} — ${endTime}`}
-        >
-          <FiClock />
-        </CardListItem>
-        <CardListItem text={location || "TBD"}>
-          <FiMapPin />
-        </CardListItem>
-        {description && (
-          <CardListItem text={description}>
-            <FiBookmark />
-          </CardListItem>
-        )}
+          icon="clock"
+        />
+        <CardListItem text={location || "TBD"} icon="pin" />
+        {description && <CardListItem text={description} icon="bookmark" />}
       </ul>
 
       <Button href={`/schedule/${slug}`}>

@@ -1,12 +1,6 @@
 import Button from "@ui/Button";
 import Typography from "@ui/Typography";
-import {
-  FiBookmark,
-  FiChevronsRight,
-  FiClock,
-  FiMapPin,
-  FiUser,
-} from "react-icons/fi";
+import { FiChevronsRight } from "react-icons/fi";
 import { createSlug } from "../../utils/scheduleUtils";
 import CardListItem from "../shared/CardListItem";
 
@@ -28,20 +22,10 @@ function UnstartedCard({ id, name, description, host }: UnstartedProps) {
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">
-        <CardListItem text={host}>
-          <FiUser />
-        </CardListItem>
-        <CardListItem text={host}>
-          <FiClock />
-        </CardListItem>
-        <CardListItem text={host}>
-          <FiMapPin />
-        </CardListItem>
-        {description && (
-          <CardListItem text={description}>
-            <FiBookmark />
-          </CardListItem>
-        )}
+        <CardListItem text={host} icon="user" />
+        <CardListItem text="TBD" icon="clock" />
+        <CardListItem text="TBD" icon="pin" />
+        {description && <CardListItem text={description} icon="bookmark" />}
       </ul>
       <Button href={`/schedule/${slug}`}>
         View

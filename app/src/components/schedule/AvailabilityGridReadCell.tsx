@@ -98,7 +98,7 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
   return (
     <div
       ref={popupRef}
-      className={`absolute z-20 flex w-40 flex-col gap-2 rounded-lg border border-neutral-500 bg-neutral-900 p-2 text-xs transition-all${
+      className={`absolute z-20 flex w-40 flex-col gap-2 rounded-lg border border-neutral-900 bg-white p-2 text-xs transition-all${
         positions
           ? ` ${positions.horizontal} ${positions.vertical} ${positions.translate}`
           : ""
@@ -221,6 +221,7 @@ const AvailabilityGridReadCell = memo(
       [mostUsers, colors, users]
     );
 
+    // TODO: fix styling for long words
     return (
       <section className="relative">
         {status && status.available.length !== 0 && (

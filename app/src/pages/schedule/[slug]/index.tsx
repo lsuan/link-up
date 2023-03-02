@@ -43,7 +43,7 @@ function AvailabilitySection({
 
 function PublishSection({ slug }: { slug: string }) {
   return (
-    <div className="my-8 w-full text-center">
+    <div className="my-8 w-full rounded-lg bg-neutral-300 p-4 text-center">
       <h3 className="mb-4 text-xl font-semibold">
         You&apos;ve received responses!
       </h3>
@@ -159,7 +159,7 @@ function SchedulePage() {
               </Typography>
             </div>
           ) : (
-            isHost && <PublishSection slug={slug} />
+            <PublishSection slug={slug} />
           )}
         </div>
 
