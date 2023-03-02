@@ -72,7 +72,7 @@ function Snackbar() {
   }
 
   return (
-    <div className="sticky bottom-6 left-6 z-50 flex w-full max-w-[22rem] items-center justify-between gap-2 rounded-lg bg-brand-700 p-4 font-medium text-white">
+    <div className="sticky bottom-6 left-6 z-50 flex w-full max-w-[22rem] items-center justify-between gap-2 rounded-lg bg-brand-500 p-4 font-medium text-white">
       <span>{messageIcon}</span>
       <Typography className="w-full text-start text-white">
         {noticeMessage.message}

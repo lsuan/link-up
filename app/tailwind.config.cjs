@@ -15,7 +15,8 @@ module.exports = {
       colors: {
         brand: {
           900: "#1C1C41",
-          700: "#4E4EB2",
+          800: "#363693",
+          500: "#4E4EB2",
           200: "#C2C2FF",
         },
         disabled: {

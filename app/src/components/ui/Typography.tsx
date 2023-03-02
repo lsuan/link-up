@@ -11,7 +11,7 @@ const typographyStyles = cva("text-black transition-colors", {
       p: "font-inter text-base",
     },
     brand: {
-      true: "text-brand-700",
+      true: "text-brand-500",
     },
     defaultVariants: {
       intent: "p",
