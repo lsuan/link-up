@@ -178,11 +178,11 @@ Form.TextArea = function Input({
           </label>
           {text?.length >= maxLength ? (
             <span className="absolute right-1 -bottom-3 text-xs text-red-600">
-              {text?.length}/{maxLength}
+              {`${text?.length || 0}/${maxLength}`}
             </span>
           ) : (
             <span className="absolute right-1 -bottom-3 text-xs">
-              {text?.length}/{maxLength}
+              {`${text?.length || 0}/${maxLength}`}
             </span>
           )}
         </fieldset>

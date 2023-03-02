@@ -142,3 +142,6 @@ export const getTimeOptions = (
   );
   return formattedHours;
 };
+
+// Max character limit on schedule descriptions.
+export const MAX_DESCRIPTION_LENGTH = 200;

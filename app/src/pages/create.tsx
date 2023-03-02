@@ -16,7 +16,7 @@ import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
 import Unauthenticated from "../components/shared/Unauthenticated";
-import { getTimeOptions, MINUTES } from "../utils/formUtils";
+import { getTimeOptions, MINUTES, MAX_DESCRIPTION_LENGTH } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
@@ -217,7 +217,7 @@ function Create() {
           required
         />
         {/* TODO: add tinymce integration */}
-        <Form.TextArea name="description" displayName="Description" maxLength={200} />
+        <Form.TextArea name="description" displayName="Description" maxLength={MAX_DESCRIPTION_LENGTH} />
 
         <div className="relative rounded-lg bg-neutral-700 p-4">
           {defaultValues.dateRange.isOneDay && (
