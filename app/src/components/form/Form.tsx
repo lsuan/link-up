@@ -71,7 +71,7 @@ export default function Form<
   );
 }
 
-/** Use this component for text-based input fields. */
+/** Use this component for short text-based input fields. */
 Form.Input = function Input({
   name,
   displayName,
@@ -129,6 +129,64 @@ Form.Input = function Input({
           )}
         </div>
       )}
+      {error && <InputErrorMessage error={error as string} className="-mt-3" />}
+    </>
+  );
+};
+
+/** Use this component for longer text-based input fields. */
+Form.TextArea = function Input({
+  name,
+  displayName,
+  maxLength,
+  required,
+}: {
+  name: string;
+  displayName: string;
+  maxLength: number;
+  required?: boolean;
+}) {
+  const text = useWatch({ name });
+  const {
+    register,
+    formState: { isSubmitting, errors },
+  } = useFormContext();
+
+  const error = parseDeepErrors(errors, name);
+
+  return (
+    <>
+      <div className="flex flex-col gap-1">
+        <fieldset className="relative">
+          <textarea
+            className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-black placeholder:text-transparent"
+            placeholder={displayName}
+            {...register(name)}
+            maxLength={maxLength}
+            disabled={isSubmitting}
+            aria-invalid={error ? "true" : "false"}
+          />
+          <label
+            className="absolute left-1 top-[1.35rem] z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+          peer-placeholder-shown:left-0 peer-placeholder-shown:top-[1.35rem] peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
+          peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
+          peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
+            htmlFor={name}
+          >
+            {displayName}
+            {required && <span className="ml-1 text-red-500">*</span>}
+          </label>
+          {text?.length >= maxLength ? (
+            <span className="absolute right-1 -bottom-3 text-xs text-red-600">
+              {`${text?.length || 0}/${maxLength}`}
+            </span>
+          ) : (
+            <span className="absolute right-1 -bottom-3 text-xs">
+              {`${text?.length || 0}/${maxLength}`}
+            </span>
+          )}
+        </fieldset>
+      </div>
       {error && <InputErrorMessage error={error as string} className="-mt-3" />}
     </>
   );

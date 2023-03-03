@@ -74,7 +74,7 @@ model VerificationToken {
 model Schedule {
   id             String   @id @default(cuid())
   name           String
-  description    String?
+  description    String?  @db.VarChar(200)
   startDate      DateTime @db.DateTime()
   endDate        DateTime @db.DateTime()
   startTime      String
