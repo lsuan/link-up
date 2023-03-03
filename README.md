@@ -33,3 +33,7 @@ A scheduling app that allows users to create events and share them to users to f
   - <a href="https://docs.google.com/document/d/1RKsanTpXXaqowOV5O_GWmMP2F2q-kP6drDJhXuQYGR0/edit?usp=sharing">Google Doc</a>
 - 02/17/23: Steph Onboarding + Style Guideline Draft
   - <a href="https://docs.google.com/document/d/1QVpWgZsCoCCg6S7NJQihGmz5iFK2cwwR3v__i9HVxh4/edit?usp=sharing">Google Doc</a>
+- 02/22/23: Started Design System Implementation + User Onboarding Draft
+  - <a href="https://docs.google.com/document/d/10RjTY0kMbn9bfccrG-MaEAS2r4ikPJTsjru50ajvnbU/edit?usp=sharing">Google Doc</a>
+- 03/01/23: Codebase Standards Overview + High Fidelity Progress
+  - <a href="https://docs.google.com/document/d/1e4LtQij3KM9zgD_-TwP4NSn96p-3gliUwvTrj0c5El4/edit?usp=sharing">Google Doc</a>
