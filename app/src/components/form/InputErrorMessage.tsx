@@ -1,5 +1,4 @@
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FiAlertCircle } from "react-icons/fi";
 
 function InputErrorMessage({
   error,
@@ -10,7 +9,7 @@ function InputErrorMessage({
 }) {
   return (
     <span role="alert" className={`text-sm text-red-500 ${className}`}>
-      <FontAwesomeIcon className="mr-2" icon={faCircleExclamation} />
+      <FiAlertCircle className="mr-2" />
       {error}
     </span>
   );

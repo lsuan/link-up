@@ -1,12 +1,7 @@
-import {
-  faAngleLeft,
-  faAngleRight,
-  faCalendarDay,
-  faClose,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Typography from "@ui/Typography";
 import { atom, useAtom } from "jotai";
 import { forwardRef, type ReactNode } from "react";
+import { FiCalendar, FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 import { MONTHS } from "../../utils/formUtils";
 
 export const datePickerOpen = atom(false);
@@ -24,14 +19,14 @@ const CustomDatePicker = forwardRef<HTMLButtonElement, CustomDatePickerProps>(
       <div className="relative">
         <button
           type="button"
-          className=" w-full rounded-lg border border-neutral-500 bg-neutral-900 px-4 py-2 text-left"
+          className="flex w-full items-center rounded-lg border border-neutral-500 bg-white px-4 py-2 text-left"
           onClick={onClick}
           ref={ref}
         >
-          <FontAwesomeIcon icon={faCalendarDay} className="mr-2" />
+          <FiCalendar className="mr-2" />
           {value || <span className="text-neutral-500">Select a date...</span>}
         </button>
-        <span className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-neutral-900 px-2 text-xs text-white transition-all">
+        <span className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all">
           {label}
           {star && <span className="ml-1 text-red-500">*</span>}
         </span>
@@ -63,20 +58,19 @@ export function CalendarContainer({
   };
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   return (
-    <div className={`max-w-xs rounded-lg bg-neutral-700 p-4 pb-3 ${className}`}>
+    <div className={`max-w-xs rounded-lg bg-neutral-300 p-4 pb-3 ${className}`}>
       <header className="relative mb-4 pr-6 font-semibold">
-        <h3>
+        <Typography intent="h3">
           {title}
           {required && <span className="ml-1 text-red-500">*</span>}
-        </h3>
+        </Typography>
         {isDatePickerOpen && (
           <button
             type="button"
             onClick={handleClose}
             className="absolute right-0 top-0"
           >
-            <FontAwesomeIcon
-              icon={faClose}
+            <FiX
               className="text-neutral-500 transition-colors hover:text-neutral-300"
               onClick={() => setIsDatePickerOpen(false)}
             />
@@ -109,10 +103,7 @@ export function CalendarHeader({
         disabled={prevMonthButtonDisabled}
         className="flex items-center"
       >
-        <FontAwesomeIcon
-          icon={faAngleLeft}
-          className="text-xl text-blue-500 transition-colors hover:text-blue-300"
-        />
+        <FiChevronLeft className="text-xl text-blue-500 transition-colors hover:text-blue-300" />
       </button>
       <h5 className="mx-8 font-semibold">
         {`${MONTHS[date.getMonth()]} ${date.getFullYear()}`}
@@ -124,10 +115,7 @@ export function CalendarHeader({
         disabled={nextMonthButtonDisabled}
         className="flex items-center"
       >
-        <FontAwesomeIcon
-          icon={faAngleRight}
-          className="text-xl text-blue-500 transition-colors hover:text-blue-300"
-        />
+        <FiChevronRight className="text-xl text-blue-500 transition-colors hover:text-blue-300" />
       </button>
     </div>
   );

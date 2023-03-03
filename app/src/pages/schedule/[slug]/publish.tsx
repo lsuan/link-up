@@ -1,17 +1,17 @@
-import { faListCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Schedule } from "@prisma/client";
 import Button from "@ui/Button";
+import { notice } from "@ui/Snackbar";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FiCheckSquare, FiPlus } from "react-icons/fi";
 import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMessage";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
-import { notice } from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import Unauthenticated from "../../../components/shared/Unauthenticated";
@@ -131,7 +131,11 @@ function Publish() {
       setSaveWarning("You have unsaved events!");
       setErrorBorder();
     } else {
-      setNoticeMessage("Your events have been successfully published!");
+      setNoticeMessage({
+        action: "close",
+        icon: "check",
+        message: "Your events have been successfully published!",
+      });
       const eventData = events.map((event) => {
         type NewEvent = Omit<InitialEventInfo, "isEditing" & "className">;
         const newEvent: NewEvent = event;
@@ -156,7 +160,11 @@ function Publish() {
 
       if (res) {
         router.push(`/schedule/${slug}`);
-        setNoticeMessage("Your events have been successfully published!");
+        setNoticeMessage({
+          action: "close",
+          icon: "check",
+          message: "Your events have been successfully published!",
+        });
       }
     }
   };
@@ -194,13 +202,13 @@ function Publish() {
         scheduleName={schedule?.name ?? ""}
       />
       {schedule && <AvailabilityResponses schedule={schedule} />}
-      <h3 className="mt-8 mb-4 font-semibold">
+      <Typography intent="h4">
         {`These are the best times based on your preferences (${
           schedule?.numberOfEvents
         } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
           schedule?.lengthOfEvents
         } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
-      </h3>
+      </Typography>
       <div className="flex flex-col items-center gap-4">
         {events.map((event, index) => (
           <div
@@ -236,7 +244,7 @@ function Publish() {
           className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
           onClick={() => addEvent()}
         >
-          <FontAwesomeIcon icon={faPlus} />
+          <FiPlus />
         </button>
         {saveWarning !== "" && (
           <div className="-mb-6 w-full">
@@ -248,7 +256,7 @@ function Publish() {
           isLoading={isCreateEventsLoading}
           fullWidth
         >
-          <FontAwesomeIcon icon={faListCheck} />
+          <FiCheckSquare />
           <span>Confirm and Publish</span>
         </Button>
       </div>

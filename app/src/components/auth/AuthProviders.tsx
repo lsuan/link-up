@@ -1,16 +1,17 @@
-import {
-  faDiscord,
-  faGoogle,
-  faTwitter,
-} from "@fortawesome/free-brands-svg-icons";
-import AuthIcon from "./AuthIcon";
+import Button from "@ui/Button";
+import { signIn } from "next-auth/react";
+import { BsDiscord, BsGoogle } from "react-icons/bs";
 
 function AuthProviders() {
   return (
     <div className="flex justify-center gap-8">
-      <AuthIcon icon={faDiscord} type="discord" />
-      <AuthIcon icon={faGoogle} type="google" />
-      <AuthIcon icon={faTwitter} type="twitter" />
+      <Button onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}>
+        <BsDiscord />
+      </Button>
+
+      <Button onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
+        <BsGoogle />
+      </Button>
     </div>
   );
 }

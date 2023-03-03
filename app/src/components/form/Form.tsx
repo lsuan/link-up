@@ -1,10 +1,6 @@
-import {
-  faCheckCircle,
-  faExclamationCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   FormProvider,
@@ -14,6 +10,7 @@ import {
   type DeepPartial,
   type FieldValues,
 } from "react-hook-form";
+import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { type z } from "zod";
 import {
   parseDeepErrors,
@@ -225,7 +222,7 @@ Form.Password = function Input({
 
   return (
     <>
-      <ul className="rounded-lg bg-neutral-700 p-4 text-sm">
+      <ul className="rounded-lg bg-neutral-300 p-4 text-sm">
         {conditions.map((condition) => (
           <li
             key={condition.message}
@@ -233,12 +230,8 @@ Form.Password = function Input({
               condition.isFulFilled ? " text-green-300" : " text-black"
             }`}
           >
-            {condition.isFulFilled ? (
-              <FontAwesomeIcon icon={faCheckCircle} />
-            ) : (
-              <FontAwesomeIcon icon={faExclamationCircle} />
-            )}
-            <p>{condition.message}</p>
+            {condition.isFulFilled ? <FiCheckCircle /> : <FiAlertCircle />}
+            <Typography>{condition.message}</Typography>
           </li>
         ))}
       </ul>

@@ -55,6 +55,11 @@ const AvailabilityGridWriteApplyCheckbox = memo(
       (a, b) => new Date(a).getTime() - new Date(b).getTime()
     );
 
+    // don't show checkbox if it's a one day schedule
+    if (startDate.getTime() === endDate.getTime()) {
+      return null;
+    }
+
     return (
       <section className="mb-4 flex items-center gap-2">
         <input
@@ -68,7 +73,7 @@ const AvailabilityGridWriteApplyCheckbox = memo(
           Autofill availability from
           <select
             ref={selectRef}
-            className="ml-2 rounded-lg border border-neutral-500 bg-neutral-900 p-2"
+            className="ml-2 rounded-lg border border-neutral-900 bg-white p-2"
             onChange={handleSelectChange}
           >
             <option>Select Day</option>

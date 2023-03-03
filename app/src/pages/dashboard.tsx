@@ -1,8 +1,9 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
+import Snackbar from "@ui/Snackbar";
+import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { FiPlus } from "react-icons/fi";
 import DashboardEventCard from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
@@ -37,12 +38,14 @@ function Dashboard() {
   return (
     <section className="min-h-screen px-8">
       <header className="mb-12 flex w-full items-center justify-between">
-        <h1 className="text-3xl font-semibold">Events</h1>
+        <Typography intent="h1">Events</Typography>
         <Button href="/create">
-          <FontAwesomeIcon size="sm" icon={faPlus} />
+          <FiPlus />
           Create
         </Button>
       </header>
+
+      <Snackbar action="close" />
 
       <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">
         <Pill

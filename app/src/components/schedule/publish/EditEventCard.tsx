@@ -1,3 +1,4 @@
+import Button from "@ui/Button";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
@@ -83,7 +84,7 @@ function EditEventCard({
   return (
     <>
       <ModalBackground isModalOpen={isDatePickerOpen} />
-      <div className={`rounded-lg bg-neutral-700 p-4${className}`}>
+      <div className={`rounded-lg border border-neutral-900 p-4${className}`}>
         <Form<EditEventInputs, typeof EditEventSchema>
           schema={EditEventSchema}
           onSubmit={handleEventSave}
@@ -106,15 +107,7 @@ function EditEventCard({
             selected={eventDate}
             onChange={(date) => setEventDate(date)}
             customInput={<CustomDatePicker label="Date" star />}
-            calendarContainer={({ children }) => (
-              <CalendarContainer
-                title="When should this event occur?"
-                className="border border-neutral-500"
-                required
-              >
-                {children}
-              </CalendarContainer>
-            )}
+            calendarContainer={CalendarContainer}
             onCalendarOpen={() => setIsDatePickerOpen(true)}
             onCalendarClose={() => setIsDatePickerOpen(false)}
             dayClassName={() => "p-1 m-1 rounded-lg"}
@@ -143,13 +136,9 @@ function EditEventCard({
             type="text"
           />
           <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              className="rounded-lg bg-neutral-500 py-2 px-4"
-              onClick={() => deleteEvent(index)}
-            >
+            <Button intent="secondary" onClick={() => deleteEvent(index)}>
               Delete
-            </button>
+            </Button>
             <Form.Button type="submit" name="Save" />
           </div>
         </Form>

@@ -1,13 +1,8 @@
-import {
-  faArrowRightLong,
-  faClock,
-  faLocationPin,
-  faNoteSticky,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
+import { FiChevronsRight } from "react-icons/fi";
 import { createSlug } from "../../utils/scheduleUtils";
+import CardListItem from "../shared/CardListItem";
 
 type UnstartedProps = {
   id: string;
@@ -21,40 +16,20 @@ function UnstartedCard({ id, name, description, host }: UnstartedProps) {
 
   // TODO: figure out how to convert time by location
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-neutral-700 p-4">
+    <div className="flex flex-col gap-4 rounded-xl bg-neutral-300 p-4">
       <header className="relative flex items-start justify-between gap-2">
-        <h3 className="w-9/12 text-lg">{name}</h3>
+        <Typography intent="h3">{name}</Typography>
       </header>
 
       <ul className="flex flex-col gap-2 text-sm">
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faUser} />
-          <p>{host}</p>
-        </li>
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
-          <p>TBD</p>
-        </li>
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
-          <p>TBD</p>
-        </li>
-        {description && (
-          <li className="flex items-start gap-2">
-            <FontAwesomeIcon
-              className="mt-[3px] w-[14px]"
-              icon={faNoteSticky}
-            />
-            <p className="line-clamp-2">{description}</p>
-          </li>
-        )}
+        <CardListItem text={host} icon="user" />
+        <CardListItem text="TBD" icon="clock" />
+        <CardListItem text="TBD" icon="pin" />
+        {description && <CardListItem text={description} icon="bookmark" />}
       </ul>
       <Button href={`/schedule/${slug}`}>
         View
-        <FontAwesomeIcon
-          icon={faArrowRightLong}
-          className="transition-transform group-hover:translate-x-2"
-        />
+        <FiChevronsRight className="transition-transform group-hover:translate-x-2" />
       </Button>
     </div>
   );

@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import Link from "next/link";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
@@ -30,13 +31,13 @@ function SignUp() {
 
   return (
     <section className="w-full max-w-md self-center px-8">
-      <h1 className="mb-2 text-3xl font-semibold">Sign Up</h1>
-      <p className="mb-10">
+      <Typography intent="h1">Sign Up</Typography>
+      <Typography>
         <span className="mr-2">Already have an account?</span>
         <span>
           <Link href="/login">Log In</Link>
         </span>
-      </p>
+      </Typography>
 
       {email === "" ? (
         <>

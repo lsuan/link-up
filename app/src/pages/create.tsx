@@ -1,3 +1,5 @@
+import { notice } from "@ui/Snackbar";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -11,7 +13,6 @@ import CustomDatePicker, {
   datePickerOpen,
 } from "../components/form/DatePickerHelpers";
 import Form from "../components/form/Form";
-import { notice } from "../components/schedule/SuccessNotice";
 import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
@@ -111,7 +112,7 @@ function Create() {
     endTime: "5:00 PM",
   });
 
-  const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (data) => {
+  const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {
     const {
       scheduleName: name,
       description,
@@ -120,13 +121,13 @@ function Create() {
       deadline,
       numberOfEvents,
       lengthOfEvents,
-    } = data;
-    const { startDate, isOneDay } = data.dateRange as {
+    } = inputs;
+    const { startDate, isOneDay } = inputs.dateRange as {
       startDate: Date;
       isOneDay: boolean;
     };
 
-    let { endDate } = data.dateRange as {
+    let { endDate } = inputs.dateRange as {
       endDate: Date;
     };
 
@@ -134,7 +135,7 @@ function Create() {
       endDate = startDate;
     }
 
-    const res = await mutateAsync(
+    await mutateAsync(
       {
         name,
         description,
@@ -147,10 +148,14 @@ function Create() {
         lengthOfEvents,
       },
       {
-        onSuccess: () => {
-          const { name: currentName, id } = res.schedule;
+        onSuccess: (data) => {
+          const { name: currentName, id } = data.schedule;
           const slug = createSlug(currentName, id);
-          setNoticeMessage("Your schedule has successfully been created!");
+          setNoticeMessage({
+            action: "close",
+            icon: "check",
+            message: "Your schedule has been successfully created!",
+          });
           router.push(`schedule/${slug}`);
         },
       }
@@ -203,7 +208,7 @@ function Create() {
     <section className="px-8">
       <BackArrow href="/dashboard" page="Dashboard" />
       <ModalBackground isModalOpen={isDatePickerOpen} />
-      <h1 className="mb-12 text-3xl">Plan a Schedule</h1>
+      <Typography intent="h1">Plan a Schedule</Typography>
       <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
         onSubmit={handleSubmit}
         schema={CreateScheduleSchema}
@@ -219,9 +224,9 @@ function Create() {
         {/* TODO: add tinymce integration */}
         <Form.TextArea name="description" displayName="Description" maxLength={MAX_DESCRIPTION_LENGTH} />
 
-        <div className="relative rounded-lg bg-neutral-700 p-4">
+        <div className="relative rounded-lg bg-neutral-300 p-4">
           {defaultValues.dateRange.isOneDay && (
-            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-700 opacity-50" />
+            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-300 opacity-50" />
           )}
           <DatePicker
             id="calendarDatePicker"

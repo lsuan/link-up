@@ -1,3 +1,4 @@
+import Snackbar from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
@@ -34,6 +35,7 @@ function Layout({ children }: LayoutProps) {
             <SignedOutNavMenu />
           ))}
         {children}
+        <Snackbar />
       </main>
     </>
   );

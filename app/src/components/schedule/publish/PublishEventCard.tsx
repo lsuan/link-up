@@ -1,12 +1,7 @@
-import {
-  faEdit,
-  faLocationPin,
-  faNoteSticky,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
+import CardListItem from "../../shared/CardListItem";
 import PublishCardMetadata from "./PublishCardMetadata";
 
 function PublishEventCard({
@@ -30,7 +25,7 @@ function PublishEventCard({
     setEvents([...prevEvents]);
   };
   return (
-    <section className="w-full rounded-lg bg-neutral-500 p-6">
+    <section className="w-full rounded-lg bg-neutral-300 p-6">
       <header className="relative">
         <p className="text-sm">
           {event.date &&
@@ -46,13 +41,13 @@ function PublishEventCard({
             className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
             onClick={() => deleteEvent(index)}
           >
-            <FontAwesomeIcon icon={faTrash} />
+            <FiTrash2 />
           </button>
           <button
             className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
             onClick={() => setCardEditState()}
           >
-            <FontAwesomeIcon icon={faEdit} />
+            <FiEdit />
           </button>
         </div>
       </header>
@@ -76,22 +71,22 @@ function PublishEventCard({
         />
       )}
       <ul>
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faLocationPin} />
-          <p className="text-neutral-300">
-            {event.location && event.location !== ""
+        <CardListItem
+          text={
+            event.location && event.location !== ""
               ? event.location
-              : "Add a location..."}
-          </p>
-        </li>
-        <li className="flex items-start gap-2">
-          <FontAwesomeIcon className="mt-[3px] w-[14px]" icon={faNoteSticky} />
-          <p className="text-neutral-300">
-            {event.description && event.description !== ""
+              : "Add a location..."
+          }
+          icon="pin"
+        />
+        <CardListItem
+          text={
+            event.description && event.description !== ""
               ? event.description
-              : "Add a description..."}
-          </p>
-        </li>
+              : "Add a description..."
+          }
+          icon="bookmark"
+        />
       </ul>
     </section>
   );

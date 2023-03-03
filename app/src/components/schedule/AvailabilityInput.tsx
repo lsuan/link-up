@@ -1,5 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Button from "@ui/Button";
+import { notice } from "@ui/Snackbar";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -17,7 +19,6 @@ import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
 import Form from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
 import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
-import { notice } from "./SuccessNotice";
 
 type AnonAvailabilityInputs = {
   name: string;
@@ -141,7 +142,11 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
       {
         onSuccess: () => {
           setIsUpated(true);
-          setNoticeMessage("Availability has been saved!");
+          setNoticeMessage({
+            action: "close",
+            icon: "check",
+            message: "Availability has been saved!",
+          });
           setIsDisabled(true);
         },
       }
@@ -162,7 +167,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
           onSubmit={handleGuestUserSubmit}
           className="mb-8 flex flex-col gap-2"
         >
-          <p className="my-2">
+          <Typography className="my-2">
             <span className="mr-2">Already have an account?</span>
             <span>
               <Link
@@ -172,8 +177,10 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
                 Log In
               </Link>
             </span>
-          </p>
-          <p className="py-2 text-center text-xl font-semibold">OR</p>
+          </Typography>
+          <Typography className="py-2 text-center text-xl font-semibold">
+            OR
+          </Typography>
           <Form.Input type="text" name="name" displayName="Name" />
           <Form.Button type="submit" name="Continue" />
         </Form>

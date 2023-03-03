@@ -1,21 +1,16 @@
-import {
-  faListCheck,
-  faPenToSquare,
-  faShareFromSquare,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@ui/Button";
+import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FiEdit, FiExternalLink, FiList } from "react-icons/fi";
 import AddToCalendarModal from "../../../components/schedule/AddToCalendarModal";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import ScheduleEventCard from "../../../components/schedule/ScheduleEventCard";
 import ShareModal, {
   shareModalShown,
 } from "../../../components/schedule/ShareModal";
-import SuccessNotice from "../../../components/schedule/SuccessNotice";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
@@ -33,11 +28,13 @@ function AvailabilitySection({
   buttonTitle,
 }: SchedulePageAvailabilityProps) {
   return (
-    <div className="my-8 w-full bg-neutral-500 py-8 px-8">
-      <h2 className="mb-8 rounded-lg text-3xl font-semibold">Availability</h2>
+    <div className="my-8 w-full bg-neutral-300 py-8 px-8">
+      <Typography intent="h2" className="mb-8">
+        Availability
+      </Typography>
       <AvailabilityResponses schedule={schedule} />
       <Button href={`/schedule/${slug}/availability`}>
-        <FontAwesomeIcon icon={faPenToSquare} />
+        <FiEdit />
         {buttonTitle}
       </Button>
     </div>
@@ -46,13 +43,13 @@ function AvailabilitySection({
 
 function PublishSection({ slug }: { slug: string }) {
   return (
-    <div className="my-8 w-full text-center">
+    <div className="my-8 w-full rounded-lg bg-neutral-300 p-4 text-center">
       <h3 className="mb-4 text-xl font-semibold">
         You&apos;ve received responses!
       </h3>
       <h4 className="mb-2">Ready to finalize dates and times?</h4>
       <Button href={`/schedule/${slug}/publish`}>
-        <FontAwesomeIcon icon={faListCheck} />
+        <FiList />
         Publish Event(s)
       </Button>
     </div>
@@ -99,30 +96,29 @@ function SchedulePage() {
         <ModalBackground isModalOpen />
       )}
       <section>
-        <SuccessNotice />
         <div className="px-8">
           {sessionData?.user && (
             <BackArrow href="/dashboard" page="Dashboard" />
           )}
           <header className="relative mb-8 mt-4 flex w-full items-start justify-between gap-2">
-            <h1 className="text-3xl font-semibold">{schedule?.name}</h1>
+            <Typography intent="h1">{schedule?.name}</Typography>
             {isShareModalShown && <ShareModal />}
             <Button onClick={() => setIsShareModalShown(!isShareModalShown)}>
-              <FontAwesomeIcon icon={faShareFromSquare} />
+              <FiExternalLink />
               Share
             </Button>
           </header>
 
           {schedule?.deadline && (
-            <p>
+            <Typography>
               <span className="underline">Deadline to Fill By</span>
               <span>{`: ${schedule?.deadline.toLocaleDateString()}`}</span>
-            </p>
+            </Typography>
           )}
-          <p className="my-4">{schedule?.description}</p>
-          <p className="z-10 mb-4 font-semibold">
+          <Typography>{schedule?.description}</Typography>
+          <Typography>
             {schedule && getHost(sessionData?.user?.id ?? "", schedule)}
-          </p>
+          </Typography>
 
           {events && hasEvents && (
             <div className="relative">
@@ -156,16 +152,14 @@ function SchedulePage() {
             </div>
           )}
           {isHost && Object.keys(schedule?.attendees ?? {}).length === 0 ? (
-            <div className="my-8 rounded-lg bg-neutral-700 p-4 text-center">
-              <h4 className="mb-2 text-xl font-semibold">
-                Waiting for Responses...
-              </h4>
-              <div>
+            <div className="my-8 rounded-lg bg-neutral-300 p-4 text-center">
+              <Typography intent="h4">Waiting for Responses...</Typography>
+              <Typography>
                 Click the Share button at the top to share this event to others!
-              </div>
+              </Typography>
             </div>
           ) : (
-            isHost && <PublishSection slug={slug} />
+            <PublishSection slug={slug} />
           )}
         </div>
 

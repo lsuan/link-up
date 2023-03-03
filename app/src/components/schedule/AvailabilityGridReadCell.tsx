@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import React, {
   memo,
   useCallback,
@@ -97,26 +98,27 @@ function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
   return (
     <div
       ref={popupRef}
-      className={`absolute z-20 flex w-40 flex-col gap-2 rounded-lg border border-neutral-500 bg-neutral-900 p-2 text-xs transition-all${
+      className={`absolute z-20 flex w-40 flex-col gap-2 rounded-lg border border-neutral-900 bg-white p-2 text-xs transition-all${
         positions
           ? ` ${positions.horizontal} ${positions.vertical} ${positions.translate}`
           : ""
       }`}
     >
       <header className="font-semibold">
-        <h5>{getShortenedDateWithDay(new Date(dateString))}</h5>
-        <h6>{`${start} — ${end}`}</h6>
+        <Typography intent="h4">
+          {`${getShortenedDateWithDay(new Date(dateString))} ${start} — ${end}`}
+        </Typography>
       </header>
       <div className="flex flex-col gap-0">
-        <p>
+        <Typography>
           <span className="font-semibold text-indigo-300">Available</span>
           {` (${available.length}): ${available.join(", ")}`}
-        </p>
+        </Typography>
         {unavailable?.length > 0 && (
-          <p>
+          <Typography>
             <span className="font-semibold text-indigo-500">Unavailable</span>
             {` (${unavailable.length}): ${unavailable.join(", ")}`}
-          </p>
+          </Typography>
         )}
       </div>
     </div>
@@ -219,6 +221,7 @@ const AvailabilityGridReadCell = memo(
       [mostUsers, colors, users]
     );
 
+    // TODO: fix styling for long words
     return (
       <section className="relative">
         {status && status.available.length !== 0 && (

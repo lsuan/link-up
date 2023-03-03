@@ -1,12 +1,7 @@
-import {
-  faCalendarPlus,
-  faClock,
-  faLocationPin,
-  faNoteSticky,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type Event } from "@prisma/client";
+import { FiCalendar } from "react-icons/fi";
 import { getEventCardDateDisplay } from "../../utils/timeUtils";
+import CardListItem from "../shared/CardListItem";
 
 export type ScheduleEventCardProps = {
   index: number;
@@ -34,34 +29,20 @@ function ScheduleEventCard({
 
   // TODO: figure out how to convert time by location
   return (
-    <div className="flex w-64 flex-col justify-between gap-4 rounded-xl bg-neutral-700 p-4">
+    <div className="flex w-64 flex-col justify-between gap-4 rounded-xl bg-neutral-300 p-4">
       <section className="flex flex-col gap-4">
         <h3 className="w-9/12 text-lg">{name}</h3>
 
         <ul className="flex flex-col gap-2 text-sm">
-          <li className="flex items-start gap-2">
-            <FontAwesomeIcon className="mt-[3px]" icon={faClock} />
-            <p>{`${getEventCardDateDisplay(date)} ${
+          <CardListItem
+            text={`${getEventCardDateDisplay(date)} ${
               startTime && endTime ? `| ${startTime} — ${endTime}` : ""
-            }`}</p>
-          </li>
-          {location && (
-            <li className="flex items-start gap-2">
-              <FontAwesomeIcon
-                className="mt-[3px] w-[14px]"
-                icon={faLocationPin}
-              />
-              <p>{location || "TBD"}</p>
-            </li>
-          )}
+            }`}
+            icon="clock"
+          />
+          {location && <CardListItem text={location || "TBD"} icon="pin" />}
           {description && (
-            <li className="flex items-start gap-2">
-              <FontAwesomeIcon
-                className="mt-[3px] w-[14px]"
-                icon={faNoteSticky}
-              />
-              <p>{description}</p>
-            </li>
+            <CardListItem text={location || "TBD"} icon="bookmark" />
           )}
         </ul>
       </section>
@@ -69,7 +50,7 @@ function ScheduleEventCard({
         className="w-fill flex items-center justify-center gap-2 rounded-lg bg-neutral-500 p-2 text-white transition-colors hover:bg-neutral-300 hover:text-black"
         onClick={() => handleModalShow()}
       >
-        <FontAwesomeIcon icon={faCalendarPlus} />
+        <FiCalendar />
         Add To Calendar
       </button>
     </div>

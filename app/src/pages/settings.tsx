@@ -1,3 +1,4 @@
+import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import EmailCredentialsForm from "../components/settings/EmailCredentialsForm";
 import OAuthForm from "../components/settings/OAuthForm";
@@ -26,7 +27,7 @@ function Settings() {
   return (
     <section className="px-8">
       <BackArrow href="/dashboard" page="Dashboard" />
-      <h1 className="mb-12 text-3xl font-semibold">Settings</h1>
+      <Typography intent="h1">Settings</Typography>
       {account > 0
         ? user.data && <OAuthForm {...user.data} />
         : user.data && <EmailCredentialsForm {...user.data} />}

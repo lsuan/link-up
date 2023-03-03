@@ -1,12 +1,11 @@
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { notice } from "@ui/Snackbar";
 import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
+import { BsGoogle } from "react-icons/bs";
+import { FiX } from "react-icons/fi";
 import { googleAccessToken } from "../../pages/schedule/google-oauth-redirect";
 import { handleGoogleCalendar } from "../../utils/addToCalendarUtils";
 import { type ScheduleEventCardProps } from "./ScheduleEventCard";
-import { notice } from "./SuccessNotice";
 
 // TODO: move google calendar functionality to the backend
 const GOOGLE_CLIENT_ID = "";
@@ -89,7 +88,11 @@ function AddToCalendarModal({
       if (Object.keys(googleResponse).includes("error")) {
         console.error("error", googleResponse);
       } else {
-        setNoticeMessage(`Event ${name} has been saved to Google Calendar`);
+        setNoticeMessage({
+          action: "close",
+          icon: "check",
+          message: `Event ${name} has been saved to Google Calendar`,
+        });
       }
       return;
     }
@@ -131,8 +134,7 @@ function AddToCalendarModal({
     <div className="absolute top-0 left-1/2 z-40 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-500 bg-neutral-900 p-6 transition-all">
       <header className="mb-6 flex justify-between">
         <h2 className="text-xl font-semibold">{`Add ${name} to Calendar`}</h2>
-        <FontAwesomeIcon
-          icon={faClose}
+        <FiX
           className="cursor-pointer text-neutral-500 transition-colors hover:text-neutral-300"
           onClick={() => handleModalClose()}
         />
@@ -141,7 +143,7 @@ function AddToCalendarModal({
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-500 p-2 transition-colors hover:bg-neutral-300 hover:text-black"
         onClick={() => handleAddToGoogleCalendar()}
       >
-        <FontAwesomeIcon icon={faGoogle} />
+        <BsGoogle />
         Google Calendar
       </button>
       <form
