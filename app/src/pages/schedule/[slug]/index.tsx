@@ -66,6 +66,7 @@ function SchedulePage() {
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule?.events;
   const hasEvents = events?.length ? events.length > 0 : false;
+  const numberOfAttendees = Object.keys(schedule?.attendees ?? {}).length;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
     boolean[]
@@ -151,16 +152,15 @@ function SchedulePage() {
               </div>
             </div>
           )}
-          {isHost && Object.keys(schedule?.attendees ?? {}).length === 0 ? (
+          {isHost && numberOfAttendees === 0 && (
             <div className="my-8 rounded-lg bg-neutral-300 p-4 text-center">
               <Typography intent="h4">Waiting for Responses...</Typography>
               <Typography>
                 Click the Share button at the top to share this event to others!
               </Typography>
             </div>
-          ) : (
-            <PublishSection slug={slug} />
           )}
+          {isHost && numberOfAttendees > 0 && <PublishSection slug={slug} />}
         </div>
 
         {schedule && (
