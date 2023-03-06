@@ -188,7 +188,7 @@ export const getBestTimesPerDay = (
 
   const categorizedEntries = Array.from(categorizedUsers);
   const betterEntries = categorizedEntries.filter(
-    (entry) => entry[1].length > Math.round(mostUsers / 2)
+    (entry) => entry[1].length >= Math.round(mostUsers / 2)
   );
   betterEntries.sort((a, b) => b[1].length - a[1].length);
   const bestTimes = new Map(betterEntries);

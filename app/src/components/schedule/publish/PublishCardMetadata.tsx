@@ -1,3 +1,6 @@
+import Typography from "@ui/Typography";
+import { useState } from "react";
+import { FiAlertTriangle, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import {
   categorizeUsers,
   getHourNumber,
@@ -5,11 +8,19 @@ import {
 } from "../../../utils/availabilityUtils";
 import { getFormattedHours } from "../../../utils/formUtils";
 
+type Metadata = {
+  isEveryoneFree: boolean;
+  message: string;
+};
+
 /** Grammatically lists users.
  *
  * Ex. ["user1" , "user2", "user3"] returns "user1, user2, and user3"
  */
 const listUsers = (users: string[]) => {
+  if (users.length === 1) {
+    return users[0];
+  }
   if (users.length === 2) {
     return `${users[0]} and ${users[1]}`;
   }
@@ -21,10 +32,43 @@ const listUsers = (users: string[]) => {
   )}`;
 };
 
-type Metadata = {
-  isEveryoneFree: boolean;
-  message: string;
-  className?: string;
+/**
+ * Sets the event metadata about any missing users from a given date and time.
+ * If everyone is free at a given time, then it doesn't set that information.
+ */
+const setMetadata = (
+  attendees: UserAvailability[],
+  date: Date,
+  startTime: string,
+  endTime: string
+) => {
+  const metadata: Metadata[] = [];
+  const categorizedUsers = categorizeUsers(attendees) as Map<string, string[]>;
+  const startHour = getHourNumber(startTime);
+  const endHour = getHourNumber(endTime);
+  const dateString = date.toISOString().split("T")[0];
+
+  for (let hour = startHour; hour < endHour; hour += 0.5) {
+    const endOfBlock = hour + 0.5;
+    const timeKey = `${dateString}:${hour}-${endOfBlock}`;
+    const [start, end] = getFormattedHours([hour, endOfBlock], "long");
+    const currentUsers = categorizedUsers.get(timeKey);
+
+    // gets the names of attendees who are unavailable in the current time block
+    const unavailableUsers = attendees
+      .filter((attendee) => !currentUsers?.includes(attendee.name))
+      .map((user) => user.name);
+
+    if (unavailableUsers.length > 0) {
+      metadata.push({
+        isEveryoneFree: false,
+        message: `${listUsers(
+          unavailableUsers
+        )} will not be available from ${start} - ${end}`,
+      });
+    }
+  }
+  return metadata;
 };
 
 function PublishCardMetadata({
@@ -38,66 +82,48 @@ function PublishCardMetadata({
   startTime: string;
   endTime: string;
 }) {
-  const dateString = date.toISOString().split("T")[0];
-  const categorizedUsers = categorizeUsers(attendees) as Map<string, string[]>;
-  const allUsers = attendees.length;
+  const metadata = setMetadata(attendees, date, startTime, endTime);
+  const [isMetadataShown, setIsMetadataShown] = useState<boolean>(false);
 
-  // FIXME: Right now metadata shows old user name.
-  // Should fix the mutation in settings to change the user name in every availability entry.
-  const setMetadata = () => {
-    let metadata: Metadata[] = [];
-    const startHour = getHourNumber(startTime);
-    const endHour = getHourNumber(endTime);
-    for (let hour = startHour; hour < endHour; hour += 0.5) {
-      const endOfBlock = hour + 0.5;
-      const timeKey = `${dateString}:${hour}-${endOfBlock}`;
-      const [start, end] = getFormattedHours([hour, endOfBlock], "long");
-      const currentUsers = categorizedUsers.get(timeKey);
-      if (currentUsers?.length === allUsers) {
-        metadata.push({
-          isEveryoneFree: true,
-          message: `Everyone will be free from ${`${start} - ${end}`}.`,
-        });
-      } else {
-        const unavailableUsers: string[] = [];
-
-        attendees.forEach((attendee) => {
-          if (!currentUsers?.includes(attendee.name)) {
-            unavailableUsers.push(attendee.name);
-          }
-        });
-
-        metadata.push({
-          isEveryoneFree: false,
-          message: `NOTE***: ${listUsers(
-            unavailableUsers
-          )} will not be available from ${start} - ${end}`,
-          className: "text-indigo-300",
-        });
-      }
-    }
-
-    if (metadata.every((entry) => entry.isEveryoneFree)) {
-      metadata = [
-        {
-          isEveryoneFree: true,
-          message: "Everyone is free for the entire event!",
-        },
-      ];
-    }
-    return metadata;
-  };
-
-  const metadata = setMetadata();
+  if (metadata.length === 0) {
+    return null;
+  }
 
   return (
-    <ul className="list-inside list-disc py-4">
-      {metadata.map((entry) => (
-        <li key={entry.message} className={entry.className}>
-          {entry.message}
-        </li>
-      ))}
-    </ul>
+    <section className="flex flex-col gap-2 py-2 text-brand-500">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span>
+            <FiAlertTriangle size="1rem" />
+          </span>
+          <Typography brand>
+            NOTE: Some people will be missing during this time.
+          </Typography>
+        </div>
+        <button className="cursor-pointer">
+          {isMetadataShown ? (
+            <FiChevronUp
+              size="1.5rem"
+              onClick={() => setIsMetadataShown(false)}
+            />
+          ) : (
+            <FiChevronDown
+              size="1.5rem"
+              onClick={() => setIsMetadataShown(true)}
+            />
+          )}
+        </button>
+      </div>
+      {isMetadataShown && (
+        <ul className="list-outside list-disc gap-2 whitespace-pre-wrap break-words rounded-lg bg-white py-4 marker:text-brand-500">
+          {metadata.map((entry) => (
+            <li key={entry.message} className="ml-6 pr-2">
+              <Typography brand>{entry.message}</Typography>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
