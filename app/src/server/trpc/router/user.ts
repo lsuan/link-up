@@ -149,15 +149,20 @@ const userRouter = router({
   getUserFullName: publicProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
+      if (!input) {
+        return null;
+      }
+
       const user = await ctx.prisma.user.findFirst({
         where: {
           id: input,
         },
       });
 
-      return user
-        ? { firstName: user.firstName, lastName: user.lastName }
-        : null;
+      if (!user) {
+        return null;
+      }
+      return { firstName: user.firstName, lastName: user.lastName };
     }),
 });
 

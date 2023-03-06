@@ -62,20 +62,20 @@ function SchedulePage() {
   // this is needed since the host is different from the actual user
   // and users can still browse this page even if they are not logged in
   const { schedule, isScheduleLoading, slug } = useSchedule(router);
-  const host = schedule?.host ?? null;
-  const isHost = host ? host.id === sessionData?.user?.id : false;
-  const events = schedule?.events;
-  const hasEvents = events?.length ? events.length > 0 : false;
-  const numberOfAttendees = Object.keys(schedule?.attendees ?? {}).length;
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
     boolean[]
   >([]);
-
   const {
     title: availabilityButtonTitle,
     isLoading: isUserAvailabilityLoading,
   } = useUserAvailability(status, schedule);
+
+  const host = schedule?.host;
+  const isHost = host ? host.id === sessionData?.user?.id : false;
+  const events = schedule?.events;
+  const hasEvents = events?.length ? events.length > 0 : false;
+  const numberOfAttendees = Object.keys(schedule?.attendees ?? {}).length;
 
   useEffect(() => {
     const modalsShown: boolean[] = [];

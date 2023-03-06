@@ -27,7 +27,7 @@ const listUsers = (users: string[]) => {
 
   const formatted = users.join(", ");
   const lastCommaIndex = formatted.lastIndexOf(",");
-  return `${formatted.slice(0, lastCommaIndex + 1)} " and" ${formatted.slice(
+  return `${formatted.slice(0, lastCommaIndex + 1)} and${formatted.slice(
     lastCommaIndex + 1
   )}`;
 };

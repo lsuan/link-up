@@ -43,6 +43,7 @@ const getActionComponent = (
         <FiX
           className="cursor-pointer text-base text-brand-200 transition-colors hover:text-white"
           onClick={onClick}
+          size="1.5rem"
         />
       );
   }
