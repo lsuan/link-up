@@ -25,6 +25,7 @@ type AnonAvailabilityInputs = {
 };
 const AnonAvailabilitySchema = z.object({ name: z.string().optional() });
 
+/** Handles optimistic updates to a user's availability. */
 const updateSchedule = (
   variables: {
     id: string;
@@ -36,6 +37,15 @@ const updateSchedule = (
   const updatedAvailability = JSON.parse(
     variables.attendee
   ) as UserAvailability;
+
+  const prevAvailability = prevAttendees.find(
+    (attendee) => attendee.user === updatedAvailability.user
+  );
+  // when a new user sets their availablity, just add their availability to the current schedule
+  if (!prevAvailability) {
+    return { ...newData, attendees: [...prevAttendees, updatedAvailability] };
+  }
+  // otherwise, update their old availability
   const newAttendees = prevAttendees?.map((attendee) => {
     if (attendee.user === updatedAvailability.user) {
       return updatedAvailability;
@@ -73,9 +83,6 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [selectedCells, setSelectedCells] = useAtom(selected);
-
-  // might not need this copy, need to double check expected functionality
-  // const [selectedCellsCopy, setSelectedCellsCopy] = useState<string[]>([]);
   const [isDisabled, setIsDisabled] = useAtom(disabled);
   const [, setIsUpated] = useAtom(updated);
 
@@ -83,29 +90,28 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
     if (!attendees) {
       return;
     }
+    const user = sessionData?.user?.id ?? guestUser;
     const userAvailability = attendees.filter(
-      (attendee) => attendee.user === sessionData?.user?.id ?? guestUser
+      (attendee) => attendee.user === user
     )[0];
+
     const oldAvailability: string[] = [];
-    const daysOnly: string[] = [];
     Object.entries(userAvailability?.availability ?? {}).forEach(
       ([date, hours]) => {
         const times = hours as string[];
         times.forEach((time) => {
           oldAvailability.push(`${date}:${time}`);
         });
-        daysOnly.push(date);
       }
     );
 
     setSelectedCells([...oldAvailability]);
-    // setSelectedCellsCopy([...oldAvailability]);
   };
 
   const userFullName = trpc.user.getUserFullName.useQuery(
-    sessionData?.user?.id as string,
+    sessionData?.user?.id ?? "",
     {
-      enabled: sessionData?.user !== undefined,
+      enabled: sessionData?.user !== undefined || guestUser !== "",
       refetchOnWindowFocus: false,
       onSuccess: () => onSuccess(),
     }
