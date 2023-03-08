@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 import { z } from "zod";
 import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { getHourNumber } from "../../../utils/availabilityUtils";
-import { getTimeOptions } from "../../../utils/formUtils";
+import { getTimeOptions, MAX_DESCRIPTION_LENGTH } from "../../../utils/formUtils";
 import CustomDatePicker, {
   CalendarContainer,
   CalendarHeader,
@@ -130,11 +130,12 @@ function EditEventCard({
             />
           </div>
           <Form.Input name="location" displayName="Location" type="text" />
-          <Form.Input
+          {/* <Form.Input
             name="description"
             displayName="Description"
             type="text"
-          />
+          /> */}
+          <Form.TextArea name="description" displayName="Description" maxLength={MAX_DESCRIPTION_LENGTH} />
           <div className="flex justify-end gap-2">
             <Button intent="secondary" onClick={() => deleteEvent(index)}>
               Delete
