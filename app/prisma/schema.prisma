@@ -95,13 +95,13 @@ model Schedule {
 }
 
 model Event {
-  id          String @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   date        DateTime
   startTime   String
   endTime     String
   scheduleId  String
-  description String?
+  description String?   @db.VarChar(200)
   location    String?
-  schedule    Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  schedule    Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 }
