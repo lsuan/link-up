@@ -20,9 +20,13 @@ function Tooltip({ text, children }: TooltipProps) {
       return;
     }
     const { x: textClientX } = textElement.getBoundingClientRect();
-    if (textClientX + textElement.scrollWidth > document.body.clientWidth) {
+
+    if (textClientX + textElement.clientWidth / 2 > document.body.offsetWidth) {
       textElement.classList.toggle("right-0");
-    } else if (textElement.clientWidth / 2 > textClientX) {
+    } else if (
+      textClientX - textElement.clientWidth / 2 <
+      document.body.offsetLeft
+    ) {
       textElement.classList.toggle("left-0");
     } else {
       textElement.classList.toggle("left-1/2");
