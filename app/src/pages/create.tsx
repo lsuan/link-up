@@ -17,7 +17,11 @@ import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
 import Unauthenticated from "../components/shared/Unauthenticated";
-import { getTimeOptions, MINUTES, MAX_DESCRIPTION_LENGTH } from "../utils/formUtils";
+import {
+  getTimeOptions,
+  MAX_DESCRIPTION_LENGTH,
+  MINUTES,
+} from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
@@ -52,7 +56,10 @@ type ControlledScheduleInputs = {
 
 const CreateScheduleSchema = z.object({
   scheduleName: z.string().min(1, "Schedule name is required!"),
-  description: z.string().max(200, "Description cannot be longer than 200 characters.").optional(),
+  description: z
+    .string()
+    .max(200, "Description cannot be longer than 200 characters.")
+    .optional(),
   dateRange: z
     .object({
       startDate: z
@@ -222,7 +229,11 @@ function Create() {
           required
         />
         {/* TODO: add tinymce integration */}
-        <Form.TextArea name="description" displayName="Description" maxLength={MAX_DESCRIPTION_LENGTH} />
+        <Form.TextArea
+          name="description"
+          displayName="Description"
+          maxLength={MAX_DESCRIPTION_LENGTH}
+        />
 
         <div className="relative rounded-lg bg-neutral-300 p-4">
           {defaultValues.dateRange.isOneDay && (
@@ -280,6 +291,7 @@ function Create() {
           label="One Day Schedule?"
           className="-mt-2 mb-2"
           onClick={() => handleOneDayChange()}
+          tooltipText="If your schedule range is only one day, select this option."
         />
 
         <div className="flex justify-between gap-4">
@@ -288,12 +300,14 @@ function Create() {
             displayName="No Earlier Than"
             options={getTimeOptions()}
             required
+            tooltipText="You can specify the timeframe that each day of your schedule will accept availabilities from."
           />
           <Form.Select
             name="endTime"
             displayName="No Later Than"
             options={getTimeOptions()}
             required
+            tooltipText="You can specify the timeframe that each day of your schedule will accept availabilities from."
           />
         </div>
         {/* TODO: add custom header with custom title */}
@@ -317,12 +331,14 @@ function Create() {
             displayName="Number of Events"
             options={[1, 2, 3, 4, 5]}
             required
+            tooltipText="A schedule is made up of events. You can specify how many events you would like the schedule to have."
           />
           <Form.Select
             name="lengthOfEvents"
             displayName="Length of Events"
             options={getEventLengthOptions()}
             required
+            tooltipText="A schedule is made up of events. You can specify how long you would like each event to be."
           />
         </div>
         <Form.Button name="Create Schedule" type="submit" />
