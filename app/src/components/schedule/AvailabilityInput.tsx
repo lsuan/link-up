@@ -33,7 +33,8 @@ const updateSchedule = (
   },
   newData: RouterOutputs["schedule"]["getScheduleFromSlugId"]
 ) => {
-  const prevAttendees = newData?.attendees as UserAvailability[];
+  // if attendees is null, just set it to an empty array
+  const prevAttendees = (newData?.attendees ?? []) as UserAvailability[];
   const updatedAvailability = JSON.parse(
     variables.attendee
   ) as UserAvailability;
