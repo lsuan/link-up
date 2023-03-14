@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@ui/Button";
+import Tooltip from "@ui/Tooltip";
 import Typography from "@ui/Typography";
 import { useEffect, useState, type ReactNode } from "react";
 import {
@@ -252,12 +253,14 @@ Form.Select = function Select({
   options,
   required,
   className,
+  tooltipText,
 }: {
   name: string;
   displayName: string;
   options: string[] | number[];
   required?: boolean;
   className?: string;
+  tooltipText?: string;
 }) {
   const {
     register,
@@ -267,7 +270,7 @@ Form.Select = function Select({
   const error = parseDeepErrors(errors, name);
   return (
     <div className="flex w-full flex-col gap-1">
-      <fieldset className="relative">
+      <fieldset className="relative flex items-center gap-1">
         <select
           key={name}
           {...register(name, { valueAsNumber: typeof options[0] === "number" })}
@@ -292,6 +295,11 @@ Form.Select = function Select({
           {displayName}
           {required && <span className="ml-1 text-red-500">*</span>}
         </label>
+        {tooltipText && (
+          <Tooltip text={tooltipText}>
+            <FiAlertCircle />
+          </Tooltip>
+        )}
       </fieldset>
       {error && <InputErrorMessage error={error as string} />}
     </div>
@@ -321,11 +329,13 @@ Form.Checkbox = function Input({
   label,
   onClick,
   className,
+  tooltipText,
 }: {
   name: string;
   label: string;
   onClick?: () => void;
   className?: string;
+  tooltipText?: string;
 }) {
   const {
     register,
@@ -335,9 +345,14 @@ Form.Checkbox = function Input({
 
   return (
     <div className={`flex flex-col gap-1${className ? ` ${className}` : ""}`}>
-      <fieldset className="flex gap-2">
+      <fieldset className="flex items-center gap-2">
         <input type="checkbox" {...register(name)} onClick={onClick} />
         <label htmlFor={name}>{label}</label>
+        {tooltipText && (
+          <Tooltip text={tooltipText}>
+            <FiAlertCircle />
+          </Tooltip>
+        )}
       </fieldset>
       {error && <InputErrorMessage error={error as string} className="-mt-1" />}
     </div>
