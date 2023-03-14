@@ -17,7 +17,11 @@ import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
 import Unauthenticated from "../components/shared/Unauthenticated";
-import { getTimeOptions, MINUTES, MAX_DESCRIPTION_LENGTH } from "../utils/formUtils";
+import {
+  getTimeOptions,
+  MAX_DESCRIPTION_LENGTH,
+  MINUTES,
+} from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
@@ -52,7 +56,10 @@ type ControlledScheduleInputs = {
 
 const CreateScheduleSchema = z.object({
   scheduleName: z.string().min(1, "Schedule name is required!"),
-  description: z.string().max(200, "Description cannot be longer than 200 characters.").optional(),
+  description: z
+    .string()
+    .max(200, "Description cannot be longer than 200 characters.")
+    .optional(),
   dateRange: z
     .object({
       startDate: z
@@ -151,12 +158,12 @@ function Create() {
         onSuccess: (data) => {
           const { name: currentName, id } = data.schedule;
           const slug = createSlug(currentName, id);
+          router.push(`schedule/${slug}`);
           setNoticeMessage({
             action: "close",
             icon: "check",
             message: "Your schedule has been successfully created!",
           });
-          router.push(`schedule/${slug}`);
         },
       }
     );
@@ -222,7 +229,11 @@ function Create() {
           required
         />
         {/* TODO: add tinymce integration */}
-        <Form.TextArea name="description" displayName="Description" maxLength={MAX_DESCRIPTION_LENGTH} />
+        <Form.TextArea
+          name="description"
+          displayName="Description"
+          maxLength={MAX_DESCRIPTION_LENGTH}
+        />
 
         <div className="relative rounded-lg bg-neutral-300 p-4">
           {defaultValues.dateRange.isOneDay && (

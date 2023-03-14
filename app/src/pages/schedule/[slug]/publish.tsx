@@ -11,6 +11,7 @@ import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMess
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
+import PublishedEventsNote from "../../../components/schedule/PublishedEventsNote";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
@@ -192,6 +193,11 @@ function Publish() {
 
   if (status === "unauthenticated") {
     return <Unauthenticated />;
+  }
+
+  // show a message if events have already been made for this schedule
+  if (schedule && schedule.events.length > 0) {
+    return <PublishedEventsNote slug={slug} />;
   }
 
   return (

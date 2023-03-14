@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import AvailabilityInput from "../../../components/schedule/AvailabilityInput";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
+import PublishedEventsNote from "../../../components/schedule/PublishedEventsNote";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
@@ -19,6 +20,11 @@ function Availability() {
 
   if (!router.isReady || isScheduleLoading || isUserAvailabilityLoading) {
     return <Loading />;
+  }
+
+  // show a message if events have already been made for this schedule
+  if (schedule && schedule.events.length > 0) {
+    return <PublishedEventsNote slug={slug} />;
   }
 
   return (

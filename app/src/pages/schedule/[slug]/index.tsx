@@ -20,12 +20,14 @@ import { getHost } from "../../../utils/scheduleUtils";
 
 type SchedulePageAvailabilityProps = AvailabilityProps & {
   buttonTitle: string;
+  hasEvents: boolean;
 };
 
 function AvailabilitySection({
   schedule,
   slug,
   buttonTitle,
+  hasEvents,
 }: SchedulePageAvailabilityProps) {
   return (
     <div className="my-8 w-full bg-neutral-300 py-8 px-8">
@@ -33,10 +35,12 @@ function AvailabilitySection({
         Availability
       </Typography>
       <AvailabilityResponses schedule={schedule} />
-      <Button href={`/schedule/${slug}/availability`}>
-        <FiEdit />
-        {buttonTitle}
-      </Button>
+      {!hasEvents && (
+        <Button href={`/schedule/${slug}/availability`}>
+          <FiEdit />
+          {buttonTitle}
+        </Button>
+      )}
     </div>
   );
 }
@@ -160,7 +164,9 @@ function SchedulePage() {
               </Typography>
             </div>
           )}
-          {isHost && numberOfAttendees > 0 && <PublishSection slug={slug} />}
+          {isHost && !hasEvents && numberOfAttendees > 0 && (
+            <PublishSection slug={slug} />
+          )}
         </div>
 
         {schedule && (
@@ -168,6 +174,7 @@ function SchedulePage() {
             schedule={schedule}
             slug={slug}
             buttonTitle={availabilityButtonTitle}
+            hasEvents={hasEvents}
           />
         )}
       </section>
