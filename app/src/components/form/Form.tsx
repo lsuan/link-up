@@ -11,7 +11,7 @@ import {
   type DeepPartial,
   type FieldValues,
 } from "react-hook-form";
-import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import { FiAlertCircle, FiCheck, FiCheckCircle } from "react-icons/fi";
 import { type z } from "zod";
 import {
   parseDeepErrors,
@@ -104,7 +104,7 @@ Form.Input = function Input({
                 />
               ) : (
                 <input
-                  className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-black placeholder:text-transparent"
+                  className="peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent"
                   placeholder={displayName}
                   type={type}
                   {...register(name)}
@@ -114,10 +114,10 @@ Form.Input = function Input({
               )}
 
               <label
-                className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+                className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
               peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
-              peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
+              peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-200
+              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
                 htmlFor={name}
               >
                 {displayName}
@@ -165,10 +165,10 @@ Form.TextArea = function Input({
             aria-invalid={error ? "true" : "false"}
           />
           <label
-            className="absolute left-1 top-[1.35rem] z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+            className="absolute left-1 top-[1.35rem] z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
           peer-placeholder-shown:left-0 peer-placeholder-shown:top-[1.35rem] peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
           peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-          peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
+          peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
             htmlFor={name}
           >
             {displayName}
@@ -286,10 +286,10 @@ Form.Select = function Select({
           ))}
         </select>
         <label
-          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
         peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
         peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
+        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
           htmlFor={name}
         >
           {displayName}
@@ -343,11 +343,29 @@ Form.Checkbox = function Input({
   } = useFormContext();
   const error = parseDeepErrors(errors, name);
 
+  // used only to style the checkbox
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
   return (
     <div className={`flex flex-col gap-1${className ? ` ${className}` : ""}`}>
-      <fieldset className="flex items-center gap-2">
-        <input type="checkbox" {...register(name)} onClick={onClick} />
-        <label htmlFor={name}>{label}</label>
+      <fieldset className="relative flex items-center gap-2">
+        <input
+          className="peer relative z-20 appearance-none rounded border border-neutral-200 bg-transparent p-2 transition-all checked:border-brand-500"
+          type="checkbox"
+          {...register(name)}
+          onClick={() => {
+            setIsChecked(!isChecked);
+            onClick;
+          }}
+        />
+        <label htmlFor={name}>
+          <FiCheck
+            className={`absolute top-1/2 left-[1px] -translate-y-1/2 bg-brand-500  ${
+              isChecked ? "block text-white" : "hidden"
+            }`}
+          />
+          {label}
+        </label>
         {tooltipText && (
           <Tooltip text={tooltipText}>
             <FiAlertCircle />

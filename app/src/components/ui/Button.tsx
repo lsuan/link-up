@@ -18,6 +18,7 @@ const buttonStyles = cva(
           "bg-white border border-brand-500 hover:border-brand-800 hover:text-brand-800 font-medium text-brand-500",
         secondaryDisabled:
           "border border-disabled-400 text-disabled-400 cursor-not-allowed font-medium",
+        auth: "border border-brand-100 bg-white font-medium text-black",
       },
       fullWidth: {
         true: "w-full",

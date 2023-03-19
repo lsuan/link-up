@@ -1,6 +1,5 @@
 import Typography from "@ui/Typography";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
@@ -9,6 +8,7 @@ import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
 import Form from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
+import FormFooter from "../components/shared/FormFooter";
 import { EMAIL_REGEX } from "../utils/formUtils";
 
 type LoginInputs = {
@@ -44,15 +44,8 @@ function Login() {
   };
 
   return (
-    <section className="w-full max-w-md self-center px-8">
+    <section className="relative flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
       <Typography intent="h1">Log In</Typography>
-      <Typography>
-        Don&apos;t have an account?
-        <span className="ml-2">
-          <Link href="/signup">Sign Up</Link>
-        </span>
-      </Typography>
-
       {isInvalid && (
         <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
       )}
@@ -68,10 +61,18 @@ function Login() {
           type="password"
           required
         />
+        <Form.Checkbox
+          name="remember-me"
+          label="Remember Me"
+          className="self-end"
+        />
         <Form.Button name="Log In" type="submit" />
       </Form>
-      <AuthDivider />
-      <AuthProviders />
+      <div>
+        <AuthDivider />
+        <AuthProviders />
+      </div>
+      <FormFooter page="login" />
     </section>
   );
 }
