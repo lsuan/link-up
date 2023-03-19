@@ -11,7 +11,7 @@ import {
   type DeepPartial,
   type FieldValues,
 } from "react-hook-form";
-import { FiAlertCircle, FiCheck, FiCheckCircle } from "react-icons/fi";
+import { FiAlertCircle, FiCheck, FiX } from "react-icons/fi";
 import { type z } from "zod";
 import {
   parseDeepErrors,
@@ -92,42 +92,47 @@ Form.Input = function Input({
     <>
       {type !== "hidden" && (
         <div className="flex flex-col gap-1">
-          {type !== "hidden" && (
-            <fieldset className="relative">
-              {type === "password" ? (
-                <ShowPassword
-                  name={name}
-                  displayName={displayName}
-                  isSubmitting={isSubmitting}
-                  error={error}
-                  register={register}
-                />
-              ) : (
-                <input
-                  className="peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent"
-                  placeholder={displayName}
-                  type={type}
-                  {...register(name)}
-                  disabled={isSubmitting}
-                  aria-invalid={error ? "true" : "false"}
-                />
-              )}
+          <fieldset className="relative">
+            {type === "password" ? (
+              <ShowPassword
+                name={name}
+                displayName={displayName}
+                isSubmitting={isSubmitting}
+                error={error}
+                register={register}
+              />
+            ) : (
+              <input
+                className={`peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent ${
+                  error ? "border-error-400" : ""
+                }`}
+                placeholder={displayName}
+                type={type}
+                {...register(name)}
+                disabled={isSubmitting}
+                aria-invalid={error ? "true" : "false"}
+              />
+            )}
 
-              <label
-                className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+            <label
+              className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
               peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
               peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-200
               peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
-                htmlFor={name}
-              >
-                {displayName}
-                {required && <span className="ml-1 text-red-500">*</span>}
-              </label>
-            </fieldset>
+              htmlFor={name}
+            >
+              {displayName}
+              {required && <span className="ml-1 text-error-500">*</span>}
+            </label>
+          </fieldset>
+          {error && (
+            <InputErrorMessage error={error as string} className="-mt-3" />
           )}
         </div>
       )}
-      {error && <InputErrorMessage error={error as string} className="-mt-3" />}
+      {type === "hidden" && error && (
+        <InputErrorMessage error={error as string} className="-mt-3" />
+      )}
     </>
   );
 };
@@ -172,7 +177,7 @@ Form.TextArea = function Input({
             htmlFor={name}
           >
             {displayName}
-            {required && <span className="ml-1 text-red-500">*</span>}
+            {required && <span className="ml-1 text-error-500">*</span>}
           </label>
           {text?.length >= maxLength ? (
             <span className="absolute right-1 -bottom-3 text-xs text-red-600">
@@ -223,15 +228,18 @@ Form.Password = function Input({
 
   return (
     <>
-      <ul className="rounded-lg bg-neutral-300 p-4 text-sm">
+      <ul className="rounded-lg bg-brand-100 p-4 text-sm">
+        <Typography>Password should have: </Typography>
         {conditions.map((condition) => (
           <li
             key={condition.message}
-            className={`flex items-center gap-2${
+            className={`flex items-center pl-4 gap-2${
               condition.isFulFilled ? " text-green-300" : " text-black"
             }`}
           >
-            {condition.isFulFilled ? <FiCheckCircle /> : <FiAlertCircle />}
+            <span className="text-brand-500">
+              {condition.isFulFilled ? <FiCheck /> : <FiX />}
+            </span>
             <Typography>{condition.message}</Typography>
           </li>
         ))}
@@ -293,7 +301,7 @@ Form.Select = function Select({
           htmlFor={name}
         >
           {displayName}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {required && <span className="ml-1 text-error-500">*</span>}
         </label>
         {tooltipText && (
           <Tooltip text={tooltipText}>

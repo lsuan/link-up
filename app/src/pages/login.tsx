@@ -45,7 +45,7 @@ function Login() {
   };
 
   return (
-    <section className="relative flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
+    <section className="flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
       <Typography intent="h1">Log In</Typography>
       <Form
         onSubmit={onSubmit}
@@ -55,7 +55,12 @@ function Login() {
         {isInvalid && (
           <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
         )}
-        <Form.Input name="email" displayName="Email" type="email" required />
+        <Form.Input
+          name="email"
+          displayName="Email Address"
+          type="email"
+          required
+        />
         <Form.Input
           name="password"
           displayName="Password"

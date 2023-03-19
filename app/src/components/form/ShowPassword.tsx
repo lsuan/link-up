@@ -26,7 +26,9 @@ function ShowPassword({
   return (
     <>
       <input
-        className="peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent"
+        className={`peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent${
+          error ? " border-red-400" : ""
+        }`}
         placeholder={displayName}
         type={isShown ? "text" : "password"}
         {...register(name)}

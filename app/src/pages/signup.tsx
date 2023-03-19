@@ -1,11 +1,11 @@
 import Typography from "@ui/Typography";
-import Link from "next/link";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import AuthDivider from "../components/auth/AuthDivider";
 import AuthProviders from "../components/auth/AuthProviders";
 import Form from "../components/form/Form";
+import FormFooter from "../components/shared/FormFooter";
 import SignUpForm from "../components/signup/SignUpForm";
 import { EMAIL_REGEX } from "../utils/formUtils";
 
@@ -30,15 +30,8 @@ function SignUp() {
   };
 
   return (
-    <section className="w-full max-w-md self-center px-8">
+    <section className="flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
       <Typography intent="h1">Sign Up</Typography>
-      <Typography>
-        <span className="mr-2">Already have an account?</span>
-        <span>
-          <Link href="/login">Log In</Link>
-        </span>
-      </Typography>
-
       {email === "" ? (
         <>
           <Form<GetStartedInputs, typeof GetStartedSchema>
@@ -48,18 +41,21 @@ function SignUp() {
           >
             <Form.Input
               name="email"
-              displayName="Email"
+              displayName="Email Address"
               type="email"
               required
             />
             <Form.Button name="Get Started" type="submit" />
           </Form>
-          <AuthDivider />
-          <AuthProviders />
+          <div>
+            <AuthDivider />
+            <AuthProviders />
+          </div>
         </>
       ) : (
         <SignUpForm email={email} />
       )}
+      <FormFooter page="signup" />
     </section>
   );
 }

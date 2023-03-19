@@ -89,13 +89,15 @@ function SignUpForm({ email }: { email: string }) {
         defaultValues={{ email }}
         className="flex flex-col gap-4"
       >
-        <Form.Input
-          name="firstName"
-          displayName="First Name"
-          type="text"
-          required
-        />
-        <Form.Input name="lastName" displayName="Last Name" type="text" />
+        <div className="flex justify-between gap-2">
+          <Form.Input
+            name="firstName"
+            displayName="First Name"
+            type="text"
+            required
+          />
+          <Form.Input name="lastName" displayName="Last Name" type="text" />
+        </div>
         <Form.Input name="email" displayName="Email" type="email" />
         <Form.Password name="passwords.password" required />
         <Form.Input
@@ -104,7 +106,7 @@ function SignUpForm({ email }: { email: string }) {
           type="password"
           required
         />
-        <Form.Button name="Sign Up" type="submit" />
+        <Form.Button name="Create Account" type="submit" />
       </Form>
     </>
   );

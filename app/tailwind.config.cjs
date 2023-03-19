@@ -20,11 +20,15 @@ module.exports = {
           200: "#C2C2FF",
           100: "#D8D8E9",
         },
-        neutral: {
-          200: "#B2B2BA",
-        },
         disabled: {
           400: "#C4C4CD",
+        },
+        error: {
+          400: "#F74440",
+          500: "#FF0000",
+        },
+        neutral: {
+          200: "#B2B2BA",
         },
       },
     },
