@@ -14,6 +14,7 @@ import { EMAIL_REGEX } from "../utils/formUtils";
 type LoginInputs = {
   email: string;
   password: string;
+  rememberMe: boolean;
 };
 
 const LoginFormSchema = z.object({
@@ -46,14 +47,14 @@ function Login() {
   return (
     <section className="relative flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
       <Typography intent="h1">Log In</Typography>
-      {isInvalid && (
-        <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
-      )}
       <Form
         onSubmit={onSubmit}
         schema={LoginFormSchema}
         className="flex flex-col gap-4"
       >
+        {isInvalid && (
+          <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
+        )}
         <Form.Input name="email" displayName="Email" type="email" required />
         <Form.Input
           name="password"
@@ -62,7 +63,7 @@ function Login() {
           required
         />
         <Form.Checkbox
-          name="remember-me"
+          name="rememberMe"
           label="Remember Me"
           className="self-end"
         />
