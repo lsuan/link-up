@@ -8,14 +8,16 @@ function PublishEventCard({
   index,
   events,
   setEvents,
-  deleteEvent,
   attendees,
+  isDeleteWarningModalShown,
+  setIsDeleteWarningModalShown,
 }: {
   index: number;
   events: InitialEventInfo[];
   setEvents: (events: InitialEventInfo[]) => void;
-  deleteEvent: (index: number) => void;
   attendees: UserAvailability[];
+  isDeleteWarningModalShown: boolean[];
+  setIsDeleteWarningModalShown: (state: boolean[]) => void;
 }) {
   const event = events[index] as InitialEventInfo;
   const setCardEditState = () => {
@@ -24,6 +26,12 @@ function PublishEventCard({
     prevEvents[index] = eventData;
     setEvents([...prevEvents]);
   };
+  const handleModalShow = () => {
+    const prev = isDeleteWarningModalShown.slice(0, index);
+    const rest = isDeleteWarningModalShown.slice(index + 1);
+    setIsDeleteWarningModalShown([...prev, true, ...rest]);
+  };
+
   return (
     <section className="w-full rounded-lg bg-neutral-300 p-6">
       <header className="relative">
@@ -39,7 +47,7 @@ function PublishEventCard({
         <div className="absolute right-0 top-0 flex gap-2">
           <button
             className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-            onClick={() => deleteEvent(index)}
+            onClick={() => handleModalShow()}
           >
             <FiTrash2 />
           </button>

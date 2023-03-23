@@ -10,6 +10,8 @@ import { FiCheckSquare, FiPlus } from "react-icons/fi";
 import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMessage";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
+import DeleteWarningModal from "../../../components/schedule/DeleteWarningModal";
+import ModalBackground from "../../../components/shared/ModalBackground";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
 import PublishedEventsNote from "../../../components/schedule/PublishedEventsNote";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
@@ -48,6 +50,9 @@ function Publish() {
   const [, setNoticeMessage] = useAtom(notice);
   const [events, setEvents] = useState<InitialEventInfo[]>([]);
   const [saveWarning, setSaveWarning] = useState<string>("");
+  const [isDeleteWarningModalShown, setIsDeleteWarningModalShown] = useState<
+    boolean[]
+  >([]);
 
   const initializeEvents = (data: Schedule | null) => {
     if (!data) {
@@ -96,6 +101,7 @@ function Publish() {
     }
 
     setEvents([...initialEvents]);
+    setIsDeleteWarningModalShown(initialEvents.map(() => false));
   };
 
   const { schedule, isScheduleLoading, slug } = useSchedule(
@@ -201,72 +207,94 @@ function Publish() {
   }
 
   return (
-    <section className="px-8">
-      <BackArrow href={`/schedule/${slug}`} page="Schedule" />
-      <ScheduleHeader
-        title="Publish Event(s)"
-        scheduleName={schedule?.name ?? ""}
-      />
-      {schedule && <AvailabilityResponses schedule={schedule} />}
-      <Typography intent="h4">
-        {`These are the best times based on your preferences (${
-          schedule?.numberOfEvents
-        } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
-          schedule?.lengthOfEvents
-        } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
-      </Typography>
-      <div className="flex flex-col items-center gap-4">
-        {events.map((event, index) => (
-          <div
-            key={`${event.date}, ${event.startTime}-${event.endTime}`}
-            className="w-full"
+    <>
+      {isDeleteWarningModalShown.some((isShown) => isShown) && (
+        <ModalBackground isModalOpen />
+      )}
+      <section className="px-8">
+        <BackArrow href={`/schedule/${slug}`} page="Schedule" />
+        <ScheduleHeader
+          title="Publish Event(s)"
+          scheduleName={schedule?.name ?? ""}
+        />
+        {schedule && <AvailabilityResponses schedule={schedule} />}
+        <Typography intent="h4">
+          {`These are the best times based on your preferences (${
+            schedule?.numberOfEvents
+          } ${schedule?.numberOfEvents === 1 ? "event" : "events"}, ${
+            schedule?.lengthOfEvents
+          } ${schedule?.numberOfEvents === 1 ? "long" : "each"}):`}
+        </Typography>
+        <div className="flex flex-col items-center gap-4">
+          {events.map((event, index) => (
+            <div
+              key={`${event.date}, ${event.startTime}-${event.endTime}`}
+              className="w-full"
+            >
+              {isDeleteWarningModalShown[index] && (
+                <DeleteWarningModal
+                  index={index}
+                  events={events}
+                  deleteEvent={deleteEvent}
+                  isDeleteWarningModalShown={isDeleteWarningModalShown}
+                  setIsDeleteWarningModalShown={
+                    setIsDeleteWarningModalShown
+                  }
+                />
+              )}
+              {events[index]?.isEditing ? (
+                <EditEventCard
+                  index={index}
+                  events={events}
+                  scheduleStartTime={schedule?.startTime ?? ""}
+                  scheduleEndTime={schedule?.endTime ?? ""}
+                  setEvents={setEvents}
+                  isDeleteWarningModalShown={isDeleteWarningModalShown}
+                  setIsDeleteWarningModalShown={
+                    setIsDeleteWarningModalShown
+                  }
+                  className={
+                    event.className && event.className !== ""
+                      ? ` ${event.className}`
+                      : ""
+                  }
+                />
+              ) : (
+                <PublishEventCard
+                  index={index}
+                  events={events}
+                  setEvents={setEvents}
+                  attendees={schedule?.attendees as UserAvailability[]}
+                  isDeleteWarningModalShown={isDeleteWarningModalShown}
+                  setIsDeleteWarningModalShown={
+                    setIsDeleteWarningModalShown
+                  }
+                />
+              )}
+            </div>
+          ))}
+          <button
+            className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
+            onClick={() => addEvent()}
           >
-            {events[index]?.isEditing ? (
-              <EditEventCard
-                index={index}
-                events={events}
-                scheduleStartTime={schedule?.startTime ?? ""}
-                scheduleEndTime={schedule?.endTime ?? ""}
-                setEvents={setEvents}
-                deleteEvent={deleteEvent}
-                className={
-                  event.className && event.className !== ""
-                    ? ` ${event.className}`
-                    : ""
-                }
-              />
-            ) : (
-              <PublishEventCard
-                index={index}
-                events={events}
-                setEvents={setEvents}
-                deleteEvent={deleteEvent}
-                attendees={schedule?.attendees as UserAvailability[]}
-              />
-            )}
-          </div>
-        ))}
-        <button
-          className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-          onClick={() => addEvent()}
-        >
-          <FiPlus />
-        </button>
-        {saveWarning !== "" && (
-          <div className="-mb-6 w-full">
-            <ServerSideErrorMessage error={saveWarning} />
-          </div>
-        )}
-        <Button
-          onClick={() => handlePublish()}
-          isLoading={isCreateEventsLoading}
-          fullWidth
-        >
-          <FiCheckSquare />
-          <span>Confirm and Publish</span>
-        </Button>
-      </div>
-    </section>
+            <FiPlus />
+          </button>
+          {saveWarning !== "" && (
+            <div className="-mb-6 w-full">
+              <ServerSideErrorMessage error={saveWarning} />
+            </div>
+          )}
+          <Button
+            onClick={() => handlePublish()}
+            isLoading={isCreateEventsLoading}
+            fullWidth
+          >
+            <FiCheckSquare />
+            <span>Confirm and Publish</span>
+          </Button>
+        </div>
+      </section>
+    </>
   );
 }
 
