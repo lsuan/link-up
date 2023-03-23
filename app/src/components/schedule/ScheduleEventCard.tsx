@@ -42,7 +42,7 @@ function ScheduleEventCard({
           />
           {location && <CardListItem text={location || "TBD"} icon="pin" />}
           {description && (
-            <CardListItem text={location || "TBD"} icon="bookmark" />
+            <CardListItem text={description || "TBD"} icon="bookmark" />
           )}
         </ul>
       </section>

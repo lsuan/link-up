@@ -1,9 +1,15 @@
 import { FiAlertCircle } from "react-icons/fi";
 
-function ServerSideErrorMessage({ error }: { error: string }) {
+interface ServerSideErrorMessageProps {
+  error: string;
+}
+
+function ServerSideErrorMessage({ error }: ServerSideErrorMessageProps) {
   return (
-    <div className="mb-6 flex items-center rounded-lg bg-red-100 px-4 py-2 text-red-700">
-      <FiAlertCircle className="mr-3" />
+    <div className="flex items-center rounded-lg bg-red-100 px-4 py-2 text-red-700">
+      <span>
+        <FiAlertCircle className="mr-3" />
+      </span>
       {error}
     </div>
   );

@@ -13,6 +13,7 @@ import EditEventCard from "../../../components/schedule/publish/EditEventCard";
 import DeleteWarningModal from "../../../components/schedule/DeleteWarningModal";
 import ModalBackground from "../../../components/shared/ModalBackground";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
+import PublishedEventsNote from "../../../components/schedule/PublishedEventsNote";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
@@ -198,6 +199,11 @@ function Publish() {
 
   if (status === "unauthenticated") {
     return <Unauthenticated />;
+  }
+
+  // show a message if events have already been made for this schedule
+  if (schedule && schedule.events.length > 0) {
+    return <PublishedEventsNote slug={slug} />;
   }
 
   return (

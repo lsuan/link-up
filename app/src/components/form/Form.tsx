@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@ui/Button";
+import Tooltip from "@ui/Tooltip";
 import Typography from "@ui/Typography";
 import { useEffect, useState, type ReactNode } from "react";
 import {
@@ -10,7 +11,7 @@ import {
   type DeepPartial,
   type FieldValues,
 } from "react-hook-form";
-import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import { FiAlertCircle, FiCheck, FiX } from "react-icons/fi";
 import { type z } from "zod";
 import {
   parseDeepErrors,
@@ -91,42 +92,47 @@ Form.Input = function Input({
     <>
       {type !== "hidden" && (
         <div className="flex flex-col gap-1">
-          {type !== "hidden" && (
-            <fieldset className="relative">
-              {type === "password" ? (
-                <ShowPassword
-                  name={name}
-                  displayName={displayName}
-                  isSubmitting={isSubmitting}
-                  error={error}
-                  register={register}
-                />
-              ) : (
-                <input
-                  className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-black placeholder:text-transparent"
-                  placeholder={displayName}
-                  type={type}
-                  {...register(name)}
-                  disabled={isSubmitting}
-                  aria-invalid={error ? "true" : "false"}
-                />
-              )}
+          <fieldset className="relative">
+            {type === "password" ? (
+              <ShowPassword
+                name={name}
+                displayName={displayName}
+                isSubmitting={isSubmitting}
+                error={error}
+                register={register}
+              />
+            ) : (
+              <input
+                className={`peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent ${
+                  error ? "border-error-400" : ""
+                }`}
+                placeholder={displayName}
+                type={type}
+                {...register(name)}
+                disabled={isSubmitting}
+                aria-invalid={error ? "true" : "false"}
+              />
+            )}
 
-              <label
-                className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+            <label
+              className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
               peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
-              peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
-                htmlFor={name}
-              >
-                {displayName}
-                {required && <span className="ml-1 text-red-500">*</span>}
-              </label>
-            </fieldset>
+              peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-200
+              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
+              htmlFor={name}
+            >
+              {displayName}
+              {required && <span className="ml-1 text-error-500">*</span>}
+            </label>
+          </fieldset>
+          {error && (
+            <InputErrorMessage error={error as string} className="-mt-3" />
           )}
         </div>
       )}
-      {error && <InputErrorMessage error={error as string} className="-mt-3" />}
+      {type === "hidden" && error && (
+        <InputErrorMessage error={error as string} className="-mt-3" />
+      )}
     </>
   );
 };
@@ -164,14 +170,14 @@ Form.TextArea = function Input({
             aria-invalid={error ? "true" : "false"}
           />
           <label
-            className="absolute left-1 top-[1.35rem] z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+            className="absolute left-1 top-[1.35rem] z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
           peer-placeholder-shown:left-0 peer-placeholder-shown:top-[1.35rem] peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
           peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-          peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
+          peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
             htmlFor={name}
           >
             {displayName}
-            {required && <span className="ml-1 text-red-500">*</span>}
+            {required && <span className="ml-1 text-error-500">*</span>}
           </label>
           {text?.length >= maxLength ? (
             <span className="absolute right-1 -bottom-3 text-xs text-red-600">
@@ -222,15 +228,18 @@ Form.Password = function Input({
 
   return (
     <>
-      <ul className="rounded-lg bg-neutral-300 p-4 text-sm">
+      <ul className="rounded-lg bg-brand-100 p-4 text-sm">
+        <Typography>Password should have: </Typography>
         {conditions.map((condition) => (
           <li
             key={condition.message}
-            className={`flex items-center gap-2${
+            className={`flex items-center pl-4 gap-2${
               condition.isFulFilled ? " text-green-300" : " text-black"
             }`}
           >
-            {condition.isFulFilled ? <FiCheckCircle /> : <FiAlertCircle />}
+            <span className="text-brand-500">
+              {condition.isFulFilled ? <FiCheck /> : <FiX />}
+            </span>
             <Typography>{condition.message}</Typography>
           </li>
         ))}
@@ -252,12 +261,14 @@ Form.Select = function Select({
   options,
   required,
   className,
+  tooltipText,
 }: {
   name: string;
   displayName: string;
   options: string[] | number[];
   required?: boolean;
   className?: string;
+  tooltipText?: string;
 }) {
   const {
     register,
@@ -267,7 +278,7 @@ Form.Select = function Select({
   const error = parseDeepErrors(errors, name);
   return (
     <div className="flex w-full flex-col gap-1">
-      <fieldset className="relative">
+      <fieldset className="relative flex items-center gap-1">
         <select
           key={name}
           {...register(name, { valueAsNumber: typeof options[0] === "number" })}
@@ -283,15 +294,20 @@ Form.Select = function Select({
           ))}
         </select>
         <label
-          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
         peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
         peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[1.85rem] peer-focus:text-xs peer-focus:text-black"
+        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
           htmlFor={name}
         >
           {displayName}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {required && <span className="ml-1 text-error-500">*</span>}
         </label>
+        {tooltipText && (
+          <Tooltip text={tooltipText}>
+            <FiAlertCircle />
+          </Tooltip>
+        )}
       </fieldset>
       {error && <InputErrorMessage error={error as string} />}
     </div>
@@ -321,11 +337,13 @@ Form.Checkbox = function Input({
   label,
   onClick,
   className,
+  tooltipText,
 }: {
   name: string;
   label: string;
   onClick?: () => void;
   className?: string;
+  tooltipText?: string;
 }) {
   const {
     register,
@@ -333,11 +351,34 @@ Form.Checkbox = function Input({
   } = useFormContext();
   const error = parseDeepErrors(errors, name);
 
+  // used only to style the checkbox
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
   return (
     <div className={`flex flex-col gap-1${className ? ` ${className}` : ""}`}>
-      <fieldset className="flex gap-2">
-        <input type="checkbox" {...register(name)} onClick={onClick} />
-        <label htmlFor={name}>{label}</label>
+      <fieldset className="relative flex items-center gap-2">
+        <input
+          className="peer relative z-20 appearance-none rounded border border-neutral-200 bg-transparent p-2 transition-all checked:border-brand-500"
+          type="checkbox"
+          {...register(name)}
+          onClick={() => {
+            setIsChecked(!isChecked);
+            onClick;
+          }}
+        />
+        <label htmlFor={name}>
+          <FiCheck
+            className={`absolute top-1/2 left-[1px] -translate-y-1/2 bg-brand-500  ${
+              isChecked ? "block text-white" : "hidden"
+            }`}
+          />
+          {label}
+        </label>
+        {tooltipText && (
+          <Tooltip text={tooltipText}>
+            <FiAlertCircle />
+          </Tooltip>
+        )}
       </fieldset>
       {error && <InputErrorMessage error={error as string} className="-mt-1" />}
     </div>

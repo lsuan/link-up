@@ -27,7 +27,9 @@ const MyApp: AppType<{ session: Session | null }> = function MyApp({
 }) {
   return (
     <SessionProvider session={session}>
-      <div className={`${inter.variable} ${montserrat.variable}`}>
+      <div
+        className={`flex h-full min-h-screen flex-col ${inter.variable} ${montserrat.variable}`}
+      >
         <Layout>
           <Component {...pageProps} />
         </Layout>
