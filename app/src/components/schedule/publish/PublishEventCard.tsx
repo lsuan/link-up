@@ -3,8 +3,6 @@ import { type InitialEventInfo } from "../../../pages/schedule/[slug]/publish";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
 import CardListItem from "../../shared/CardListItem";
 import PublishCardMetadata from "./PublishCardMetadata";
-// import DeleteWarningModal from "../DeleteWarningModal";
-// import ModalBackground from "../../shared/ModalBackground";
 
 function PublishEventCard({
   index,
@@ -32,7 +30,6 @@ function PublishEventCard({
     const prev = isDeleteWarningModalShown.slice(0, index);
     const rest = isDeleteWarningModalShown.slice(index + 1);
     setIsDeleteWarningModalShown([...prev, true, ...rest]);
-    console.log(isDeleteWarningModalShown);
   };
 
   return (
@@ -50,7 +47,6 @@ function PublishEventCard({
         <div className="absolute right-0 top-0 flex gap-2">
           <button
             className="flex h-10 w-10 items-center justify-center gap-2 rounded-full bg-blue-500  text-white transition-colors hover:bg-blue-300 hover:text-blue-700"
-            // onClick={() => deleteEvent(index)}
             onClick={() => handleModalShow()}
           >
             <FiTrash2 />

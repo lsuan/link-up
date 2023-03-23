@@ -21,7 +21,9 @@ function DeleteWarningModal({
   isDeleteWarningModalShown: boolean[];
   setIsDeleteWarningModalShown: (state: boolean[]) => void;
 }) {
+  const event = events[index] as InitialEventInfo;
   const [, setNoticeMessage] = useAtom(notice);
+
   const handleModalClose = useCallback(() => {
     const prev = isDeleteWarningModalShown.slice(0, index);
     const rest = isDeleteWarningModalShown.slice(index + 1);
@@ -42,11 +44,9 @@ function DeleteWarningModal({
     setNoticeMessage({
       action: "close",
       icon: "check",
-      message: "Event has been removed.",
+      message: `${event.name} has been removed`,
     });
   };
-
-  const event = events[index] as InitialEventInfo;
 
   return (
     <div className="absolute left-1/2 z-40 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-900 bg-neutral-300 p-6 transition-all">

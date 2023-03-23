@@ -71,7 +71,6 @@ function EditEventCard({
     const prev = isDeleteWarningModalShown.slice(0, index);
     const rest = isDeleteWarningModalShown.slice(index + 1);
     setIsDeleteWarningModalShown([...prev, true, ...rest]);
-    console.log(isDeleteWarningModalShown);
   };
 
   const handleEventSave = async (data: EditEventInputs) => {

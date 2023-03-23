@@ -264,7 +264,6 @@ function Publish() {
                   index={index}
                   events={events}
                   setEvents={setEvents}
-                  // deleteEvent={deleteEvent}
                   attendees={schedule?.attendees as UserAvailability[]}
                   isDeleteWarningModalShown={isDeleteWarningModalShown}
                   setIsDeleteWarningModalShown={
