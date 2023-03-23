@@ -47,16 +47,18 @@ function EditEventCard({
   scheduleStartTime,
   scheduleEndTime,
   setEvents,
-  deleteEvent,
   className,
+  isDeleteWarningModalShown,
+  setIsDeleteWarningModalShown,
 }: {
   index: number;
   events: InitialEventInfo[];
   scheduleStartTime: string;
   scheduleEndTime: string;
   setEvents: (events: InitialEventInfo[]) => void;
-  deleteEvent: (index: number) => void;
   className?: string;
+  isDeleteWarningModalShown: boolean[];
+  setIsDeleteWarningModalShown: (state: boolean[]) => void;
 }) {
   const event = events[index] as InitialEventInfo;
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
@@ -64,6 +66,13 @@ function EditEventCard({
   const eventStartTime = getHourNumber(scheduleStartTime);
   const eventEndTime = getHourNumber(scheduleEndTime);
   const selectOptions = getTimeOptions(eventStartTime, eventEndTime);
+
+  const handleModalShow = () => {
+    const prev = isDeleteWarningModalShown.slice(0, index);
+    const rest = isDeleteWarningModalShown.slice(index + 1);
+    setIsDeleteWarningModalShown([...prev, true, ...rest]);
+    console.log(isDeleteWarningModalShown);
+  };
 
   const handleEventSave = async (data: EditEventInputs) => {
     const eventData: InitialEventInfo = {
@@ -136,7 +145,7 @@ function EditEventCard({
             type="text"
           />
           <div className="flex justify-end gap-2">
-            <Button intent="secondary" onClick={() => deleteEvent(index)}>
+            <Button intent="secondary" onClick={() => handleModalShow()}>
               Delete
             </Button>
             <Form.Button type="submit" name="Save" />

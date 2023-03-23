@@ -9,10 +9,10 @@ import { useEffect, useState } from "react";
 import { FiCheckSquare, FiPlus } from "react-icons/fi";
 import ServerSideErrorMessage from "../../../components/form/ServerSideErrorMessage";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
-// import DeleteWarningModal from "../../../components/schedule/DeleteWarningModal";
 import EditEventCard from "../../../components/schedule/publish/EditEventCard";
+import DeleteWarningModal from "../../../components/schedule/DeleteWarningModal";
+import ModalBackground from "../../../components/shared/ModalBackground";
 import PublishEventCard from "../../../components/schedule/publish/PublishEventCard";
-// import ModalBackground from "../../../components/shared/ModalBackground";
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
@@ -100,6 +100,7 @@ function Publish() {
     }
 
     setEvents([...initialEvents]);
+    setIsDeleteWarningModalShown(initialEvents.map(() => false));
   };
 
   const { schedule, isScheduleLoading, slug } = useSchedule(
@@ -201,9 +202,9 @@ function Publish() {
 
   return (
     <>
-      {/* {isDeleteWarningModalShown.some((isShown) => isShown) && (
+      {isDeleteWarningModalShown.some((isShown) => isShown) && (
         <ModalBackground isModalOpen />
-      )} */}
+      )}
       <section className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
         <ScheduleHeader
@@ -224,6 +225,17 @@ function Publish() {
               key={`${event.date}, ${event.startTime}-${event.endTime}`}
               className="w-full"
             >
+              {isDeleteWarningModalShown[index] && (
+                <DeleteWarningModal
+                  index={index}
+                  events={events}
+                  deleteEvent={deleteEvent}
+                  isDeleteWarningModalShown={isDeleteWarningModalShown}
+                  setIsDeleteWarningModalShown={
+                    setIsDeleteWarningModalShown
+                  }
+                />
+              )}
               {events[index]?.isEditing ? (
                 <EditEventCard
                   index={index}
@@ -231,7 +243,10 @@ function Publish() {
                   scheduleStartTime={schedule?.startTime ?? ""}
                   scheduleEndTime={schedule?.endTime ?? ""}
                   setEvents={setEvents}
-                  deleteEvent={deleteEvent}
+                  isDeleteWarningModalShown={isDeleteWarningModalShown}
+                  setIsDeleteWarningModalShown={
+                    setIsDeleteWarningModalShown
+                  }
                   className={
                     event.className && event.className !== ""
                       ? ` ${event.className}`
@@ -243,7 +258,7 @@ function Publish() {
                   index={index}
                   events={events}
                   setEvents={setEvents}
-                  deleteEvent={deleteEvent}
+                  // deleteEvent={deleteEvent}
                   attendees={schedule?.attendees as UserAvailability[]}
                   isDeleteWarningModalShown={isDeleteWarningModalShown}
                   setIsDeleteWarningModalShown={

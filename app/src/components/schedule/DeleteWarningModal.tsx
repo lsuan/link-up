@@ -4,16 +4,19 @@ import { atom, useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 import { FiTrash2, FiX } from "react-icons/fi";
 import Typography from "@ui/Typography";
+import { type InitialEventInfo } from "../../pages/schedule/[slug]/publish";
 
 export const deleteWarningModalShown = atom(false);
 
 function DeleteWarningModal({
   index,
+  events,
   deleteEvent,
   isDeleteWarningModalShown,
   setIsDeleteWarningModalShown,
 }: {
   index: number;
+  events: InitialEventInfo[];
   deleteEvent: (index: number) => void;
   isDeleteWarningModalShown: boolean[];
   setIsDeleteWarningModalShown: (state: boolean[]) => void;
@@ -43,10 +46,12 @@ function DeleteWarningModal({
     });
   };
 
+  const event = events[index] as InitialEventInfo;
+
   return (
-    <div className="absolute top-0 left-1/2 z-40 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-900 bg-neutral-300 p-6 transition-all">
+    <div className="absolute left-1/2 z-40 w-10/12 max-w-md -translate-x-1/2 rounded-lg border border-neutral-900 bg-neutral-300 p-6 transition-all">
       <header className="flex justify-between">
-        <Typography intent="h2">Remove Event</Typography>
+        <Typography intent="h2">Remove {event.name}</Typography>
         <FiX
           className="cursor-pointer text-neutral-500 transition-colors hover:text-black"
           onClick={() => handleModalClose()}
