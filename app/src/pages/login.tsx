@@ -67,11 +67,6 @@ function Login() {
           type="password"
           required
         />
-        <Form.Checkbox
-          name="rememberMe"
-          label="Remember Me"
-          className="self-end"
-        />
         <Form.Button name="Log In" type="submit" />
       </Form>
       <div>

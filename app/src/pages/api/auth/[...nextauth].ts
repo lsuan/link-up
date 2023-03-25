@@ -11,6 +11,8 @@ import { comparePassword } from "../../../utils/passwordUtils";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 
+const NINETY_DAYS_LOGGED_IN = 90 * 24 * 30 * 60;
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
 
@@ -32,7 +34,7 @@ export const authOptions: NextAuthOptions = {
 
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
-    maxAge: 15 * 24 * 30 * 60, // might change this later, currently sets it to expire in 15 days
+    maxAge: NINETY_DAYS_LOGGED_IN,
   },
 
   providers: [
