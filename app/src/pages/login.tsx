@@ -1,3 +1,4 @@
+import PageContainer from "@ui/PageContainer";
 import Typography from "@ui/Typography";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -45,36 +46,40 @@ function Login() {
   };
 
   return (
-    <section className="flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
-      <Typography intent="h1">Log In</Typography>
-      <Form
-        onSubmit={onSubmit}
-        schema={LoginFormSchema}
-        className="flex flex-col gap-4"
-      >
-        {isInvalid && (
-          <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
-        )}
-        <Form.Input
-          name="email"
-          displayName="Email Address"
-          type="email"
-          required
-        />
-        <Form.Input
-          name="password"
-          displayName="Password"
-          type="password"
-          required
-        />
-        <Form.Button name="Log In" type="submit" />
-      </Form>
-      <div>
-        <AuthDivider />
-        <AuthProviders />
+    <PageContainer>
+      <div className="flex flex-col items-center gap-12">
+        <Typography intent="h1" className="w-full">
+          Log In
+        </Typography>
+        <Form
+          onSubmit={onSubmit}
+          schema={LoginFormSchema}
+          className="flex w-full flex-col gap-4"
+        >
+          {isInvalid && (
+            <ServerSideErrorMessage error="The email and password combination is not valid. Please try again." />
+          )}
+          <Form.Input
+            name="email"
+            displayName="Email Address"
+            type="email"
+            required
+          />
+          <Form.Input
+            name="password"
+            displayName="Password"
+            type="password"
+            required
+          />
+          <Form.Button name="Log In" type="submit" />
+        </Form>
+        <div className="w-full">
+          <AuthDivider />
+          <AuthProviders />
+        </div>
       </div>
       <FormFooter page="login" />
-    </section>
+    </PageContainer>
   );
 }
 

@@ -7,7 +7,7 @@ interface FormFooterProps {
 
 function FormFooter({ page }: FormFooterProps) {
   return (
-    <footer className="absolute bottom-8 left-1/2 flex w-max -translate-x-1/2 items-center justify-center gap-1 text-center">
+    <footer className="flex w-full flex-wrap items-center justify-center gap-1 self-end px-2 text-center">
       {page === "login" && (
         <>
           <Typography className="text-neutral-200">

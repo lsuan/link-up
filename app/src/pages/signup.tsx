@@ -1,3 +1,4 @@
+import PageContainer from "@ui/PageContainer";
 import Typography from "@ui/Typography";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
@@ -30,33 +31,37 @@ function SignUp() {
   };
 
   return (
-    <section className="flex h-full w-full max-w-md flex-col justify-between gap-12 px-8">
-      <Typography intent="h1">Sign Up</Typography>
-      {email === "" ? (
-        <>
-          <Form<GetStartedInputs, typeof GetStartedSchema>
-            onSubmit={onSubmit}
-            schema={GetStartedSchema}
-            className="flex flex-col gap-4"
-          >
-            <Form.Input
-              name="email"
-              displayName="Email Address"
-              type="email"
-              required
-            />
-            <Form.Button name="Get Started" type="submit" />
-          </Form>
-          <div>
-            <AuthDivider />
-            <AuthProviders />
-          </div>
-        </>
-      ) : (
-        <SignUpForm email={email} />
-      )}
+    <PageContainer>
+      <div className="flex w-full flex-col items-center justify-between gap-12">
+        <Typography intent="h1" className="w-full">
+          Sign Up
+        </Typography>
+        {email === "" ? (
+          <>
+            <Form<GetStartedInputs, typeof GetStartedSchema>
+              onSubmit={onSubmit}
+              schema={GetStartedSchema}
+              className="flex w-full flex-col gap-4"
+            >
+              <Form.Input
+                name="email"
+                displayName="Email Address"
+                type="email"
+                required
+              />
+              <Form.Button name="Get Started" type="submit" />
+            </Form>
+            <div className="w-full">
+              <AuthDivider />
+              <AuthProviders />
+            </div>
+          </>
+        ) : (
+          <SignUpForm email={email} />
+        )}
+      </div>
       <FormFooter page="signup" />
-    </section>
+    </PageContainer>
   );
 }
 
