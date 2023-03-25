@@ -10,14 +10,18 @@ function AuthProviders() {
         intent="auth"
         onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
       >
-        <FcGoogle />
+        <span>
+          <FcGoogle />
+        </span>
         Login with Google
       </Button>
       <Button
         intent="auth"
         onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
       >
-        <FaDiscord color="#5865F2" />
+        <span>
+          <FaDiscord color="#5865F2" />
+        </span>
         Login with Discord
       </Button>
     </div>
