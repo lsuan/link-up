@@ -7,6 +7,8 @@ import {
   useEffect,
   useMemo,
   useState,
+  type ButtonHTMLAttributes,
+  type InputHTMLAttributes,
   type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
@@ -76,18 +78,13 @@ export default function Form<
   );
 }
 
-/** Use this component for short text-based input fields. */
-Form.Input = function Input({
-  name,
-  displayName,
-  type,
-  required,
-}: {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
   displayName: string;
-  type: string;
-  required?: boolean;
-}) {
+}
+
+/** Use this component for short text-based input fields. */
+Form.Input = function Input({ name, displayName, type, required }: InputProps) {
   const {
     register,
     formState: { isSubmitting, errors },
@@ -144,18 +141,19 @@ Form.Input = function Input({
   );
 };
 
+interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
+  name: string;
+  displayName: string;
+  maxLength: number;
+}
+
 /** Use this component for longer text-based input fields. */
 Form.TextArea = function Input({
   name,
   displayName,
   maxLength,
   required,
-}: {
-  name: string;
-  displayName: string;
-  maxLength: number;
-  required?: boolean;
-}) {
+}: TextAreaProps) {
   const text = useWatch({ name });
   const {
     register,
@@ -202,26 +200,20 @@ Form.TextArea = function Input({
   );
 };
 
+interface PasswordProps {
+  name: string;
+  required: boolean;
+}
+
 /**
  * A special password input field that displays the conditions on top of the input.
  * For "Confirm Password" fields, use the Form.Input component.
  */
-Form.Password = function Input({
-  name,
-  required,
-}: {
-  name: string;
-  required: boolean;
-}) {
-  // const {
-  //   formState: { errors },
-  // } = useFormContext();
-
+Form.Password = function Input({ name, required }: PasswordProps) {
   const password = useWatch({ name });
   const [conditions, setConditions] = useState<PasswordCondition[]>([
     ...PASSWORD_REGEX_CONDITIONS,
   ]);
-  // const error = parseDeepErrors(errors, name);
 
   useEffect(() => {
     const currentConditions = conditions.map((condition) => {
@@ -262,6 +254,13 @@ Form.Password = function Input({
   );
 };
 
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  name: string;
+  displayName: string;
+  options: string[] | number[];
+  tooltipText?: string;
+}
+
 Form.Select = function Select({
   name,
   displayName,
@@ -269,14 +268,7 @@ Form.Select = function Select({
   required,
   className,
   tooltipText,
-}: {
-  name: string;
-  displayName: string;
-  options: string[] | number[];
-  required?: boolean;
-  className?: string;
-  tooltipText?: string;
-}) {
+}: SelectProps) {
   const {
     register,
     formState: { errors },
@@ -321,13 +313,11 @@ Form.Select = function Select({
   );
 };
 
-Form.Button = function FormButton({
-  name,
-  type,
-}: {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   name: string;
-  type: "button" | "reset" | "submit" | undefined;
-}) {
+}
+
+Form.Button = function FormButton({ name, type }: ButtonProps) {
   const {
     formState: { isSubmitting },
   } = useFormContext();
@@ -354,6 +344,10 @@ const optionStyles = cva("p-2 rounded-lg hover:bg-brand-100 cursor-pointer", {
 });
 
 // TODO: add keyboard functionality
+/**
+ * A custom searchable select component that includes a search box in the options container.
+ * Used for extremely long lists of options.
+ * */
 Form.SearchableSelect = function SearchableSelect({
   name,
   displayName,
@@ -455,6 +449,12 @@ Form.SearchableSelect = function SearchableSelect({
   );
 };
 
+interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
+  name: string;
+  label: string;
+  tooltipText?: string;
+}
+
 // TODO: add keyboard enter functionality for accessibility
 Form.Checkbox = function Input({
   name,
@@ -462,13 +462,7 @@ Form.Checkbox = function Input({
   onClick,
   className,
   tooltipText,
-}: {
-  name: string;
-  label: string;
-  onClick?: () => void;
-  className?: string;
-  tooltipText?: string;
-}) {
+}: CheckboxProps) {
   const {
     register,
     formState: { errors },
