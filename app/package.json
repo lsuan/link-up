@@ -31,6 +31,7 @@
     "react-hook-form": "^7.40.0",
     "react-icons": "^4.7.1",
     "superjson": "1.9.1",
+    "tailwind-merge": "^1.10.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {

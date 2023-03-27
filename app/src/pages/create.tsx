@@ -38,6 +38,7 @@ type CreateScheduleInputs = {
   };
   startTime: string;
   endTime: string;
+  timezone: string;
   deadline?: Date | null;
   numberOfEvents: number;
   lengthOfEvents: string;
@@ -52,6 +53,7 @@ type ControlledScheduleInputs = {
   };
   startTime: string;
   endTime: string;
+  timezone: string;
   deadline?: Date | null;
 };
 
@@ -98,6 +100,7 @@ const CreateScheduleSchema = z.object({
     ),
   startTime: z.string({ required_error: "Start time is required!" }),
   endTime: z.string({ required_error: "End time must be set!" }),
+  timezone: z.string({ required_error: "Timezone must be set!" }),
   deadline: z
     .date()
     .min(new Date(), { message: "Deadline must not be in the past!" })
@@ -118,6 +121,7 @@ function Create() {
     dateRange: { startDate: new Date(), endDate: null, isOneDay: false },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {
@@ -311,10 +315,11 @@ function Create() {
             tooltipText="You can specify the timeframe that each day of your schedule will accept availabilities from."
           />
         </div>
-        <Form.Select
+        <Form.SearchableSelect
           name="timezone"
           displayName="Timezone"
           options={TIMEZONES}
+          required
         />
         {/* TODO: add custom header with custom title */}
         <DatePicker

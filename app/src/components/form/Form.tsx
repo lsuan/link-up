@@ -2,7 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@ui/Button";
 import Tooltip from "@ui/Tooltip";
 import Typography from "@ui/Typography";
-import { useEffect, useState, type ReactNode } from "react";
+import { cva } from "cva";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+  type SelectHTMLAttributes,
+} from "react";
 import {
   FormProvider,
   useForm,
@@ -11,7 +18,7 @@ import {
   type DeepPartial,
   type FieldValues,
 } from "react-hook-form";
-import { FiAlertCircle, FiCheck, FiX } from "react-icons/fi";
+import { FiAlertCircle, FiCheck, FiChevronDown, FiX } from "react-icons/fi";
 import { type z } from "zod";
 import {
   parseDeepErrors,
@@ -328,6 +335,123 @@ Form.Button = function FormButton({
     <Button type={type} isLoading={isSubmitting}>
       {name}
     </Button>
+  );
+};
+
+interface SearchableSelectProps
+  extends SelectHTMLAttributes<HTMLSelectElement> {
+  name: string;
+  displayName: string;
+  options: string[];
+  tooltipText?: string;
+}
+
+const optionStyles = cva("p-2 rounded-lg hover:bg-brand-100 cursor-pointer", {
+  variants: {
+    intent: {},
+    isSelected: { true: "bg-brand-200" },
+  },
+});
+
+// TODO: add keyboard functionality
+Form.SearchableSelect = function SearchableSelect({
+  name,
+  displayName,
+  options,
+  tooltipText,
+}: SearchableSelectProps) {
+  const {
+    formState: { errors },
+    getValues,
+    reset,
+  } = useFormContext();
+  const error = parseDeepErrors(errors, name);
+  const watch = useWatch({ name: "searchTerm" });
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [selected, setSelected] = useState<string>();
+
+  const filteredOptions = useMemo(() => {
+    const filtered = options.filter((option) =>
+      option.toLowerCase().includes(watch)
+    );
+    setSelected(filtered[0]);
+    return filtered;
+  }, [options, watch]);
+
+  const handleClick = (option: string) => {
+    setIsMenuOpen(false);
+    setSelected(option);
+    reset({ [name]: option });
+  };
+
+  const currentValue = getValues(name);
+
+  return (
+    <div className="flex w-full flex-col gap-1">
+      <fieldset className="relative flex w-full items-center gap-1">
+        <Button
+          className="justify-between border border-neutral-200 bg-white text-left text-base font-normal text-black hover:bg-white"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          fullWidth
+        >
+          {currentValue}
+          <span>
+            <FiChevronDown />
+          </span>
+        </Button>
+
+        {isMenuOpen && (
+          <div className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2">
+            <Form.Input
+              name="searchTerm"
+              displayName="Search Timezone"
+              type="text"
+            />
+            <ul className="max-h-[10rem] overflow-scroll">
+              {filteredOptions.length === 0
+                ? options.map((option) => (
+                    <li
+                      key={option}
+                      className={optionStyles({
+                        isSelected: option === selected,
+                      })}
+                      onClick={() => handleClick(option)}
+                    >
+                      <Typography>{option}</Typography>
+                    </li>
+                  ))
+                : filteredOptions.map((option) => (
+                    <li
+                      key={option}
+                      className={optionStyles({
+                        isSelected: option === selected,
+                      })}
+                      onClick={() => handleClick(option)}
+                    >
+                      <Typography>{option}</Typography>
+                    </li>
+                  ))}
+            </ul>
+          </div>
+        )}
+
+        <label
+          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
+        peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
+        peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
+        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
+          htmlFor={name}
+        >
+          {displayName}
+        </label>
+        {tooltipText && (
+          <Tooltip text={tooltipText}>
+            <FiAlertCircle />
+          </Tooltip>
+        )}
+      </fieldset>
+      {error && <InputErrorMessage error={error as string} />}
+    </div>
   );
 };
 

@@ -6,6 +6,7 @@ import {
   type ClassAttributes,
 } from "react";
 import { FiRotateCw } from "react-icons/fi";
+import { twMerge } from "tailwind-merge";
 
 const buttonStyles = cva(
   "group flex justify-center items-center rounded-lg text-lg p-4 transition-all gap-2 font-inter leading-none",
@@ -41,14 +42,20 @@ type ButtonProps = {
 type ButtonLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof buttonStyles>;
 
-function ButtonLink({ intent, fullWidth, children, ...rest }: ButtonLinkProps) {
+function ButtonLink({
+  intent,
+  fullWidth,
+  children,
+  className,
+  ...rest
+}: ButtonLinkProps) {
   const isInternal = rest.href?.startsWith("/");
   return (
     <>
       {isInternal && (
         <Link
           href={rest.href as string}
-          className={buttonStyles({ intent, fullWidth })}
+          className={twMerge(buttonStyles({ intent, fullWidth, className }))}
           {...rest}
         >
           {children}
@@ -57,7 +64,7 @@ function ButtonLink({ intent, fullWidth, children, ...rest }: ButtonLinkProps) {
       {!isInternal && (
         <a
           href={rest.href as string}
-          className={buttonStyles({ intent, fullWidth })}
+          className={twMerge(buttonStyles({ intent, fullWidth, className }))}
           {...rest}
         >
           {children}
@@ -72,6 +79,7 @@ function Button({
   fullWidth,
   isLoading,
   children,
+  className,
   ...rest
 }: ButtonProps) {
   const isLink = "href" in rest;
@@ -85,7 +93,10 @@ function Button({
   }
 
   return (
-    <button className={buttonStyles({ intent, fullWidth })} {...rest}>
+    <button
+      className={twMerge(buttonStyles({ intent, fullWidth, className }))}
+      {...rest}
+    >
       {isLoading ? (
         <>
           <FiRotateCw className="animate-spin" />
