@@ -21,6 +21,7 @@ import {
   getTimeOptions,
   MAX_DESCRIPTION_LENGTH,
   MINUTES,
+  TIMEZONES,
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
@@ -310,6 +311,11 @@ function Create() {
             tooltipText="You can specify the timeframe that each day of your schedule will accept availabilities from."
           />
         </div>
+        <Form.Select
+          name="timezone"
+          displayName="Timezone"
+          options={TIMEZONES}
+        />
         {/* TODO: add custom header with custom title */}
         <DatePicker
           selected={defaultValues.deadline}

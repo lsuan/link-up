@@ -78,7 +78,8 @@ model Schedule {
   startDate      DateTime @db.DateTime()
   endDate        DateTime @db.DateTime()
   startTime      String
-  endTime        String
+  endTime        String 
+  timezone       String   @default("America/Los_Angeles")
   deadline       DateTime?
   numberOfEvents Int      @db.UnsignedTinyInt
   lengthOfEvents String
