@@ -45,7 +45,7 @@ function Dashboard() {
         </Button>
       </header>
 
-      <Snackbar action="close" />
+      <Snackbar />
 
       <div className="mb-4 flex justify-between gap-1 rounded-full border border-gray-500 bg-neutral-500">
         <Pill
