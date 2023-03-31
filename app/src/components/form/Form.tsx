@@ -83,8 +83,40 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   displayName: string;
 }
 
+const floatinglabelStyles = cva(
+  `absolute left-1 top-1/2 z-20 ml-2 flex rounded-lg bg-white px-2 text-xs text-black transition-all
+peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
+peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-200
+peer-focus:left-1 peer-focus:z-20 peer-focus:text-xs peer-focus:text-black`,
+  {
+    variants: {
+      isTextArea: {
+        true: "-translate-y-11 peer-focus:-translate-y-11",
+        false: "-translate-y-8 peer-focus:-translate-y-8",
+      },
+    },
+  }
+);
+
+const inputStyles = cva(
+  "peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-3 text-black placeholder:text-transparent",
+  {
+    variants: {
+      error: {
+        true: "border-error-400",
+      },
+    },
+  }
+);
+
 /** Use this component for short text-based input fields. */
-Form.Input = function Input({ name, displayName, type, required }: InputProps) {
+Form.Input = function Input({
+  name,
+  displayName,
+  type,
+  required,
+  className,
+}: InputProps) {
   const {
     register,
     formState: { isSubmitting, errors },
@@ -107,9 +139,7 @@ Form.Input = function Input({ name, displayName, type, required }: InputProps) {
               />
             ) : (
               <input
-                className={`peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-4 text-black placeholder:text-transparent ${
-                  error ? "border-error-400" : ""
-                }`}
+                className={inputStyles({ error: !!error, className })}
                 placeholder={displayName}
                 type={type}
                 {...register(name)}
@@ -119,10 +149,7 @@ Form.Input = function Input({ name, displayName, type, required }: InputProps) {
             )}
 
             <label
-              className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
-              peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
-              peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-200
-              peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
+              className={floatinglabelStyles({ isTextArea: false })}
               htmlFor={name}
             >
               {displayName}
@@ -165,9 +192,10 @@ Form.TextArea = function Input({
   return (
     <>
       <div className="flex flex-col gap-1">
-        <fieldset className="relative">
+        {/* this needs to be flexed to fix the floating label height */}
+        <fieldset className="relative flex h-fit">
           <textarea
-            className="peer relative z-10 w-full rounded-lg border border-neutral-500 bg-inherit py-2 px-4 text-black placeholder:text-transparent"
+            className="peer relative z-10 w-full rounded-lg border border-neutral-200 bg-inherit p-3 text-black placeholder:text-transparent"
             placeholder={displayName}
             {...register(name)}
             maxLength={maxLength}
@@ -175,24 +203,19 @@ Form.TextArea = function Input({
             aria-invalid={error ? "true" : "false"}
           />
           <label
-            className="absolute left-1 top-[1.35rem] z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
-          peer-placeholder-shown:left-0 peer-placeholder-shown:top-[1.35rem] peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
-          peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-          peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
+            className={floatinglabelStyles({ isTextArea: true })}
             htmlFor={name}
           >
             {displayName}
             {required && <span className="ml-1 text-error-500">*</span>}
           </label>
-          {text?.length >= maxLength ? (
-            <span className="absolute right-1 -bottom-3 text-xs text-red-600">
-              {`${text?.length || 0}/${maxLength}`}
-            </span>
-          ) : (
-            <span className="absolute right-1 -bottom-3 text-xs">
-              {`${text?.length || 0}/${maxLength}`}
-            </span>
-          )}
+          <span
+            className={`absolute right-1 -bottom-4 text-xs${
+              text?.length > maxLength ? " text-error-400" : " text-neutral-200"
+            }`}
+          >
+            {`${text?.length || 0}/${maxLength}`}
+          </span>
         </fieldset>
       </div>
       {error && <InputErrorMessage error={error as string} className="-mt-3" />}
@@ -281,7 +304,7 @@ Form.Select = function Select({
         <select
           key={name}
           {...register(name, { valueAsNumber: typeof options[0] === "number" })}
-          className={`peer relative z-10 w-full rounded-lg border border-neutral-500 bg-transparent py-2 px-4 text-black placeholder:text-transparent ${
+          className={`peer relative z-10 w-full appearance-none rounded-lg border border-neutral-200 bg-transparent p-3 text-black placeholder:text-transparent ${
             className || ""
           }`}
           placeholder={displayName}
@@ -292,11 +315,11 @@ Form.Select = function Select({
             </option>
           ))}
         </select>
+        <span className="absolute right-8">
+          <FiChevronDown />
+        </span>
         <label
-          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
-        peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
-        peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
+          className={floatinglabelStyles({ isTextArea: false })}
           htmlFor={name}
         >
           {displayName}
@@ -454,7 +477,7 @@ Form.SearchableSelect = function SearchableSelect({
       <fieldset className="relative flex w-full items-center gap-1">
         <Button
           type="button"
-          className="justify-between border border-neutral-200 bg-white text-left text-base font-normal text-black hover:bg-white"
+          className="justify-between border border-neutral-200 bg-white p-3 text-left text-base font-normal text-black hover:bg-white"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           fullWidth
         >
@@ -465,10 +488,7 @@ Form.SearchableSelect = function SearchableSelect({
         </Button>
 
         {isMenuOpen && (
-          <section
-            className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2"
-            id="searchable-select"
-          >
+          <section className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2 pt-8">
             <Form.Input
               name="searchTerm"
               displayName="Search Timezone"
@@ -503,14 +523,15 @@ Form.SearchableSelect = function SearchableSelect({
                   />
                 ))}
             </div>
+            <FiX
+              className="absolute right-2 top-2 cursor-pointer text-neutral-200 hover:text-brand-500"
+              onClick={() => setIsMenuOpen(false)}
+            />
           </section>
         )}
 
         <label
-          className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[2.25rem] rounded-lg bg-white px-2 text-xs text-black transition-all
-        peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
-        peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-500
-        peer-focus:left-1 peer-focus:z-20 peer-focus:-translate-y-[2.25rem] peer-focus:text-xs peer-focus:text-black"
+          className={floatinglabelStyles({ isTextArea: false })}
           htmlFor={name}
         >
           {displayName}

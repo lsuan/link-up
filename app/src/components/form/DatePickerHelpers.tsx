@@ -19,14 +19,14 @@ const CustomDatePicker = forwardRef<HTMLButtonElement, CustomDatePickerProps>(
       <div className="relative">
         <button
           type="button"
-          className="flex w-full items-center rounded-lg border border-neutral-500 bg-white px-4 py-2 text-left"
+          className="flex w-full items-center rounded-lg border border-neutral-200 bg-white p-3 text-left"
           onClick={onClick}
           ref={ref}
         >
           <FiCalendar className="mr-2" />
           {value || <span className="text-neutral-500">Select a date...</span>}
         </button>
-        <span className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-[1.85rem] rounded-lg bg-white px-2 text-xs text-black transition-all">
+        <span className="absolute left-1 top-1/2 z-20 ml-2 flex -translate-y-8 rounded-lg bg-white px-2 text-xs text-black transition-all">
           {label}
           {star && <span className="ml-1 text-red-500">*</span>}
         </span>
