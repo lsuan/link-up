@@ -1,3 +1,4 @@
+import PageContainer from "@ui/PageContainer";
 import { notice } from "@ui/Snackbar";
 import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
@@ -217,10 +218,12 @@ function Create() {
   }
 
   return (
-    <section className="px-8">
+    <PageContainer>
       <BackArrow href="/dashboard" page="Dashboard" />
       <ModalBackground isModalOpen={isDatePickerOpen} />
-      <Typography intent="h1">Plan a Schedule</Typography>
+      <Typography intent="h1" className="mb-12">
+        Plan a Schedule
+      </Typography>
       <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
         onSubmit={handleSubmit}
         schema={CreateScheduleSchema}
@@ -354,7 +357,7 @@ function Create() {
         </div>
         <Form.Button name="Create Schedule" type="submit" />
       </Form>
-    </section>
+    </PageContainer>
   );
 }
 

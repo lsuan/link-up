@@ -384,25 +384,26 @@ Form.SearchableSelect = function SearchableSelect({
     getValues,
     reset,
   } = useFormContext();
+  const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const error = parseDeepErrors(errors, name);
   const watch = useWatch({ name: "searchTerm" });
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string>();
+  const [selected, setSelected] = useState<string>(currentTimezone);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-
-  const filteredOptions = useMemo(() => {
-    const filtered = options.filter((option) =>
-      option.toLowerCase().includes(watch)
-    );
-    setSelected(filtered[0]);
-    return filtered;
-  }, [options, watch]);
 
   const handleSelect = (option: string) => {
     setIsMenuOpen(false);
     setSelected(option);
     reset({ [name]: option });
   };
+
+  const filteredOptions = useMemo(() => {
+    const filtered = options.filter((option) =>
+      option.toLowerCase().includes(watch)
+    );
+    setSelected(filtered[0] ?? currentTimezone);
+    return filtered;
+  }, [options, watch]);
 
   // allows the user exit out of the component by pressing the escape key
   useEffect(() => {
@@ -414,6 +415,9 @@ Form.SearchableSelect = function SearchableSelect({
         setIsMenuOpen(false);
       }
     });
+    // this scrolls the current selected option into view
+    const currentOption = document.querySelector(`option[value='${selected}']`);
+    currentOption?.scrollIntoView({ behavior: "auto" });
   }, [isMenuOpen]);
 
   /**
@@ -421,7 +425,6 @@ Form.SearchableSelect = function SearchableSelect({
    * It automatically scrolls to the current selected option.
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
     e.stopPropagation();
     const element = e.target as HTMLDivElement;
     const currentOptions =
@@ -443,7 +446,7 @@ Form.SearchableSelect = function SearchableSelect({
         }
         const currentSelected = currentOptions[currentIndex];
         element.children[currentIndex]?.scrollIntoView({
-          behavior: "smooth",
+          behavior: "auto",
         });
         setSelectedIndex(currentIndex);
         setSelected(currentSelected);
@@ -459,7 +462,7 @@ Form.SearchableSelect = function SearchableSelect({
         }
         const currentSelected = currentOptions[currentIndex];
         element.children[currentIndex]?.scrollIntoView({
-          behavior: "smooth",
+          behavior: "auto",
         });
         setSelectedIndex(currentIndex);
         setSelected(currentSelected);
@@ -504,6 +507,7 @@ Form.SearchableSelect = function SearchableSelect({
                 options.map((option) => (
                   <option
                     key={option}
+                    value={option}
                     label={option}
                     className={optionStyles({
                       isSelected: option === selected,
@@ -514,8 +518,9 @@ Form.SearchableSelect = function SearchableSelect({
               {filteredOptions.length > 0 &&
                 filteredOptions.map((option) => (
                   <option
-                    label={option}
                     key={option}
+                    label={option}
+                    value={option}
                     className={optionStyles({
                       isSelected: option === selected,
                     })}
