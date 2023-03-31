@@ -336,14 +336,16 @@ interface SearchableSelectProps
   tooltipText?: string;
 }
 
-const optionStyles = cva("p-2 rounded-lg hover:bg-brand-100 cursor-pointer", {
-  variants: {
-    intent: {},
-    isSelected: { true: "bg-brand-200" },
-  },
-});
+const optionStyles = cva(
+  "p-2 rounded-lg hover:bg-brand-100 cursor-pointer transition-colors",
+  {
+    variants: {
+      intent: {},
+      isSelected: { true: "bg-brand-200" },
+    },
+  }
+);
 
-// TODO: add keyboard functionality
 /**
  * A custom searchable select component that includes a search box in the options container.
  * Used for extremely long lists of options.
@@ -363,6 +365,7 @@ Form.SearchableSelect = function SearchableSelect({
   const watch = useWatch({ name: "searchTerm" });
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>();
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   const filteredOptions = useMemo(() => {
     const filtered = options.filter((option) =>
@@ -372,10 +375,76 @@ Form.SearchableSelect = function SearchableSelect({
     return filtered;
   }, [options, watch]);
 
-  const handleClick = (option: string) => {
+  const handleSelect = (option: string) => {
     setIsMenuOpen(false);
     setSelected(option);
     reset({ [name]: option });
+  };
+
+  // allows the user exit out of the component by pressing the escape key
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+    document.addEventListener("keyup", (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    });
+  }, [isMenuOpen]);
+
+  /**
+   * Creates keyboard accessibility for the component.
+   * It automatically scrolls to the current selected option.
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const element = e.target as HTMLDivElement;
+    const currentOptions =
+      filteredOptions.length === 0 ? options : filteredOptions;
+
+    switch (e.key) {
+      case "Enter":
+        if (selected) {
+          handleSelect(selected);
+        }
+        break;
+      case "ArrowDown": {
+        let currentIndex = selectedIndex;
+        if (currentIndex < currentOptions.length - 1) {
+          currentIndex += 1;
+        }
+        if (currentIndex === currentOptions.length - 1) {
+          currentIndex = 0;
+        }
+        const currentSelected = currentOptions[currentIndex];
+        element.children[currentIndex]?.scrollIntoView({
+          behavior: "smooth",
+        });
+        setSelectedIndex(currentIndex);
+        setSelected(currentSelected);
+        break;
+      }
+      case "ArrowUp": {
+        let currentIndex = selectedIndex;
+        if (currentIndex > 0) {
+          currentIndex -= 1;
+        }
+        if (currentIndex === 0) {
+          currentIndex = currentOptions.length - 1;
+        }
+        const currentSelected = currentOptions[currentIndex];
+        element.children[currentIndex]?.scrollIntoView({
+          behavior: "smooth",
+        });
+        setSelectedIndex(currentIndex);
+        setSelected(currentSelected);
+        break;
+      }
+      default:
+        break;
+    }
   };
 
   const currentValue = getValues(name);
@@ -384,6 +453,7 @@ Form.SearchableSelect = function SearchableSelect({
     <div className="flex w-full flex-col gap-1">
       <fieldset className="relative flex w-full items-center gap-1">
         <Button
+          type="button"
           className="justify-between border border-neutral-200 bg-white text-left text-base font-normal text-black hover:bg-white"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           fullWidth
@@ -395,38 +465,45 @@ Form.SearchableSelect = function SearchableSelect({
         </Button>
 
         {isMenuOpen && (
-          <div className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2">
+          <section
+            className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2"
+            id="searchable-select"
+          >
             <Form.Input
               name="searchTerm"
               displayName="Search Timezone"
               type="text"
             />
-            <ul className="max-h-[10rem] overflow-scroll">
-              {filteredOptions.length === 0
-                ? options.map((option) => (
-                    <li
-                      key={option}
-                      className={optionStyles({
-                        isSelected: option === selected,
-                      })}
-                      onClick={() => handleClick(option)}
-                    >
-                      <Typography>{option}</Typography>
-                    </li>
-                  ))
-                : filteredOptions.map((option) => (
-                    <li
-                      key={option}
-                      className={optionStyles({
-                        isSelected: option === selected,
-                      })}
-                      onClick={() => handleClick(option)}
-                    >
-                      <Typography>{option}</Typography>
-                    </li>
-                  ))}
-            </ul>
-          </div>
+            <div
+              className="max-h-[10rem] overflow-scroll"
+              onKeyDown={handleKeyDown}
+              role="button"
+              tabIndex={0}
+            >
+              {filteredOptions.length === 0 &&
+                options.map((option) => (
+                  <option
+                    key={option}
+                    label={option}
+                    className={optionStyles({
+                      isSelected: option === selected,
+                    })}
+                    onClick={() => handleSelect(option)}
+                  />
+                ))}
+              {filteredOptions.length > 0 &&
+                filteredOptions.map((option) => (
+                  <option
+                    label={option}
+                    key={option}
+                    className={optionStyles({
+                      isSelected: option === selected,
+                    })}
+                    onClick={() => handleSelect(option)}
+                  />
+                ))}
+            </div>
+          </section>
         )}
 
         <label
