@@ -1,3 +1,4 @@
+import PageContainer from "@ui/PageContainer";
 import { notice } from "@ui/Snackbar";
 import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
@@ -21,6 +22,7 @@ import {
   getTimeOptions,
   MAX_DESCRIPTION_LENGTH,
   MINUTES,
+  TIMEZONES,
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
@@ -37,6 +39,7 @@ type CreateScheduleInputs = {
   };
   startTime: string;
   endTime: string;
+  timezone: string;
   deadline?: Date | null;
   numberOfEvents: number;
   lengthOfEvents: string;
@@ -51,6 +54,7 @@ type ControlledScheduleInputs = {
   };
   startTime: string;
   endTime: string;
+  timezone: string;
   deadline?: Date | null;
 };
 
@@ -97,6 +101,7 @@ const CreateScheduleSchema = z.object({
     ),
   startTime: z.string({ required_error: "Start time is required!" }),
   endTime: z.string({ required_error: "End time must be set!" }),
+  timezone: z.string({ required_error: "Timezone must be set!" }),
   deadline: z
     .date()
     .min(new Date(), { message: "Deadline must not be in the past!" })
@@ -117,6 +122,7 @@ function Create() {
     dateRange: { startDate: new Date(), endDate: null, isOneDay: false },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {
@@ -212,10 +218,12 @@ function Create() {
   }
 
   return (
-    <section className="px-8">
+    <PageContainer>
       <BackArrow href="/dashboard" page="Dashboard" />
       <ModalBackground isModalOpen={isDatePickerOpen} />
-      <Typography intent="h1">Plan a Schedule</Typography>
+      <Typography intent="h1" className="mb-12">
+        Plan a Schedule
+      </Typography>
       <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
         onSubmit={handleSubmit}
         schema={CreateScheduleSchema}
@@ -310,6 +318,12 @@ function Create() {
             tooltipText="You can specify the timeframe that each day of your schedule will accept availabilities from."
           />
         </div>
+        <Form.SearchableSelect
+          name="timezone"
+          displayName="Timezone"
+          options={TIMEZONES}
+          required
+        />
         {/* TODO: add custom header with custom title */}
         <DatePicker
           selected={defaultValues.deadline}
@@ -343,7 +357,7 @@ function Create() {
         </div>
         <Form.Button name="Create Schedule" type="submit" />
       </Form>
-    </section>
+    </PageContainer>
   );
 }
 
