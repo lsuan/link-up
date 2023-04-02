@@ -32,11 +32,13 @@ body {
 }
 
 .react-datepicker__day--today {
-  background-color: white !important;
+  background-color: #d8d8e9;
 }
+
 .react-datepicker__day--selected,
-.react-datepicker__day--keyboard-selected {
-  background-color: rgb(212 212 212 / var(--tw-bg-opacity));
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__day--in-selecting-range {
+  background-color: #c2c2ff;
   color: black;
 }
 .react-datepicker__day-names {
@@ -49,11 +51,11 @@ body {
   text-align: center;
 }
 .react-datepicker__day--outside-month {
-  color: rgb(212 212 212 / var(--tw-bg-opacity));
+  color: rgb(178 178 186 / var(--tw-border-opacity));
   opacity: 0.25;
 }
 
 .react-datepicker__day--in-range {
-  background-color: rgb(212 212 212 / var(--tw-bg-opacity));
+  background-color: #c2c2ff;
   color: black;
 }

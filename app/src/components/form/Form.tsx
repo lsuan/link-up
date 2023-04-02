@@ -156,9 +156,7 @@ Form.Input = function Input({
               {required && <span className="ml-1 text-error-500">*</span>}
             </label>
           </fieldset>
-          {error && (
-            <InputErrorMessage error={error as string} className="-mt-3" />
-          )}
+          {error && <InputErrorMessage error={error as string} />}
         </div>
       )}
       {type === "hidden" && error && (

@@ -243,9 +243,9 @@ function Create() {
           maxLength={MAX_DESCRIPTION_LENGTH}
         />
 
-        <div className="relative rounded-lg bg-neutral-300 p-4">
+        <div className="relative rounded-lg bg-neutral-100 p-4">
           {defaultValues.dateRange.isOneDay && (
-            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-neutral-300 opacity-50" />
+            <div className="absolute top-0 left-0 z-30 h-full w-full rounded-lg bg-brand-100 opacity-50" />
           )}
           <DatePicker
             id="calendarDatePicker"
@@ -264,7 +264,7 @@ function Create() {
             endDate={defaultValues.dateRange.endDate}
             selectsRange
             inline
-            dayClassName={() => "p-1 m-1 rounded-lg"}
+            dayClassName={() => "p-1 m-1 cursor-pointer rounded-lg"}
             renderCustomHeader={({
               date,
               decreaseMonth,
@@ -292,12 +292,11 @@ function Create() {
         />
         {!defaultValues.dateRange.isOneDay &&
           defaultValues.dateRange.endDate && (
-            <span>{`Current Schedule Range: ${defaultValues.dateRange.startDate?.toLocaleDateString()} — ${defaultValues.dateRange.endDate?.toLocaleDateString()}`}</span>
+            <p>{`Current Schedule Range: ${defaultValues.dateRange.startDate?.toLocaleDateString()} — ${defaultValues.dateRange.endDate?.toLocaleDateString()}`}</p>
           )}
         <Form.Checkbox
           name="dateRange.isOneDay"
           label="One Day Schedule?"
-          className="-mt-2 mb-2"
           onClick={() => handleOneDayChange()}
           tooltipText="If your schedule range is only one day, select this option."
         />
