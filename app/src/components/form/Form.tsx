@@ -389,7 +389,6 @@ Form.SearchableSelect = function SearchableSelect({
   const watch = useWatch({ name: "searchTerm" });
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>(currentTimezone);
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   const handleSelect = (option: string) => {
     setIsMenuOpen(false);
@@ -401,7 +400,6 @@ Form.SearchableSelect = function SearchableSelect({
     const filtered = options.filter((option) =>
       option.toLowerCase().includes(watch)
     );
-    setSelected(filtered[0] ?? currentTimezone);
     return filtered;
   }, [options, watch]);
 
@@ -425,6 +423,7 @@ Form.SearchableSelect = function SearchableSelect({
    * It automatically scrolls to the current selected option.
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
     e.stopPropagation();
     const element = e.target as HTMLDivElement;
     const currentOptions =
@@ -437,7 +436,9 @@ Form.SearchableSelect = function SearchableSelect({
         }
         break;
       case "ArrowDown": {
-        let currentIndex = selectedIndex;
+        let currentIndex = currentOptions.findIndex(
+          (option) => option === selected
+        );
         if (currentIndex < currentOptions.length - 1) {
           currentIndex += 1;
         }
@@ -448,12 +449,13 @@ Form.SearchableSelect = function SearchableSelect({
         element.children[currentIndex]?.scrollIntoView({
           behavior: "auto",
         });
-        setSelectedIndex(currentIndex);
-        setSelected(currentSelected);
+        setSelected(currentSelected!);
         break;
       }
       case "ArrowUp": {
-        let currentIndex = selectedIndex;
+        let currentIndex = currentOptions.findIndex(
+          (option) => option === selected
+        );
         if (currentIndex > 0) {
           currentIndex -= 1;
         }
@@ -464,8 +466,7 @@ Form.SearchableSelect = function SearchableSelect({
         element.children[currentIndex]?.scrollIntoView({
           behavior: "auto",
         });
-        setSelectedIndex(currentIndex);
-        setSelected(currentSelected);
+        setSelected(currentSelected!);
         break;
       }
       default:
@@ -491,14 +492,20 @@ Form.SearchableSelect = function SearchableSelect({
         </Button>
 
         {isMenuOpen && (
-          <section className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2 pt-8">
+          <section
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+            className="absolute bottom-16 z-30 flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-2 pt-8"
+          >
             <Form.Input
               name="searchTerm"
               displayName="Search Timezone"
               type="text"
             />
             <div
-              className="max-h-[10rem] overflow-scroll"
+              className="max-h-[10rem] overflow-auto"
               onKeyDown={handleKeyDown}
               role="button"
               tabIndex={0}
