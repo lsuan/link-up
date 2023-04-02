@@ -58,11 +58,13 @@ export function CalendarContainer({
   };
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
   return (
-    <div className={`max-w-xs rounded-lg bg-neutral-300 p-4 pb-3 ${className}`}>
+    <div
+      className={`max-w-xs rounded-lg border-neutral-200 bg-white p-4 pb-3 ${className}`}
+    >
       <header className="relative mb-4 pr-6 font-semibold">
         <Typography intent="h3">
           {title}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {required && <span className="ml-1 text-error-400">*</span>}
         </Typography>
         {isDatePickerOpen && (
           <button
@@ -71,7 +73,7 @@ export function CalendarContainer({
             className="absolute right-0 top-0"
           >
             <FiX
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
+              className="text-neutral-200 transition-colors hover:text-brand-500"
               onClick={() => setIsDatePickerOpen(false)}
             />
           </button>
@@ -103,7 +105,7 @@ export function CalendarHeader({
         disabled={prevMonthButtonDisabled}
         className="flex items-center"
       >
-        <FiChevronLeft className="text-xl text-blue-500 transition-colors hover:text-blue-300" />
+        <FiChevronLeft className="hover:text-brand-300 text-xl text-brand-500 transition-colors" />
       </button>
       <h5 className="mx-8 font-semibold">
         {`${MONTHS[date.getMonth()]} ${date.getFullYear()}`}
@@ -115,7 +117,7 @@ export function CalendarHeader({
         disabled={nextMonthButtonDisabled}
         className="flex items-center"
       >
-        <FiChevronRight className="text-xl text-blue-500 transition-colors hover:text-blue-300" />
+        <FiChevronRight className="hover:text-brand-300 text-xl text-brand-500 transition-colors" />
       </button>
     </div>
   );

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Typography from "./Typography";
 
@@ -43,7 +42,7 @@ function Tooltip({ text, children }: TooltipProps) {
     >
       {isShown && (
         <div
-          className="absolute bottom-5 z-50 w-60 cursor-default rounded border border-neutral-500 bg-white p-2"
+          className="absolute bottom-5 z-50 w-60 cursor-default rounded border border-neutral-200 bg-white p-2"
           ref={textRef}
         >
           <Typography className="text-sm">{text}</Typography>
