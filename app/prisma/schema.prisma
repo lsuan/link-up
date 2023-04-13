@@ -87,12 +87,15 @@ model Schedule {
   host           User     @relation(fields: [userId], references: [id])
   createdAt      DateTime @db.Timestamp(0) @default(now())
   events         Event[]
-  attendees      Json? 
-  // {
-  //   "user": {
-  //     "day": ["time"]
-  //   }
-  // }
+  availabilities Availability[]
+}
+
+model Availability {
+  id           String @id @default(cuid())
+  user         String // an anonymous user's name or a logged in user's id 
+  scheduleId   String 
+  availability Json
+  schedule     Schedule @relation(fields: [scheduleId], references: [id])
 }
 
 model Event {
