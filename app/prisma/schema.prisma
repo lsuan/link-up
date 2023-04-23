@@ -77,12 +77,21 @@ model Schedule {
   description    String?  @db.VarChar(200)
   startDate      DateTime @db.DateTime()
   endDate        DateTime @db.DateTime()
+
+  // startTime and endTime should be strings
+  // they represent the time range and cannot be
+  // represented by date objects 
   startTime      String
-  endTime        String 
+  endTime        String
+
   timezone       String   @default("America/Los_Angeles")
   deadline       DateTime?
   numberOfEvents Int      @db.UnsignedTinyInt
-  lengthOfEvents String
+
+  // lengthOfEvents is time represented in minutes
+  // from 30 to 1440 (24 hours)
+  lengthOfEvents Int
+
   userId         String
   host           User     @relation(fields: [userId], references: [id])
   createdAt      DateTime @db.Timestamp(0) @default(now())
@@ -94,16 +103,22 @@ model Availability {
   id           String @id @default(cuid())
   user         String // an anonymous user's name or a logged in user's id 
   scheduleId   String 
+
+  // this represents an array of milliseconds which represent the times 
+  // that the user is available
+  // milliseconds are strings that should be converted to numbers
+  // and then converted to date objects
   availability Json
+
   schedule     Schedule @relation(fields: [scheduleId], references: [id])
 }
 
 model Event {
   id          String    @id @default(cuid())
   name        String
-  date        DateTime
-  startTime   String
-  endTime     String
+  date        DateTime  @db.DateTime()
+  startTime   DateTime  @db.DateTime()
+  endTime     DateTime  @db.DateTime()
   scheduleId  String
   description String?   @db.VarChar(200)
   location    String?

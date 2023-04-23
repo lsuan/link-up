@@ -1,28 +1,19 @@
 import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
+import { CREATE_SCHEDULE_API_SCHEMA } from "../../../utils/schemas";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 const scheduleRouter = router({
   /** Creates a new schedule with the specified inputs. */
   createSchedule: protectedProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        description: z.string().optional(),
-        startDate: z.date(),
-        endDate: z.date(),
-        startTime: z.string(),
-        endTime: z.string(),
-        deadline: z.date().nullish().optional(),
-        numberOfEvents: z.number(),
-        lengthOfEvents: z.string(),
-      })
-    )
+    .input(CREATE_SCHEDULE_API_SCHEMA)
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.session.user.id;
+      const { scheduleName: name, ...rest } = input;
       const newSchedule = await ctx.prisma.schedule.create({
         data: {
-          ...input,
+          name,
+          ...rest,
           userId,
         },
       });

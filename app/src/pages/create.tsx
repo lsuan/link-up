@@ -4,10 +4,10 @@ import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import DatePicker from "react-datepicker";
 import { type SubmitHandler } from "react-hook-form";
-import { z } from "zod";
+import { type z } from "zod";
 import CustomDatePicker, {
   CalendarContainer,
   CalendarHeader,
@@ -19,31 +19,16 @@ import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
 import Unauthenticated from "../components/shared/Unauthenticated";
 import {
-  getTimeOptions,
   MAX_DESCRIPTION_LENGTH,
   MINUTES,
   TIMEZONES,
+  getTimeOptions,
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
+import { CREATE_SCHEDULE_FORM_SCHEMA } from "../utils/schemas";
 import { trpc } from "../utils/trpc";
 
-const MAX_SCHEDULE_RANGE = 30;
-
-type CreateScheduleInputs = {
-  scheduleName: string;
-  description?: string;
-  dateRange: {
-    startDate: Date | null;
-    endDate: Date | null;
-    isOneDay: boolean;
-  };
-  startTime: string;
-  endTime: string;
-  timezone: string;
-  deadline?: Date | null;
-  numberOfEvents: number;
-  lengthOfEvents: string;
-};
+type CreateScheduleInputs = z.infer<typeof CREATE_SCHEDULE_FORM_SCHEMA>;
 
 /** These are the only inputs that should be set by date pickers or set by default. */
 type ControlledScheduleInputs = {
@@ -58,59 +43,10 @@ type ControlledScheduleInputs = {
   deadline?: Date | null;
 };
 
-const CreateScheduleSchema = z.object({
-  scheduleName: z.string().min(1, "Schedule name is required!"),
-  description: z
-    .string()
-    .max(200, "Description cannot be longer than 200 characters.")
-    .optional(),
-  dateRange: z
-    .object({
-      startDate: z
-        .date({ invalid_type_error: "Start date must be set!" })
-        .min(new Date(), { message: "Start date must not be in the past!" }),
-      endDate: z.date().nullish(),
-      isOneDay: z.boolean(),
-    })
-    .refine((data) => data.isOneDay || data.endDate, {
-      path: ["isOneDay"],
-      message: "Check the 'One Day Schedule' or set an end date!",
-    })
-    .refine((data) => (data.endDate ? data.endDate > data.startDate : true), {
-      path: ["endDate"],
-      message: "End date must be later than the start date!",
-    })
-    .refine(
-      (data) => {
-        // pass the check if the end date isn't set yet
-        if (!data.endDate) {
-          return true;
-        }
-        const timeDifferenceMs = Math.abs(
-          data.endDate.getTime() - data.startDate.getTime()
-        );
-        const dayDifference = Math.ceil(
-          timeDifferenceMs / (1000 * 60 * 60 * 24)
-        );
-        return dayDifference < MAX_SCHEDULE_RANGE;
-      },
-      {
-        path: ["endDate"],
-        message: "The max range for a schedule is 30 days!",
-      }
-    ),
-  startTime: z.string({ required_error: "Start time is required!" }),
-  endTime: z.string({ required_error: "End time must be set!" }),
-  timezone: z.string({ required_error: "Timezone must be set!" }),
-  deadline: z
-    .date()
-    .min(new Date(), { message: "Deadline must not be in the past!" })
-    .optional(),
-  numberOfEvents: z
-    .number()
-    .min(1, { message: "You must have at least one event!" }),
-  lengthOfEvents: z.string(),
-});
+const LENGTH_OF_EVENTS_OPTIONS = Object.values(MINUTES);
+const LENGTH_OF_EVENTS_VALUES = Object.keys(MINUTES).map((minutes) =>
+  Number(minutes)
+);
 
 function Create() {
   const { status } = useSession();
@@ -127,35 +63,32 @@ function Create() {
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {
     const {
-      scheduleName: name,
+      scheduleName,
       description,
       startTime,
       endTime,
       deadline,
       numberOfEvents,
       lengthOfEvents,
+      timezone,
     } = inputs;
     const { startDate, isOneDay } = inputs.dateRange as {
       startDate: Date;
       isOneDay: boolean;
     };
 
-    let { endDate } = inputs.dateRange as {
-      endDate: Date;
-    };
-
-    if (isOneDay) {
-      endDate = startDate;
-    }
+    const endDate = isOneDay ? startDate : inputs.dateRange.endDate!;
 
     await mutateAsync(
       {
-        name,
+        scheduleName,
         description,
         startDate,
         endDate,
         startTime,
         endTime,
+        isOneDay,
+        timezone,
         deadline,
         numberOfEvents,
         lengthOfEvents,
@@ -175,7 +108,7 @@ function Create() {
     );
   };
 
-  const handleOneDayChange = () => {
+  const handleOneDayChange = useCallback(() => {
     const { startDate, isOneDay } = defaultValues.dateRange;
     if (isOneDay) {
       setDefaultValues({
@@ -195,19 +128,11 @@ function Create() {
         },
       });
     }
-  };
-
-  const getEventLengthOptions = () => {
-    const mins = [...MINUTES];
-
-    const options = mins.map((min) => {
-      if (min >= 60) {
-        return `${min / 60} ${min / 60 === 1 ? "hour" : "hours"}`;
-      }
-      return `${min} mins`;
-    });
-    return options;
-  };
+  }, [
+    defaultValues.dateRange.startDate,
+    defaultValues.dateRange.isOneDay,
+    defaultValues.dateRange.endDate,
+  ]);
 
   if (status === "loading") {
     return <Loading />;
@@ -224,9 +149,9 @@ function Create() {
       <Typography intent="h1" className="mb-12">
         Plan a Schedule
       </Typography>
-      <Form<CreateScheduleInputs, typeof CreateScheduleSchema>
+      <Form<CreateScheduleInputs, typeof CREATE_SCHEDULE_FORM_SCHEMA>
         onSubmit={handleSubmit}
-        schema={CreateScheduleSchema}
+        schema={CREATE_SCHEDULE_FORM_SCHEMA}
         className="flex flex-col gap-4"
         defaultValues={defaultValues}
       >
@@ -349,7 +274,8 @@ function Create() {
           <Form.Select
             name="lengthOfEvents"
             displayName="Length of Events"
-            options={getEventLengthOptions()}
+            options={LENGTH_OF_EVENTS_OPTIONS}
+            values={LENGTH_OF_EVENTS_VALUES}
             required
             tooltipText="A schedule is made up of events. You can specify how long you would like each event to be."
           />

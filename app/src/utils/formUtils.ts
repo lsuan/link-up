@@ -29,10 +29,33 @@ export type PasswordCondition = {
   isFulFilled: boolean;
 };
 
-export const MINUTES = [
-  30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900,
-  960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440,
-] as const;
+export const MINUTES = {
+  30: "30 mins",
+  60: "1 hour",
+  120: "2 hours",
+  180: "3 hours",
+  240: "4 hours",
+  300: "5 hours",
+  360: "6 hours",
+  420: "7 hours",
+  480: "8 hours",
+  540: "9 hours",
+  600: "10 hours",
+  660: "11 hours",
+  720: "12 hours",
+  780: "13 hours",
+  840: "14 hours",
+  900: "15 hours",
+  960: "16 hours",
+  1020: "17 hours",
+  1080: "18 hours",
+  1140: "19 hours",
+  1200: "20 hours",
+  1260: "21 hours",
+  1320: "22 hours",
+  1380: "23 hours",
+  1440: "24 hours",
+} as const;
 
 // eslint-disable-next-line no-useless-escape
 export const EMAIL_REGEX = /[\w]+@[a-z]+[\.][a-z]+/;

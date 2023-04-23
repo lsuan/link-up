@@ -23,8 +23,8 @@ import {
 import { FiAlertCircle, FiCheck, FiChevronDown, FiX } from "react-icons/fi";
 import { type z } from "zod";
 import {
-  parseDeepErrors,
   PASSWORD_REGEX_CONDITIONS,
+  parseDeepErrors,
   type PasswordCondition,
 } from "../../utils/formUtils";
 import InputErrorMessage from "./InputErrorMessage";
@@ -280,6 +280,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   displayName: string;
   options: string[] | number[];
   tooltipText?: string;
+  values?: string[] | number[];
 }
 
 Form.Select = function Select({
@@ -289,26 +290,36 @@ Form.Select = function Select({
   required,
   className,
   tooltipText,
+  values,
 }: SelectProps) {
   const {
     register,
     formState: { errors },
   } = useFormContext();
 
+  if (values && options.length !== values?.length) {
+    throw new Error("Options and Values attributes must be of the same length");
+  }
+
   const error = parseDeepErrors(errors, name);
+
   return (
     <div className="flex w-full flex-col gap-1">
       <fieldset className="relative flex items-center gap-1">
         <select
           key={name}
-          {...register(name, { valueAsNumber: typeof options[0] === "number" })}
+          {...register(name, {
+            valueAsNumber: values
+              ? typeof values[0] === "number"
+              : typeof options[0] === "number",
+          })}
           className={`peer relative z-10 w-full appearance-none rounded-lg border border-neutral-200 bg-transparent p-3 text-black placeholder:text-transparent ${
             className || ""
           }`}
           placeholder={displayName}
         >
-          {options.map((option) => (
-            <option key={option} value={option}>
+          {options.map((option, index) => (
+            <option key={option} value={values ? values[index] : option}>
               {option}
             </option>
           ))}
