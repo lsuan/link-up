@@ -39,10 +39,17 @@ const eventRouter = router({
             {
               userId,
             },
+            // {
+            //   attendees: {
+            //     path: "$[*].user",
+            //     array_contains: userId,
+            //   },
+            // },
             {
-              attendees: {
-                path: "$[*].user",
-                array_contains: userId,
+              availabilities: {
+                every: {
+                  user: userId,
+                },
               },
             },
           ],

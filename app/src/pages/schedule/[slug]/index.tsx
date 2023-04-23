@@ -23,6 +23,7 @@ type SchedulePageAvailabilityProps = AvailabilityProps & {
   hasEvents: boolean;
 };
 
+/** Renders the availability table on the schedule page. */
 function AvailabilitySection({
   schedule,
   slug,
@@ -45,6 +46,7 @@ function AvailabilitySection({
   );
 }
 
+/** Renders the publish button on the schedule page. */
 function PublishSection({ slug }: { slug: string }) {
   return (
     <div className="my-8 w-full rounded-lg bg-neutral-300 p-4 text-center">
@@ -60,6 +62,7 @@ function PublishSection({ slug }: { slug: string }) {
   );
 }
 
+/** The individual schedule page. */
 function SchedulePage() {
   const router = useRouter();
   const { status, data: sessionData } = useSession();
@@ -79,8 +82,7 @@ function SchedulePage() {
   const isHost = host ? host.id === sessionData?.user?.id : false;
   const events = schedule?.events;
   const hasEvents = events?.length ? events.length > 0 : false;
-  const numberOfAttendees = Object.keys(schedule?.attendees ?? {}).length;
-
+  const numberOfAttendees = 0;
   useEffect(() => {
     const modalsShown: boolean[] = [];
     events?.forEach(() => modalsShown.push(false));
