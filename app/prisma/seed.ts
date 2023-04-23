@@ -217,80 +217,81 @@ const seed = async () => {
   const createUsers = newUsers.map((user) =>
     prisma.user.create({ data: user })
   );
+  await prisma.$transaction(createUsers);
 
-  const dbUsers = await prisma.$transaction(createUsers);
+  // const dbUsers = await prisma.$transaction(createUsers);
 
-  const newSchedules = new Array(NUMBER_OF_SCHEDULES)
-    .fill(null)
-    .map((schedule, index) => {
-      const {
-        startDate,
-        endDate,
-        startTime,
-        endTime,
-        deadline,
-        lengthOfEvents,
-      } = SCHEDULE_TIMES[index] as ScheduleTimes;
-      const numberOfEvents = NUMBER_OF_EVENTS[index];
+  // const newSchedules = new Array(NUMBER_OF_SCHEDULES)
+  //   .fill(null)
+  //   .map((schedule, index) => {
+  //     const {
+  //       startDate,
+  //       endDate,
+  //       startTime,
+  //       endTime,
+  //       deadline,
+  //       lengthOfEvents,
+  //     } = SCHEDULE_TIMES[index] as ScheduleTimes;
+  //     const numberOfEvents = NUMBER_OF_EVENTS[index];
 
-      return {
-        name: `Schedule ${index + 1}`,
-        description: faker.lorem.sentence(),
-        startDate,
-        endDate,
-        startTime,
-        endTime,
-        deadline,
-        numberOfEvents,
-        lengthOfEvents,
-        userId: dbUsers[index]?.id,
-        attendees: createAttendees(
-          dbUsers,
-          index,
-          startDate,
-          endDate,
-          startTime,
-          endTime
-        ),
-      } as NewSchedule;
-    });
+  //     return {
+  //       name: `Schedule ${index + 1}`,
+  //       description: faker.lorem.sentence(),
+  //       startDate,
+  //       endDate,
+  //       startTime,
+  //       endTime,
+  //       deadline,
+  //       numberOfEvents,
+  //       lengthOfEvents,
+  //       userId: dbUsers[index]?.id,
+  //       attendees: createAttendees(
+  //         dbUsers,
+  //         index,
+  //         startDate,
+  //         endDate,
+  //         startTime,
+  //         endTime
+  //       ),
+  //     } as NewSchedule;
+  //   });
 
-  const createSchedules = newSchedules.map((schedule) =>
-    prisma.schedule.create({ data: schedule })
-  );
+  // const createSchedules = newSchedules.map((schedule) =>
+  //   prisma.schedule.create({ data: schedule })
+  // );
 
-  const dbSchedules = await prisma.$transaction(createSchedules);
+  //  const dbSchedules = await prisma.$transaction(createSchedules);
 
-  const newEvents: NewEvent[] = [];
-  NUMBER_OF_EVENTS.forEach((value, index) => {
-    const schedule = dbSchedules[index];
+  // const newEvents: NewEvent[] = [];
+  // NUMBER_OF_EVENTS.forEach((value, index) => {
+  //   const schedule = dbSchedules[index];
 
-    // only create events for the first 3 schedules
-    if (index > 2) {
-      return;
-    }
-    for (let i = 0; i < value; i++) {
-      const currentDate = new Date(schedule?.startDate as Date);
-      currentDate.setDate((schedule?.startDate?.getDate() ?? 0) + i);
-      const endTime = getEventEndTime(schedule as Schedule);
+  //   // only create events for the first 3 schedules
+  //   if (index > 2) {
+  //     return;
+  //   }
+  //   for (let i = 0; i < value; i++) {
+  //     const currentDate = new Date(schedule?.startDate as Date);
+  //     currentDate.setDate((schedule?.startDate?.getDate() ?? 0) + i);
+  //     const endTime = getEventEndTime(schedule as Schedule);
 
-      newEvents.push({
-        name: `Event ${i + 1} of ${schedule?.name}`,
-        date: schedule?.startDate,
-        startTime: schedule?.startTime,
-        endTime,
-        description: faker.lorem.sentence(),
-        scheduleId: schedule?.id,
-        location: faker.address.streetAddress(),
-      } as NewEvent);
-    }
-  });
+  //     newEvents.push({
+  //       name: `Event ${i + 1} of ${schedule?.name}`,
+  //       date: schedule?.startDate,
+  //       startTime: schedule?.startTime,
+  //       endTime,
+  //       description: faker.lorem.sentence(),
+  //       scheduleId: schedule?.id,
+  //       location: faker.address.streetAddress(),
+  //     } as NewEvent);
+  //   }
+  // });
 
-  const createEvents = newEvents.map((event) =>
-    prisma.event.create({ data: event })
-  );
+  // const createEvents = newEvents.map((event) =>
+  //   prisma.event.create({ data: event })
+  // );
 
-  await prisma.$transaction(createEvents);
+  // await prisma.$transaction(createEvents);
   await prisma.$disconnect();
 };
 
