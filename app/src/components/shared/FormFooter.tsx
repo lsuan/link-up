@@ -1,5 +1,5 @@
 import Typography from "@ui/Typography";
-import Link from "next/link";
+import HyperLink from "@ui/Hyperlink";
 
 interface FormFooterProps {
   page: "login" | "signup";
@@ -14,8 +14,7 @@ function FormFooter({ page }: FormFooterProps) {
             Don&apos;t have an account?{" "}
           </Typography>
           <span>
-            {/* TODO: replace with custom link component */}
-            <Link href="/signup">Sign Up</Link>
+            <HyperLink href="/signup">Sign Up</HyperLink>
           </span>
         </>
       )}
@@ -25,8 +24,7 @@ function FormFooter({ page }: FormFooterProps) {
             Already have an account?
           </Typography>
           <span>
-            {/* TODO: replace with custom link component */}
-            <Link href="/login">Log In</Link>
+            <HyperLink href="/login">Log In</HyperLink>
           </span>
         </>
       )}

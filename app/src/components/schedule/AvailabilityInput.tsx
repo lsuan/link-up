@@ -2,9 +2,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import Button from "@ui/Button";
 import { notice } from "@ui/Snackbar";
 import Typography from "@ui/Typography";
+import HyperLink from "@ui/Hyperlink";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
@@ -177,12 +177,12 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
           <Typography className="my-2">
             <span className="mr-2">Already have an account?</span>
             <span>
-              <Link
+              <HyperLink
                 className="text-blue-500 transition-colors hover:text-blue-300"
                 href="/login"
               >
                 Log In
-              </Link>
+              </HyperLink>
             </span>
           </Typography>
           <Typography className="py-2 text-center text-xl font-semibold">
