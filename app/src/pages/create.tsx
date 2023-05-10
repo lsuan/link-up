@@ -48,7 +48,7 @@ const LENGTH_OF_EVENTS_VALUES = Object.keys(MINUTES).map((minutes) =>
   Number(minutes)
 );
 
-function Create() {
+function CreatePage() {
   const { status } = useSession();
   const { mutateAsync } = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
@@ -87,7 +87,6 @@ function Create() {
         endDate,
         startTime,
         endTime,
-        isOneDay,
         timezone,
         deadline,
         numberOfEvents,
@@ -286,4 +285,4 @@ function Create() {
   );
 }
 
-export default Create;
+export default CreatePage;

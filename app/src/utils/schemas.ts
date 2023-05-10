@@ -65,11 +65,9 @@ export const CREATE_SCHEDULE_API_SCHEMA = z.object({
     .string()
     .max(200, "Description cannot be longer than 200 characters.")
     .optional(),
-  startDate: z
-    .date({ invalid_type_error: "Start date must be set!" })
-    .min(new Date(), { message: "Start date must not be in the past!" }),
+  // minimum doesn't need to be set, it is handled on form submission
+  startDate: z.date({ invalid_type_error: "Start date must be set!" }),
   endDate: z.date(),
-  isOneDay: z.boolean(),
   startTime: z.string({ required_error: "Start time is required!" }),
   endTime: z.string({ required_error: "End time must be set!" }),
   timezone: z.string({ required_error: "Timezone must be set!" }),
