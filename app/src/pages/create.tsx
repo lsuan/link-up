@@ -21,8 +21,8 @@ import Unauthenticated from "../components/shared/Unauthenticated";
 import {
   MAX_DESCRIPTION_LENGTH,
   MINUTES,
-  TIMEZONES,
   getTimeOptions,
+  getTimezoneNames,
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { CREATE_SCHEDULE_FORM_SCHEMA } from "../utils/schemas";
@@ -47,6 +47,8 @@ const LENGTH_OF_EVENTS_OPTIONS = Object.values(MINUTES);
 const LENGTH_OF_EVENTS_VALUES = Object.keys(MINUTES).map((minutes) =>
   Number(minutes)
 );
+
+const TIMEZONE_OPTIONS = getTimezoneNames();
 
 function CreatePage() {
   const { status } = useSession();
@@ -244,7 +246,7 @@ function CreatePage() {
         <Form.SearchableSelect
           name="timezone"
           displayName="Timezone"
-          options={TIMEZONES}
+          options={TIMEZONE_OPTIONS}
           required
         />
         {/* TODO: add custom header with custom title */}

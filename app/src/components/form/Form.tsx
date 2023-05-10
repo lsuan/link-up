@@ -24,6 +24,7 @@ import { FiAlertCircle, FiCheck, FiChevronDown, FiX } from "react-icons/fi";
 import { type z } from "zod";
 import {
   PASSWORD_REGEX_CONDITIONS,
+  getUtcOffsetNameFromTimezone,
   parseDeepErrors,
   type PasswordCondition,
 } from "../../utils/formUtils";
@@ -381,7 +382,9 @@ const optionStyles = cva(
 /**
  * A custom searchable select component that includes a search box in the options container.
  * Used for extremely long lists of options.
- * */
+ * Right now, it's used for the timezone selection,
+ * but it can be refactored to be more generic.
+ */
 Form.SearchableSelect = function SearchableSelect({
   name,
   displayName,
@@ -390,14 +393,14 @@ Form.SearchableSelect = function SearchableSelect({
 }: SearchableSelectProps) {
   const {
     formState: { errors },
-    getValues,
     reset,
   } = useFormContext();
   const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timezoneName = getUtcOffsetNameFromTimezone(currentTimezone);
   const error = parseDeepErrors(errors, name);
   const watch = useWatch({ name: "searchTerm" });
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string>(currentTimezone);
+  const [selected, setSelected] = useState<string>(timezoneName ?? "");
 
   const handleSelect = (option: string) => {
     setIsMenuOpen(false);
@@ -483,8 +486,6 @@ Form.SearchableSelect = function SearchableSelect({
     }
   };
 
-  const currentValue = getValues(name);
-
   return (
     <div className="flex w-full flex-col gap-1">
       <fieldset className="relative flex w-full items-center gap-1">
@@ -494,7 +495,7 @@ Form.SearchableSelect = function SearchableSelect({
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           fullWidth
         >
-          {currentValue}
+          {selected}
           <span>
             <FiChevronDown />
           </span>

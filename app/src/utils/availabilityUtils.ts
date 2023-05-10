@@ -25,7 +25,7 @@ export const selected = atom<string[]>([]);
 export const updated = atom<boolean>(false);
 
 /** Takes a time in the format tt:X0 XM and returns its numerical value */
-export const getHourNumber = (time: string) => {
+export const getHourNumber = (time: string): number => {
   const [timeValue, meridiem] = time.split(" ") as [string, string];
   const [hour, half] = timeValue.split(":");
   let hourNumber = Number(hour || "");
