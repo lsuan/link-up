@@ -1,10 +1,6 @@
 import { cva, type VariantProps } from "cva";
 import Link from "next/link";
-import {
-  type AnchorHTMLAttributes,
-  // type ClassAttributes,
-} from "react";
-// import { FiRotateCw } from "react-icons/fi";
+import { type AnchorHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
 const HyperLinkStyles = cva(
@@ -25,9 +21,7 @@ const HyperLinkStyles = cva(
   }
 );
 
-type HyperLinkProps = {
-  isLoading?: boolean;
-} & AnchorHTMLAttributes<HTMLAnchorElement> &
+type HyperLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
   VariantProps<typeof HyperLinkStyles>;
 
 function HyperLink({
