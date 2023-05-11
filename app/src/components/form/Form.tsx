@@ -24,10 +24,10 @@ import { FiAlertCircle, FiCheck, FiChevronDown, FiX } from "react-icons/fi";
 import { type z } from "zod";
 import {
   PASSWORD_REGEX_CONDITIONS,
-  getUtcOffsetNameFromTimezone,
   parseDeepErrors,
   type PasswordCondition,
 } from "../../utils/formUtils";
+import { getUtcOffsetNameFromTimezone } from "../../utils/timeUtils";
 import InputErrorMessage from "./InputErrorMessage";
 import ShowPassword from "./ShowPassword";
 

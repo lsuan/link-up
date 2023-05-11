@@ -22,10 +22,10 @@ import {
   MAX_DESCRIPTION_LENGTH,
   MINUTES,
   getTimeOptions,
-  getTimezoneNames,
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { CREATE_SCHEDULE_FORM_SCHEMA } from "../utils/schemas";
+import { getTimezoneNames } from "../utils/timeUtils";
 import { trpc } from "../utils/trpc";
 
 type CreateScheduleInputs = z.infer<typeof CREATE_SCHEDULE_FORM_SCHEMA>;
