@@ -31,9 +31,13 @@ type PopupPosition = {
   translate: string;
 };
 
-function AvailabilityPopUp(availabilityStatus: AvailabilityStatus) {
+function AvailabilityPopUp({
+  timeKey,
+  available,
+  unavailable,
+  clientX,
+}: AvailabilityStatus) {
   const popupRef = useRef<HTMLDivElement>(null);
-  const { timeKey, available, unavailable, clientX } = availabilityStatus;
   const dateString = timeKey.split(":")[0] as string;
   const [startTime, endTime] = parseRange(timeKey) as [string, string];
   const [start, end] = getFormattedHours(

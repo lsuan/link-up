@@ -2,16 +2,92 @@ import { useRef } from "react";
 import {
   getHourNumber,
   type AvailabilityProps,
-  type UserAvailability,
 } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
-import { getShortenedDateWithDay } from "../../utils/timeUtils";
+import {
+  USER_TIMEZONE,
+  convertTime,
+  getShortenedDateWithDay,
+} from "../../utils/timeUtils";
 // import Loading from "../shared/Loading";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 
+/** Gets all the dates in a date range. */
+const getAllDates = (startDate: Date, endDate: Date): Date[] => {
+  const dates: Date[] = [];
+  for (
+    let date = new Date(startDate), colIndex = 0;
+    date <= endDate;
+    date.setDate(date.getDate() + 1), colIndex++
+  ) {
+    dates.push(new Date(date));
+  }
+  return dates;
+};
+
+/**
+ * The key is the user facing date string for the grid.
+ * The values are the time slots in milliseconds for each date.
+ */
+type TimeBlocks = Record<string, number[]>;
+
+/**
+ * Given a start time and end time, gets all the 30 minute time blocks in between.
+ * Returns a list of numbers representing the time slots in milliseconds.
+ */
+const getAllTimeBlocks = (
+  dates: Date[],
+  startHour: string,
+  endHour: string
+): TimeBlocks => {
+  const timeBlocks: TimeBlocks = {};
+
+  dates.forEach((date) => {
+    const startTime = getHourNumber(startHour);
+    const endTime = getHourNumber(endHour);
+    const dailyTimeSlots: number[] = [];
+    for (
+      let currentTime = startTime;
+      currentTime <= endTime;
+      currentTime += 0.5
+    ) {
+      const dateString = date.toISOString().split("T")[0];
+      const formattedTime = getFormattedHours([currentTime], "long")[0]!.split(
+        " "
+      )[0];
+      const currentDatetime = new Date(`${dateString} ${formattedTime}:00`);
+      dailyTimeSlots.push(currentDatetime.getTime());
+    }
+    const dateLabel = getShortenedDateWithDay(date);
+    timeBlocks[dateLabel] = dailyTimeSlots;
+  });
+
+  return timeBlocks;
+};
+
+/** Used to get a list of hour labels, converted to the user's timezone. */
+const getHourLabels = (
+  timeBlocks: TimeBlocks,
+  fromTimezone: string
+): string[] => {
+  const hourBlocks = Object.values(timeBlocks);
+  if (hourBlocks.length === 0) {
+    return [];
+  }
+  return hourBlocks[0]!.map((time) => {
+    const date = new Date(time);
+    const convertedDate = convertTime(fromTimezone, USER_TIMEZONE, date);
+    return convertedDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      timeZoneName: "short",
+    });
+  });
+};
+
 function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
-  const { startDate, endDate, startTime, endTime, attendees } = schedule;
+  const { startDate, endDate, startTime, endTime } = schedule;
   const gridRef = useRef<HTMLDivElement>(null);
   // const [isGridLoading, setIsGridLoading] = useState<boolean>(false);
 
@@ -23,39 +99,9 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
   //   }
   // }, [gridRef]);
 
-  const getAllDates = () => {
-    const dates: Date[] = [];
-    for (
-      let date = new Date(startDate), colIndex = 0;
-      date <= endDate;
-      date.setDate(date.getDate() + 1), colIndex++
-    ) {
-      dates.push(new Date(date));
-    }
-    return dates;
-  };
-
-  const startHour = getHourNumber(startTime);
-  const endHour = getHourNumber(endTime);
-
-  const getAllHours = () => {
-    const hours = [...Array(endHour - startHour + 1).keys()].map(
-      (i) => i + startHour
-    );
-    const timeSlots: number[] = [];
-    hours.slice(0, hours.length - 1).forEach((hour) => {
-      timeSlots.push(hour, hour + 0.5);
-    });
-    const endHourRange = hours[hours.length - 1] as number;
-    timeSlots.push(endHourRange);
-    return timeSlots;
-  };
-
-  const hours = getAllHours();
-  const getAllFormattedHours = () => getFormattedHours(hours, "long");
-
-  const dates = getAllDates();
-  const formattedHours = getAllFormattedHours();
+  const dates = getAllDates(startDate, endDate);
+  const timeBlocks = getAllTimeBlocks(dates, startTime, endTime);
+  const hours = getHourLabels(timeBlocks, schedule.timezone);
 
   return (
     <section className="availability-container">
@@ -75,7 +121,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
         </div>
         <div className="border-grey-500 flex w-fit pl-1">
           <div className="sticky left-0 z-10 -mt-2 mr-2 flex flex-col bg-inherit">
-            {formattedHours.map((hour, index) => (
+            {hours.map((hour, index) => (
               <span
                 key={hour}
                 className={`pointer-events-none mx-auto w-max text-xs font-semibold ${
@@ -88,18 +134,17 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
               </span>
             ))}
           </div>
-          {mode === "read" ? (
+          {/* {mode === "read" ? (
             <AvailabilityGridRead
               dates={dates}
               hours={hours.slice(0, hours.length - 1)}
-              attendees={attendees as UserAvailability[]}
             />
           ) : (
             <AvailabilityGridWrite
               dates={dates}
               hours={hours.slice(0, hours.length - 1)}
             />
-          )}
+          )} */}
         </div>
       </div>
     </section>

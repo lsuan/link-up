@@ -56,12 +56,24 @@ export const getUtcOffsetName = (timezone: string): string => {
   return `${currentTimezoneName.utcOffsetName} (${currentTimezoneName.abbreviation})`;
 };
 
+// TODO: change implementation of searchable select
+// so that we're using only the timezone name
+// and not the user facing string
+// once that is done, we can change the implemention of this function
+/**
+ * Converts the time given the offset name (including the abbreviation)
+ * and the wanted converted timezone.
+ */
 export const convertTime = (
-  fromTimezone: string,
+  fromUtcOffsetName: string,
   toTimezone: string,
   date: Date
 ) => {
-  const utcDate = zonedTimeToUtc(date, fromTimezone);
+  const offsetName = fromUtcOffsetName.split("(")[0]?.trim();
+  const timezone = TIMEZONE_NAMES.find(
+    (timezoneName) => timezoneName.utcOffsetName === offsetName
+  )!;
+  const utcDate = zonedTimeToUtc(date, timezone.name);
   return utcToZonedTime(utcDate, toTimezone);
 };
 
