@@ -25,7 +25,11 @@ import {
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
 import { CREATE_SCHEDULE_FORM_SCHEMA } from "../utils/schemas";
-import { getTimezoneNames } from "../utils/timeUtils";
+import {
+  USER_TIMEZONE,
+  getTimezoneNames,
+  getUtcOffsetName,
+} from "../utils/timeUtils";
 import { trpc } from "../utils/trpc";
 
 type CreateScheduleInputs = z.infer<typeof CREATE_SCHEDULE_FORM_SCHEMA>;
@@ -60,7 +64,7 @@ function CreatePage() {
     dateRange: { startDate: new Date(), endDate: null, isOneDay: false },
     startTime: "9:00 AM",
     endTime: "5:00 PM",
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timezone: getUtcOffsetName(USER_TIMEZONE),
   });
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {

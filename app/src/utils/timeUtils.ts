@@ -1,4 +1,6 @@
 import formatInTimeZone from "date-fns-tz/formatInTimeZone";
+import utcToZonedTime from "date-fns-tz/utcToZonedTime";
+import zonedTimeToUtc from "date-fns-tz/zonedTimeToUtc";
 
 interface TimezoneName {
   /**
@@ -18,6 +20,8 @@ interface TimezoneName {
    */
   utcOffsetName: string;
 }
+
+export const USER_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const TIMEZONES = Intl.supportedValuesOf("timeZone") as readonly string[];
 
@@ -44,17 +48,21 @@ export const getTimezoneNames = (): string[] => {
   );
 };
 
-export const getUtcOffsetNameFromTimezone = (
-  timezone: string
-): string | undefined => {
+export const getUtcOffsetName = (timezone: string): string => {
   const currentTimezoneName = TIMEZONE_NAMES.find(
     (timezoneName) => timezoneName.name === timezone
-  );
-  if (!currentTimezoneName) {
-    return undefined;
-  }
+  )!;
 
   return `${currentTimezoneName.utcOffsetName} (${currentTimezoneName.abbreviation})`;
+};
+
+export const convertTime = (
+  fromTimezone: string,
+  toTimezone: string,
+  date: Date
+) => {
+  const utcDate = zonedTimeToUtc(date, fromTimezone);
+  return utcToZonedTime(utcDate, toTimezone);
 };
 
 export const getEventCardDateDisplay = (date: Date) =>

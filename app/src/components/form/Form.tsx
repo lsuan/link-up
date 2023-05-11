@@ -27,7 +27,7 @@ import {
   parseDeepErrors,
   type PasswordCondition,
 } from "../../utils/formUtils";
-import { getUtcOffsetNameFromTimezone } from "../../utils/timeUtils";
+import { USER_TIMEZONE, getUtcOffsetName } from "../../utils/timeUtils";
 import InputErrorMessage from "./InputErrorMessage";
 import ShowPassword from "./ShowPassword";
 
@@ -393,14 +393,13 @@ Form.SearchableSelect = function SearchableSelect({
 }: SearchableSelectProps) {
   const {
     formState: { errors },
+    getValues,
     reset,
   } = useFormContext();
-  const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const timezoneName = getUtcOffsetNameFromTimezone(currentTimezone);
   const error = parseDeepErrors(errors, name);
   const watch = useWatch({ name: "searchTerm" });
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string>(timezoneName ?? "");
+  const [selected, setSelected] = useState<string>(getValues(name));
 
   const handleSelect = (option: string) => {
     setIsMenuOpen(false);
