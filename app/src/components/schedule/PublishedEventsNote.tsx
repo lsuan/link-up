@@ -1,5 +1,5 @@
+import HyperLink from "@ui/Hyperlink";
 import Typography from "@ui/Typography";
-import Link from "next/link";
 
 interface PublishedEventsNoteProps {
   slug: string;
@@ -12,7 +12,7 @@ function PublishedEventsNote({ slug }: PublishedEventsNoteProps) {
         Events have already been published for this schedule! View them{" "}
         <span>
           {/* TODO: replace this with custom link component. */}
-          <Link href={`/schedule/${slug}`}>here</Link>
+          <HyperLink href={`/schedule/${slug}`}>here</HyperLink>
         </span>
         .
       </Typography>
