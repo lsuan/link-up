@@ -84,7 +84,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   displayName: string;
 }
 
-const floatinglabelStyles = cva(
+const floatingLabelStyles = cva(
   `absolute left-1 top-1/2 z-20 ml-2 flex rounded-lg bg-white px-2 text-xs text-black transition-all
 peer-placeholder-shown:left-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:z-0 peer-placeholder-shown:m-0
 peer-placeholder-shown:ml-2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-neutral-200
@@ -150,7 +150,7 @@ Form.Input = function Input({
             )}
 
             <label
-              className={floatinglabelStyles({ isTextArea: false })}
+              className={floatingLabelStyles({ isTextArea: false })}
               htmlFor={name}
             >
               {displayName}
@@ -202,7 +202,7 @@ Form.TextArea = function Input({
             aria-invalid={error ? "true" : "false"}
           />
           <label
-            className={floatinglabelStyles({ isTextArea: true })}
+            className={floatingLabelStyles({ isTextArea: true })}
             htmlFor={name}
           >
             {displayName}
@@ -329,7 +329,7 @@ Form.Select = function Select({
           <FiChevronDown />
         </span>
         <label
-          className={floatinglabelStyles({ isTextArea: false })}
+          className={floatingLabelStyles({ isTextArea: false })}
           htmlFor={name}
         >
           {displayName}
@@ -379,6 +379,7 @@ const optionStyles = cva(
   }
 );
 
+// TODO: try getting rid of selected state, might fix issue with selection bug
 /**
  * A custom searchable select component that includes a search box in the options container.
  * Used for extremely long lists of options.
@@ -395,15 +396,15 @@ Form.SearchableSelect = function SearchableSelect({
     formState: { errors },
     getValues,
     reset,
+    register,
   } = useFormContext();
   const error = parseDeepErrors(errors, name);
   const watch = useWatch({ name: "searchTerm" });
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string>(getValues(name));
+  const selected = getValues(name);
 
   const handleSelect = (option: string) => {
     setIsMenuOpen(false);
-    setSelected(option);
     reset({ [name]: option });
   };
 
@@ -460,7 +461,7 @@ Form.SearchableSelect = function SearchableSelect({
         element.children[currentIndex]?.scrollIntoView({
           behavior: "auto",
         });
-        setSelected(currentSelected!);
+        reset({ [name]: currentSelected });
         break;
       }
       case "ArrowUp": {
@@ -477,7 +478,7 @@ Form.SearchableSelect = function SearchableSelect({
         element.children[currentIndex]?.scrollIntoView({
           behavior: "auto",
         });
-        setSelected(currentSelected!);
+        reset({ [name]: currentSelected });
         break;
       }
       default:
@@ -500,6 +501,10 @@ Form.SearchableSelect = function SearchableSelect({
           </span>
         </Button>
 
+        <select
+          {...register(name, { value: getValues(name) })}
+          className="hidden"
+        />
         {isMenuOpen && (
           <section
             style={{
@@ -552,7 +557,7 @@ Form.SearchableSelect = function SearchableSelect({
         )}
 
         <label
-          className={floatinglabelStyles({ isTextArea: false })}
+          className={floatingLabelStyles({ isTextArea: false })}
           htmlFor={name}
         >
           {displayName}
