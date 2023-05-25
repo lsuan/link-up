@@ -20,6 +20,23 @@ export type TimeBlock = {
   endTime: string;
 };
 
+/**
+ * Stores information for all the timeblocks for a given date.
+ * Data is not user-facing.
+ */
+export interface CalendarDay {
+  date: Date;
+  /** Numbers are in milliseconds. */
+  timeSlots: number[];
+}
+
+export interface AvailabilityStatus {
+  timeKey: string;
+  available: string[];
+  unavailable: string[];
+  clientX: number;
+}
+
 export const disabled = atom<boolean>(true);
 export const selected = atom<string[]>([]);
 export const updated = atom<boolean>(false);
