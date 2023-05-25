@@ -2,6 +2,8 @@ import formatInTimeZone from "date-fns-tz/formatInTimeZone";
 import utcToZonedTime from "date-fns-tz/utcToZonedTime";
 import zonedTimeToUtc from "date-fns-tz/zonedTimeToUtc";
 
+export const THIRTY_MINUTES_MS = 30 * 60 * 1000;
+
 interface TimezoneName {
   /**
    * The name of the timezone.

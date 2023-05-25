@@ -17,11 +17,14 @@ import {
   type UserAvailability,
 } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
-import { getShortenedDateWithDay } from "../../utils/timeUtils";
+import {
+  THIRTY_MINUTES_MS,
+  getShortenedDateWithDay,
+} from "../../utils/timeUtils";
 import AvailabilityCellPopup from "./AvailabilityCellPopup";
 
 interface AvailabilityGridReadCellProps {
-  hour: number;
+  hours: number[];
   hourIndex: number;
 }
 
@@ -32,10 +35,10 @@ const AvailabilityGridReadCell = memo(
     // dates,
     // date,
     // dateIndex,
-    // hours,
-    hour,
+    hours,
     hourIndex,
   }: AvailabilityGridReadCellProps) => {
+    const hour = hours[hourIndex];
     const [status, setStatus] = useState<AvailabilityStatus>();
     // const categorizedUsers = useMemo(
     //   () => categorizeUsers(attendees),
@@ -113,13 +116,19 @@ const AvailabilityGridReadCell = memo(
     // );
 
     // TODO: fix styling for long words
+
+    // don't render last cell
+    if (hourIndex === hours.length - 1) {
+      return null;
+    }
+
     return (
       <section className="relative">
         {status && status.available.length !== 0 && (
           <AvailabilityCellPopup {...status} />
         )}
         <div
-          data-time={`${hour}-${hour + 0.5}`}
+          data-time={`${hour}-${hour + THIRTY_MINUTES_MS}`}
           className={`h-10 w-20 border transition-all ${
             // dateIndex !== dates.length - 1 ? "border-r" : ""
             // } ${
@@ -134,7 +143,9 @@ const AvailabilityGridReadCell = memo(
           // }
           // onFocus={(e) => e} // TODO: include onFocus for accessibility
           // onPointerLeave={() => setStatus(undefined)}
-        />
+        >
+          {new Date(hour).getMinutes()}
+        </div>
       </section>
     );
   }

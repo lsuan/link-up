@@ -8,7 +8,6 @@ interface AvailabilityGridReadProps {
 
 const AvailabilityGridRead = memo(
   ({ calendarDays }: AvailabilityGridReadProps) => {
-    console.log("hi");
     // const [allUsers, setAllUsers] = useState<string[]>([]);
 
     // useEffect(() => {
@@ -45,8 +44,7 @@ const AvailabilityGridRead = memo(
                 // dates={dates}
                 // date={date}
                 // dateIndex={dateIndex}
-                // hours={hours}
-                hour={hour}
+                hours={day.timeSlots}
                 hourIndex={hourIndex}
               />
             ))}
