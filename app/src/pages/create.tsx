@@ -127,7 +127,7 @@ function Create() {
 
   const handleSubmit: SubmitHandler<CreateScheduleInputs> = async (inputs) => {
     const {
-      scheduleName: name,
+      scheduleName,
       description,
       startTime,
       endTime,
@@ -135,6 +135,9 @@ function Create() {
       numberOfEvents,
       lengthOfEvents,
     } = inputs;
+
+    const name = scheduleName.trim();
+
     const { startDate, isOneDay } = inputs.dateRange as {
       startDate: Date;
       isOneDay: boolean;
