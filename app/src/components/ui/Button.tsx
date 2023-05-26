@@ -24,6 +24,10 @@ const buttonStyles = cva(
       fullWidth: {
         true: "w-full",
       },
+      design: {
+        // for icon only buttons (icon has to be square shaped)
+        circular: "p-2.5 rounded-full",
+      }
     },
     defaultVariants: {
       intent: "primary",
@@ -45,6 +49,7 @@ type ButtonLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
 function ButtonLink({
   intent,
   fullWidth,
+  design,
   children,
   className,
   ...rest
@@ -55,7 +60,7 @@ function ButtonLink({
       {isInternal && (
         <Link
           href={rest.href as string}
-          className={twMerge(buttonStyles({ intent, fullWidth, className }))}
+          className={twMerge(buttonStyles({ intent, fullWidth, design, className }))}
           {...rest}
         >
           {children}
@@ -64,7 +69,7 @@ function ButtonLink({
       {!isInternal && (
         <a
           href={rest.href as string}
-          className={twMerge(buttonStyles({ intent, fullWidth, className }))}
+          className={twMerge(buttonStyles({ intent, fullWidth, design, className }))}
           {...rest}
         >
           {children}
@@ -77,6 +82,7 @@ function ButtonLink({
 function Button({
   intent,
   fullWidth,
+  design,
   isLoading,
   children,
   className,
@@ -86,7 +92,7 @@ function Button({
 
   if (isLink) {
     return (
-      <ButtonLink intent={intent} fullWidth={fullWidth} {...rest}>
+      <ButtonLink intent={intent} fullWidth={fullWidth} design={design} {...rest}>
         {children}
       </ButtonLink>
     );
@@ -94,7 +100,7 @@ function Button({
 
   return (
     <button
-      className={twMerge(buttonStyles({ intent, fullWidth, className }))}
+      className={twMerge(buttonStyles({ intent, fullWidth, design, className }))}
       {...rest}
     >
       {isLoading ? (
