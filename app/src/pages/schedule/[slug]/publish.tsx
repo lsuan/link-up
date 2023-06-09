@@ -19,7 +19,7 @@ import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import Unauthenticated from "../../../components/shared/Unauthenticated";
 import { useSchedule } from "../../../hooks/scheduleHooks";
-import { updateTitle } from "../../../layouts/Layout";
+import { pageTitle } from "../../../layouts/Layout";
 import {
   categorizeUsers,
   getBestTimeBlock,
@@ -54,7 +54,7 @@ function Publish() {
   const [isDeleteWarningModalShown, setIsDeleteWarningModalShown] = useState<
     boolean[]
   >([]);
-  const [, setTitle] = useAtom(updateTitle);
+  const [, setTitle] = useAtom(pageTitle);
   setTitle("Publish Event | LinkUp");
 
   const initializeEvents = (data: Schedule | null) => {

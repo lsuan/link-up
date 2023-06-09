@@ -12,14 +12,11 @@ type LayoutProps = {
   rest?: unknown;
 };
 
-const pageTitle = atom("LinkUp");
-export const updateTitle = atom(null, (get, set, newTitle:string) =>
-  set(pageTitle, newTitle)
-);
+export const pageTitle = atom("LinkUp");
 
 function Layout({ children }: LayoutProps) {
   const [isMenuOpen] = useAtom(menuOpen);
-  const title = useAtomValue(pageTitle);
+  const [title] = useAtom(pageTitle);
   const { status } = useSession();
   return (
     <>

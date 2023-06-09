@@ -9,7 +9,7 @@ import AuthProviders from "../components/auth/AuthProviders";
 import Form from "../components/form/Form";
 import FormFooter from "../components/shared/FormFooter";
 import SignUpForm from "../components/signup/SignUpForm";
-import { updateTitle } from "../layouts/Layout";
+import { pageTitle } from "../layouts/Layout";
 import { EMAIL_REGEX } from "../utils/formUtils";
 
 type GetStartedInputs = {
@@ -26,7 +26,7 @@ const GetStartedSchema = z.object({
 
 function SignUp() {
   const [email, setEmail] = useState<string>("");
-  const [, setTitle] = useAtom(updateTitle);
+  const [, setTitle] = useAtom(pageTitle);
   setTitle("Sign Up | LinkUp");
 
   const onSubmit: SubmitHandler<GetStartedInputs> = (data) => {

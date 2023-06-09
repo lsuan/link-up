@@ -9,7 +9,7 @@ import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
-import { updateTitle } from "../../../layouts/Layout";
+import { pageTitle } from "../../../layouts/Layout";
 
 function Availability() {
   const { status } = useSession();
@@ -19,7 +19,7 @@ function Availability() {
     status,
     schedule
   );
-  const [, setTitle] = useAtom(updateTitle);
+  const [, setTitle] = useAtom(pageTitle);
   setTitle("Availability | LinkUp");
 
   if (!router.isReady || isScheduleLoading || isUserAvailabilityLoading) {

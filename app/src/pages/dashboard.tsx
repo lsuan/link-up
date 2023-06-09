@@ -10,14 +10,14 @@ import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
-import { updateTitle } from "../layouts/Layout";
+import { pageTitle } from "../layouts/Layout";
 import { getHost } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
 function Dashboard() {
   const { status, data: sessionData } = useSession();
 
-  const [, setTitle] = useAtom(updateTitle);
+  const [, setTitle] = useAtom(pageTitle);
   setTitle("Dashboard | LinkUp");
 
   const [active, setActive] = useState<string>("upcoming");

@@ -11,7 +11,7 @@ import AuthProviders from "../components/auth/AuthProviders";
 import Form from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
 import FormFooter from "../components/shared/FormFooter";
-import { updateTitle } from "../layouts/Layout";
+import { pageTitle } from "../layouts/Layout";
 import { EMAIL_REGEX } from "../utils/formUtils";
 
 type LoginInputs = {
@@ -31,7 +31,7 @@ const LoginFormSchema = z.object({
 
 function Login() {
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
-  const [, setTitle] = useAtom(updateTitle);
+  const [, setTitle] = useAtom(pageTitle);
   setTitle("Log In | LinkUp");
   const router = useRouter();
 

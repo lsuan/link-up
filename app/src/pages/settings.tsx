@@ -6,11 +6,11 @@ import OAuthForm from "../components/settings/OAuthForm";
 import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
-import { updateTitle } from "../layouts/Layout";
+import { pageTitle } from "../layouts/Layout";
 import { trpc } from "../utils/trpc";
 
 function Settings() {
-  const [, setTitle] = useAtom(updateTitle);
+  const [, setTitle] = useAtom(pageTitle);
   setTitle("Settings | LinkUp");
   const { status, data } = useSession();
   const user = trpc.user.getUser.useQuery(
