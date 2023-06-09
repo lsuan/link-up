@@ -1,6 +1,7 @@
 import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useAtom } from "jotai";
 import AvailabilityInput from "../../../components/schedule/AvailabilityInput";
 import AvailabilityResponses from "../../../components/schedule/AvailabilityResponses";
 import PublishedEventsNote from "../../../components/schedule/PublishedEventsNote";
@@ -8,6 +9,7 @@ import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import { updateTitle } from "../../../layouts/Layout";
 
 function Availability() {
   const { status } = useSession();
@@ -17,6 +19,8 @@ function Availability() {
     status,
     schedule
   );
+  const [, setTitle] = useAtom(updateTitle);
+  setTitle("Availability | LinkUp");
 
   if (!router.isReady || isScheduleLoading || isUserAvailabilityLoading) {
     return <Loading />;

@@ -18,6 +18,7 @@ import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import ModalBackground from "../components/shared/ModalBackground";
 import Unauthenticated from "../components/shared/Unauthenticated";
+import { updateTitle } from "../layouts/Layout";
 import {
   getTimeOptions,
   MAX_DESCRIPTION_LENGTH,
@@ -116,6 +117,8 @@ function Create() {
   const { status } = useSession();
   const { mutateAsync } = trpc.schedule.createSchedule.useMutation();
   const [isDatePickerOpen, setIsDatePickerOpen] = useAtom(datePickerOpen);
+  const [, setTitle] = useAtom(updateTitle);
+  setTitle("Plan A Schedule | LinkUp");
   const [, setNoticeMessage] = useAtom(notice);
   const router = useRouter();
   const [defaultValues, setDefaultValues] = useState<ControlledScheduleInputs>({

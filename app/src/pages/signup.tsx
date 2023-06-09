@@ -1,6 +1,7 @@
 import PageContainer from "@ui/PageContainer";
 import Typography from "@ui/Typography";
 import { useState } from "react";
+import { useAtom } from "jotai";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import AuthDivider from "../components/auth/AuthDivider";
@@ -8,6 +9,7 @@ import AuthProviders from "../components/auth/AuthProviders";
 import Form from "../components/form/Form";
 import FormFooter from "../components/shared/FormFooter";
 import SignUpForm from "../components/signup/SignUpForm";
+import { updateTitle } from "../layouts/Layout";
 import { EMAIL_REGEX } from "../utils/formUtils";
 
 type GetStartedInputs = {
@@ -24,6 +26,8 @@ const GetStartedSchema = z.object({
 
 function SignUp() {
   const [email, setEmail] = useState<string>("");
+  const [, setTitle] = useAtom(updateTitle);
+  setTitle("Sign Up | LinkUp");
 
   const onSubmit: SubmitHandler<GetStartedInputs> = (data) => {
     const { email: currentEmail } = data;

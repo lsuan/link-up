@@ -4,16 +4,22 @@ import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
+import { useAtom } from "jotai";
 import DashboardEventCard from "../components/dashboard/DashboardEventCard";
 import Pill from "../components/dashboard/Pill";
 import UnstartedCard from "../components/dashboard/UnstartedCard";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
+import { updateTitle } from "../layouts/Layout";
 import { getHost } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
 function Dashboard() {
   const { status, data: sessionData } = useSession();
+
+  const [, setTitle] = useAtom(updateTitle);
+  setTitle("Dashboard | LinkUp");
+
   const [active, setActive] = useState<string>("upcoming");
   const { data: unstarted, isLoading: isUnstartedLoading } =
     trpc.schedule.getUnstartedSchedules.useQuery(undefined, {

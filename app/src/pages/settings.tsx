@@ -1,13 +1,17 @@
 import Typography from "@ui/Typography";
 import { useSession } from "next-auth/react";
+import { useAtom } from "jotai";
 import EmailCredentialsForm from "../components/settings/EmailCredentialsForm";
 import OAuthForm from "../components/settings/OAuthForm";
 import BackArrow from "../components/shared/BackArrow";
 import Loading from "../components/shared/Loading";
 import Unauthenticated from "../components/shared/Unauthenticated";
+import { updateTitle } from "../layouts/Layout";
 import { trpc } from "../utils/trpc";
 
 function Settings() {
+  const [, setTitle] = useAtom(updateTitle);
+  setTitle("Settings | LinkUp");
   const { status, data } = useSession();
   const user = trpc.user.getUser.useQuery(
     { id: data?.user?.id as string },
