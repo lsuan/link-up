@@ -3,6 +3,7 @@ import Typography from "@ui/Typography";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useAtom } from "jotai";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import AuthDivider from "../components/auth/AuthDivider";
@@ -10,6 +11,7 @@ import AuthProviders from "../components/auth/AuthProviders";
 import Form from "../components/form/Form";
 import ServerSideErrorMessage from "../components/form/ServerSideErrorMessage";
 import FormFooter from "../components/shared/FormFooter";
+import { pageTitle } from "../layouts/Layout";
 import { EMAIL_REGEX } from "../utils/formUtils";
 
 type LoginInputs = {
@@ -29,6 +31,8 @@ const LoginFormSchema = z.object({
 
 function Login() {
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
+  const [, setTitle] = useAtom(pageTitle);
+  setTitle("Log In | LinkUp");
   const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {

@@ -1,5 +1,5 @@
 import Snackbar from "@ui/Snackbar";
-import { useAtom } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { type ReactNode } from "react";
@@ -11,13 +11,17 @@ type LayoutProps = {
   children: ReactNode;
   rest?: unknown;
 };
+
+export const pageTitle = atom("LinkUp");
+
 function Layout({ children }: LayoutProps) {
   const [isMenuOpen] = useAtom(menuOpen);
+  const [title] = useAtom(pageTitle);
   const { status } = useSession();
   return (
     <>
       <Head>
-        <title key="title">LinkUp</title>
+        <title key="title">{title}</title>
         <meta
           key="description"
           name="description"

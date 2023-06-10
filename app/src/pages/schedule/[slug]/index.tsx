@@ -15,6 +15,7 @@ import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import { pageTitle } from "../../../layouts/Layout";
 import { type AvailabilityProps } from "../../../utils/availabilityUtils";
 import { getHost } from "../../../utils/scheduleUtils";
 
@@ -66,6 +67,8 @@ function SchedulePage() {
   // this is needed since the host is different from the actual user
   // and users can still browse this page even if they are not logged in
   const { schedule, isScheduleLoading, slug } = useSchedule(router);
+  const [, setTitle] = useAtom(pageTitle);
+  setTitle(`${schedule?.name} | LinkUp`);
   const [isShareModalShown, setIsShareModalShown] = useAtom(shareModalShown);
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
     boolean[]
