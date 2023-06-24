@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { Dispatch, useRef, type ReactNode } from "react";
 import {
   getHourNumber,
   type AvailabilityProps,
@@ -11,6 +11,8 @@ import {
   getShortenedDateWithDay,
 } from "../../utils/timeUtils";
 // import Loading from "../shared/Loading";
+import { type Schedule } from "@prisma/client";
+import { SetStateAction } from "jotai";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 
@@ -79,7 +81,27 @@ function getHourLabels(
   });
 }
 
-function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
+type AvailabilityGridProps = {
+  schedule: Schedule;
+} & (ReadMode | WriteMode);
+
+interface ReadMode {
+  mode: "read";
+  selectedCells: undefined;
+  setSelectedCells: undefined;
+}
+interface WriteMode {
+  mode: "write";
+  selectedCells: number[];
+  setSelectedCells: Dispatch<SetStateAction<number[]>>;
+}
+
+function AvailabilityGrid({
+  schedule,
+  mode,
+  selectedCells,
+  setSelectedCells,
+}: AvailabilityGridProps) {
   const { startDate, endDate, startTime, endTime } = schedule;
   const gridRef = useRef<HTMLDivElement>(null);
   // const [isGridLoading, setIsGridLoading] = useState<boolean>(false);
@@ -95,6 +117,7 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
   const dates = getAllDates(startDate, endDate);
   const calendarDays = getAllCalendarDays(dates, startTime, endTime);
   const hours = getHourLabels(calendarDays, schedule.timezone);
+  console.log("selectedCells", selectedCells);
 
   return (
     <section className="availability-container">
@@ -127,18 +150,16 @@ function AvailabilityGrid({ schedule, mode }: AvailabilityProps) {
               </span>
             ))}
           </div>
-          <AvailabilityGridRead calendarDays={calendarDays} />
-          {/* {mode === "read" ? (
-            <AvailabilityGridRead
-              dates={dates}
-              hours={hours.slice(0, hours.length - 1)}
-            />
-          ) : (
+          {mode === "read" && (
+            <AvailabilityGridRead calendarDays={calendarDays} />
+          )}
+          {mode === "write" && (
             <AvailabilityGridWrite
-              dates={dates}
-              hours={hours.slice(0, hours.length - 1)}
+              calendarDays={calendarDays}
+              selectedCells={selectedCells}
+              setSelectedCells={setSelectedCells}
             />
-          )} */}
+          )}
         </div>
       </div>
     </section>

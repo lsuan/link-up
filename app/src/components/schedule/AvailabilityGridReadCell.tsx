@@ -128,7 +128,7 @@ const AvailabilityGridReadCell = memo(
           <AvailabilityCellPopup {...status} />
         )}
         <div
-          data-time={`${hour}-${hour + THIRTY_MINUTES_MS}`}
+          data-time={hour}
           className={`h-10 w-20 border transition-all ${
             // dateIndex !== dates.length - 1 ? "border-r" : ""
             // } ${
@@ -143,9 +143,7 @@ const AvailabilityGridReadCell = memo(
           // }
           // onFocus={(e) => e} // TODO: include onFocus for accessibility
           // onPointerLeave={() => setStatus(undefined)}
-        >
-          {new Date(hour).getMinutes()}
-        </div>
+        />
       </section>
     );
   }

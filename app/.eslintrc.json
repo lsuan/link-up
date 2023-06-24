@@ -27,6 +27,7 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "operator-linebreak": "off",
     "object-curly-newline": "off",
-    "radix": "off"
+    "radix": "off",
+    "no-use-before-define": "off"
   }
 }

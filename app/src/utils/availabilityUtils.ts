@@ -38,7 +38,7 @@ export interface AvailabilityStatus {
 }
 
 export const disabled = atom<boolean>(true);
-export const selected = atom<string[]>([]);
+// export const selected = atom<CalendarDay[] | undefined>([]);
 export const updated = atom<boolean>(false);
 
 /** Takes a time in the format tt:X0 XM and returns its numerical value */

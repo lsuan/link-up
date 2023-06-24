@@ -9,7 +9,7 @@ import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
 
-function Availability() {
+function AvailabilityPage() {
   const { status } = useSession();
   const router = useRouter();
   const { schedule, isScheduleLoading, slug } = useSchedule(router);
@@ -40,4 +40,4 @@ function Availability() {
   );
 }
 
-export default Availability;
+export default AvailabilityPage;

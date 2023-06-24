@@ -3,6 +3,11 @@ import { memo, useRef, useState, type SyntheticEvent } from "react";
 import { selected } from "../../utils/availabilityUtils";
 import { getShortenedDateWithDay } from "../../utils/timeUtils";
 
+/**
+ * Renders the availability checkbox under the availability grid.
+ * It controls the logic for displaying the current days for which
+ * the user filled out availability.
+ */
 const AvailabilityGridWriteApplyCheckbox = memo(
   ({ startDate, endDate }: { startDate: Date; endDate: Date }) => {
     const [selectedCells, setSelectedCells] = useAtom(selected);
@@ -49,11 +54,7 @@ const AvailabilityGridWriteApplyCheckbox = memo(
       resetSelectedCells(dateOption.value);
     };
 
-    const days = [...selectedCells].map((day) => day.split(":")[0]) as string[];
-    const daysSet: Set<string> = new Set(days);
-    const uniqueDays = [...daysSet]?.sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime()
-    );
+    const uniqueDays = getUniqueDays(selectedCells);
 
     // don't show checkbox if it's a one day schedule
     if (startDate.getTime() === endDate.getTime()) {
@@ -77,16 +78,29 @@ const AvailabilityGridWriteApplyCheckbox = memo(
             onChange={handleSelectChange}
           >
             <option>Select Day</option>
-            {uniqueDays.map((day) => (
+            {/* {uniqueDays.map((day) => (
               <option key={day} value={day}>
                 {getShortenedDateWithDay(new Date(day))}
               </option>
-            ))}
+            ))} */}
           </select>
         </label>
       </section>
     );
   }
 );
+
+/**
+ * Everytime the user changes their availability, update the days
+ * so that we can use it for the dropdown menu.
+ */
+function getUniqueDays(selectedCells: string[]) {
+  console.log("selectedCells", selectedCells);
+
+  // const uniqueDays = [...daysSet]?.sort(
+  //   (a, b) => new Date(a).getTime() - new Date(b).getTime()
+  // );
+  // console.log("ud", uniqueDays);
+}
 
 export default AvailabilityGridWriteApplyCheckbox;
