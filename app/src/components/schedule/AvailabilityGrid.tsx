@@ -1,8 +1,13 @@
-import { Dispatch, useRef, type ReactNode } from "react";
+import {
+  useRef,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import {
   getHourNumber,
   type AvailabilityProps,
-  type CalendarDay,
+  type CalendarDays,
 } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
 import {
@@ -12,9 +17,9 @@ import {
 } from "../../utils/timeUtils";
 // import Loading from "../shared/Loading";
 import { type Schedule } from "@prisma/client";
-import { SetStateAction } from "jotai";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
+import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
 
 /** Gets all the dates in a date range. */
 function getAllDates(startDate: Date, endDate: Date): Date[] {
@@ -33,12 +38,16 @@ function getAllDates(startDate: Date, endDate: Date): Date[] {
  * Given a start time and end time, gets all the 30 minute time blocks in between.
  * Returns a list of numbers representing the time slots in milliseconds.
  */
+
+// TODO: see if this can be refactored to use THIRTY_MINUTES_MS instead
 function getAllCalendarDays(
   dates: Date[],
   startHour: string,
   endHour: string
-): CalendarDay[] {
-  return dates.map((date) => {
+): CalendarDays {
+  const calendarDays: CalendarDays = {};
+
+  dates.forEach((date) => {
     const startTime = getHourNumber(startHour);
     const endTime = getHourNumber(endHour);
     const dailyTimeSlots: number[] = [];
@@ -54,19 +63,18 @@ function getAllCalendarDays(
       const currentDatetime = new Date(`${dateString} ${formattedTime}:00`);
       dailyTimeSlots.push(currentDatetime.getTime());
     }
-    return {
-      date,
-      timeSlots: dailyTimeSlots,
-    };
+    calendarDays[date.getTime()] = dailyTimeSlots;
   });
+
+  return calendarDays;
 }
 
 /** Used to get a list of hour labels, converted to the user's timezone. */
 function getHourLabels(
-  calendarDays: CalendarDay[],
+  calendarDays: CalendarDays,
   fromTimezone: string
 ): string[] {
-  const hourBlocks = calendarDays[0]?.timeSlots;
+  const hourBlocks = Object.values(calendarDays)[0];
   if (hourBlocks === undefined || hourBlocks?.length === 0) {
     return [];
   }
@@ -92,8 +100,8 @@ interface ReadMode {
 }
 interface WriteMode {
   mode: "write";
-  selectedCells: number[];
-  setSelectedCells: Dispatch<SetStateAction<number[]>>;
+  selectedCells: CalendarDays;
+  setSelectedCells: Dispatch<SetStateAction<CalendarDays>>;
 }
 
 function AvailabilityGrid({
@@ -162,6 +170,13 @@ function AvailabilityGrid({
           )}
         </div>
       </div>
+      {Object.keys(calendarDays).length > 1 && mode === "write" && (
+        <AvailabilityGridWriteApplyCheckbox
+          calendarDays={calendarDays}
+          selectedCells={selectedCells}
+          setSelectedCells={setSelectedCells}
+        />
+      )}
     </section>
   );
 }

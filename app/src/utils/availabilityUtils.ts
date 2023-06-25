@@ -23,12 +23,10 @@ export type TimeBlock = {
 /**
  * Stores information for all the timeblocks for a given date.
  * Data is not user-facing.
+ * Key represents each day as its time value in milliseconds.
+ * Its value is the hour blocks, in milliseconds, for that day.
  */
-export interface CalendarDay {
-  date: Date;
-  /** Numbers are in milliseconds. */
-  timeSlots: number[];
-}
+export type CalendarDays = Record<number, number[]>;
 
 export interface AvailabilityStatus {
   timeKey: string;
@@ -64,6 +62,43 @@ export const getHourNumber = (time: string): number => {
   }
   return hourNumber;
 };
+
+/** Used for checking whether a cell should be filled or empty in color. */
+export function isCellSelected(
+  selectedCells: CalendarDays,
+  day: string,
+  hour: number
+) {
+  return selectedCells[Number(day)]?.includes(hour);
+}
+
+/**
+ * Handles the user chosen cells.
+ * If the user chooses an already selected cell, it will be removed.
+ */
+export function handleCellAvailability(
+  prevCells: CalendarDays,
+  currentDate: string,
+  currentHour: number
+) {
+  if (Object.keys(prevCells).includes(currentDate)) {
+    const currentDay = prevCells[Number(currentDate)]!;
+    if (currentDay.includes(currentHour)) {
+      return {
+        ...prevCells,
+        [currentDate]: currentDay.filter((hour) => hour !== currentHour),
+      };
+    }
+    return {
+      ...prevCells,
+      [currentDate]: [...currentDay, currentHour],
+    };
+  }
+  return {
+    ...prevCells,
+    [currentDate]: [currentHour],
+  };
+}
 
 /** Gets which users are available per time cell.
  *

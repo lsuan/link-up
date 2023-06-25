@@ -24,8 +24,7 @@ import {
 import AvailabilityCellPopup from "./AvailabilityCellPopup";
 
 interface AvailabilityGridReadCellProps {
-  hours: number[];
-  hourIndex: number;
+  hour: number;
 }
 
 const AvailabilityGridReadCell = memo(
@@ -35,10 +34,8 @@ const AvailabilityGridReadCell = memo(
     // dates,
     // date,
     // dateIndex,
-    hours,
-    hourIndex,
+    hour,
   }: AvailabilityGridReadCellProps) => {
-    const hour = hours[hourIndex];
     const [status, setStatus] = useState<AvailabilityStatus>();
     // const categorizedUsers = useMemo(
     //   () => categorizeUsers(attendees),
@@ -116,11 +113,6 @@ const AvailabilityGridReadCell = memo(
     // );
 
     // TODO: fix styling for long words
-
-    // don't render last cell
-    if (hourIndex === hours.length - 1) {
-      return null;
-    }
 
     return (
       <section className="relative">

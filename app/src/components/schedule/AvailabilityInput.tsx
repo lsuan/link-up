@@ -9,11 +9,10 @@ import { useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import {
-  CalendarDay,
   disabled,
-  selected,
   updated,
   type AvailabilityProps,
+  type CalendarDays,
   type UserAvailability,
 } from "../../utils/availabilityUtils";
 import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
@@ -94,7 +93,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
 
   // might change this type to be timeBlock
   // const [selectedCells, setSelectedCells] = useAtom(selected);
-  const [selectedCells, setSelectedCells] = useState<number[]>([]);
+  const [selectedCells, setSelectedCells] = useState<CalendarDays>({});
   const [isDisabled, setIsDisabled] = useAtom(disabled);
   const [, setIsUpated] = useAtom(updated);
 
@@ -212,12 +211,6 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
             selectedCells={selectedCells}
             setSelectedCells={setSelectedCells}
           />
-          {/* {selectedCells.length > 0 && (
-            <AvailabilityGridWriteApplyCheckbox
-              startDate={startDate}
-              endDate={endDate}
-            />
-          )} */}
           <Button
             intent={isDisabled ? "primaryDisabled" : "primary"}
             type="button"

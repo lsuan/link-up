@@ -1,9 +1,9 @@
 import { memo, useEffect, useState } from "react";
-import { type CalendarDay } from "../../utils/availabilityUtils";
+import { type CalendarDays } from "../../utils/availabilityUtils";
 import AvailabilityGridReadCell from "./AvailabilityGridReadCell";
 
 interface AvailabilityGridReadProps {
-  calendarDays: CalendarDay[];
+  calendarDays: CalendarDays;
 }
 
 const AvailabilityGridRead = memo(
@@ -22,32 +22,35 @@ const AvailabilityGridRead = memo(
     //   });
     //   setAllUsers([...users]);
     // }, [attendees]);
+    console.log("calendarDays", calendarDays);
 
     return (
       <div
         id="availability-responses-grid"
         className="flex overflow-hidden rounded-lg border"
       >
-        {calendarDays.map((day) => (
+        {Object.entries(calendarDays).map(([day, hours]) => (
           <div
-            key={day.date.getUTCDate()}
+            key={day}
             className="flex flex-col"
             // data-date={
             //   new Date(date.toDateString()).toISOString().split("T")[0]
             // }
           >
-            {day.timeSlots.map((hour, hourIndex) => (
-              <AvailabilityGridReadCell
-                key={hour}
-                // attendees={attendees}
-                // allUsers={allUsers}
-                // dates={dates}
-                // date={date}
-                // dateIndex={dateIndex}
-                hours={day.timeSlots}
-                hourIndex={hourIndex}
-              />
-            ))}
+            {hours.map(
+              (hour, hourIndex) =>
+                hourIndex !== hours.length - 1 && (
+                  <AvailabilityGridReadCell
+                    key={hour}
+                    // attendees={attendees}
+                    // allUsers={allUsers}
+                    // dates={dates}
+                    // date={date}
+                    // dateIndex={dateIndex}
+                    hour={hour}
+                  />
+                )
+            )}
           </div>
         ))}
       </div>

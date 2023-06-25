@@ -11,10 +11,12 @@ import React, {
 } from "react";
 import {
   disabled,
-  selected,
-  type CalendarDay,
+  handleCellAvailability,
+  isCellSelected,
+  type CalendarDays,
 } from "../../utils/availabilityUtils";
 import { THIRTY_MINUTES_MS } from "../../utils/timeUtils";
+import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
 
 interface StartCoordinates {
   clientX: number;
@@ -24,9 +26,11 @@ interface StartCoordinates {
 }
 
 interface AvailabilityGridWriteProps {
-  calendarDays: CalendarDay[];
-  selectedCells: number[];
-  setSelectedCells: Dispatch<SetStateAction<number[]>>;
+  calendarDays: CalendarDays;
+  // selectedCells: number[];
+  // setSelectedCells: Dispatch<SetStateAction<number[]>>;
+  selectedCells: CalendarDays;
+  setSelectedCells: Dispatch<SetStateAction<CalendarDays>>;
 }
 
 const cellStyles = cva("h-10 w-20 cursor-pointer border transition-all", {
@@ -163,27 +167,19 @@ const AvailabilityGridWrite = memo(
     //  };
 
     /** Starts up edit mode so the user can drag on the grid. */
-    const onPointerDown = (date: CalendarDay["date"], hour: number) => {
+    const onPointerDown = (currentDate: string, currentHour: number) => {
       setIsEditing(true);
-      setSelectedCells((prev) => {
-        if (prev.includes(hour)) {
-          return prev.filter((time) => time !== hour);
-        }
-        return [...prev, hour];
-      });
+      setSelectedCells((prev) =>
+        handleCellAvailability(prev, currentDate, currentHour)
+      );
     };
 
     const onPointerOver = useCallback(
-      (day: CalendarDay["date"], hour: number) => {
+      (day: string, hour: number) => {
         if (!isEditing) {
           return;
         }
-        setSelectedCells((prev) => {
-          if (prev.includes(hour)) {
-            return prev.filter((time) => time !== hour);
-          }
-          return [...prev, hour];
-        });
+        setSelectedCells((prev) => handleCellAvailability(prev, day, hour));
       },
       [isEditing]
     );
@@ -196,25 +192,27 @@ const AvailabilityGridWrite = memo(
     // just remember for user-facing details to add thirty minutes to the end time
     return (
       <div className="flex overflow-hidden rounded-lg border">
-        {calendarDays.map((day, dayIndex) => (
+        {Object.entries(calendarDays).map(([day, hours]) => (
           <div
-            key={day.date.getUTCDate()}
+            key={day}
             className="flex flex-col"
             // data-date={
             //   new Date(date.toDateString()).toISOString().split("T")[0]
             // }
           >
-            {day.timeSlots.map((hour, hourIndex) => (
+            {hours.map((hour, hourIndex) => (
               <div
                 key={hour}
                 // data-time={hour}
                 // data-row={hourIndex}
                 // data-col={dayIndex}
                 className={cellStyles({
-                  intent: selectedCells.includes(hour) ? "filled" : "empty",
+                  intent: isCellSelected(selectedCells, day, hour)
+                    ? "filled"
+                    : "empty",
                 })}
-                onPointerDown={() => onPointerDown(day.date, hour)}
-                onPointerEnter={() => onPointerOver(day.date, hour)}
+                onPointerDown={() => onPointerDown(day, hour)}
+                onPointerEnter={() => onPointerOver(day, hour)}
                 onFocus={(e) => e} // TODO: add onFocus functionality for accessibility
                 onPointerUp={onPointerUp}
               />
