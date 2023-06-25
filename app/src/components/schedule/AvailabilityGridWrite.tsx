@@ -172,6 +172,7 @@ const AvailabilityGridWrite = memo(
       setSelectedCells((prev) =>
         handleCellAvailability(prev, currentDate, currentHour)
       );
+      setIsDisabled(false);
     };
 
     const onPointerOver = useCallback(

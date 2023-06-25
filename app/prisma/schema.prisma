@@ -104,10 +104,7 @@ model Availability {
   user         String // an anonymous user's name or a logged in user's id 
   scheduleId   String 
 
-  // this represents an array of milliseconds which represent the times 
-  // that the user is available
-  // milliseconds are strings that should be converted to numbers
-  // and then converted to date objects
+  // this is in the same shape as `CalendarDays` in the frontend
   availability Json
 
   schedule     Schedule @relation(fields: [scheduleId], references: [id])

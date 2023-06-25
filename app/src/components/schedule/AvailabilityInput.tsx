@@ -13,23 +13,24 @@ import {
   updated,
   type AvailabilityProps,
   type CalendarDays,
-  type UserAvailability,
 } from "../../utils/availabilityUtils";
+import type CREATE_AVAILABILITY_API_SCHEMA from "../../utils/schemas/createAvailability";
 import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
 import Form from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
-import AvailabilityGridWrite from "./AvailabilityGridWrite";
-import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
 
 /**
  * This is used in the form in which the user enters their
  * name if they are not logged in when filling out
  * their availability.
  */
-interface AnonAvailabilityInputs {
+type AnonAvailabilityInputs = {
   name: string;
-}
+};
 const AnonAvailabilitySchema = z.object({ name: z.string() });
+
+/** The shape of the inputs that the mutation requires. */
+type AvailabilityAPIInputs = z.infer<typeof CREATE_AVAILABILITY_API_SCHEMA>;
 
 /** Handles optimistic updates to a user's availability. */
 const updateSchedule = (
@@ -67,27 +68,27 @@ const updateSchedule = (
 
 function AvailabilityInput({ schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
-  const { startDate, endDate } = schedule;
   const queryClient = useQueryClient();
-  const setScheduleAvailability = trpc.schedule.setAvailability.useMutation({
-    onSuccess: (data, variables) => {
-      const { name, id } = data;
-      queryClient.setQueryData(
-        [
-          ["schedule", "getScheduleFromSlugId"],
-          {
-            name,
-            id: id.substring(id.length - 8),
-          } as RouterInputs["schedule"]["getScheduleFromSlugId"],
-        ],
-        (prevData) => {
-          const newData =
-            prevData as RouterOutputs["schedule"]["getScheduleFromSlugId"];
-          return updateSchedule(variables, newData);
-        }
-      );
-    },
-  });
+  // const setScheduleAvailability = trpc.schedule.setAvailability.useMutation({
+  //   onSuccess: (data, variables) => {
+  //     const { name, id } = data;
+  //     queryClient.setQueryData(
+  //       [
+  //         ["schedule", "getScheduleFromSlugId"],
+  //         {
+  //           name,
+  //           id: id.substring(id.length - 8),
+  //         } as RouterInputs["schedule"]["getScheduleFromSlugId"],
+  //       ],
+  //       (prevData) => {
+  //         const newData =
+  //           prevData as RouterOutputs["schedule"]["getScheduleFromSlugId"];
+  //         return updateSchedule(variables, newData);
+  //       }
+  //     );
+  //   },
+  // });
+  const createAvailability = trpc.availability.createAvailability.useMutation();
   const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
 
@@ -130,45 +131,24 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   );
 
   const save = async () => {
-    const user = sessionData?.user?.id ?? (guestUser as string);
-    const times = new Map<string, string[]>();
-    const { data: userNames } = userFullName;
-    const name = userNames
-      ? `${userNames.firstName}${
-          userNames.lastName ? ` ${userNames.lastName}` : ""
-        }`
-      : user;
-
-    selectedCells.forEach((cell) => {
-      const [date, time] = cell.split(":") as [string, string];
-      const prevTimes = times.get(date);
-      prevTimes
-        ? times.set(date, [...prevTimes, time])
-        : times.set(date, [time]);
-    });
-    const attendee = {
+    const user = sessionData?.user?.id ?? guestUser;
+    const availabilityData: AvailabilityAPIInputs = {
       user,
-      name,
-      availability: Object.fromEntries(times),
+      scheduleId: schedule.id,
+      availability: JSON.stringify(selectedCells),
     };
 
-    await setScheduleAvailability.mutateAsync(
-      {
-        id: schedule.id,
-        attendee: JSON.stringify(attendee),
+    await createAvailability.mutateAsync(availabilityData, {
+      onSuccess: () => {
+        setIsUpated(true);
+        setNoticeMessage({
+          action: "close",
+          icon: "check",
+          message: "Availability has been saved!",
+        });
+        setIsDisabled(true);
       },
-      {
-        onSuccess: () => {
-          setIsUpated(true);
-          setNoticeMessage({
-            action: "close",
-            icon: "check",
-            message: "Availability has been saved!",
-          });
-          setIsDisabled(true);
-        },
-      }
-    );
+    });
   };
 
   const handleGuestUserSubmit: SubmitHandler<AnonAvailabilityInputs> = (

@@ -24,7 +24,7 @@ import {
   getTimeOptions,
 } from "../utils/formUtils";
 import { createSlug } from "../utils/scheduleUtils";
-import { CREATE_SCHEDULE_FORM_SCHEMA } from "../utils/schemas";
+import { CREATE_SCHEDULE_FORM_SCHEMA } from "../utils/schemas/createSchedule";
 import {
   USER_TIMEZONE,
   getTimezoneNames,

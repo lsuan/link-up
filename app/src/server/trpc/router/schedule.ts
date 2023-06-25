@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
-import { CREATE_SCHEDULE_API_SCHEMA } from "../../../utils/schemas";
+import CREATE_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
+import { CREATE_SCHEDULE_API_SCHEMA } from "../../../utils/schemas/createSchedule";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 const scheduleRouter = router({
@@ -110,31 +111,29 @@ const scheduleRouter = router({
    * `[ {user: "user", availability: {"date": []}} ]`
    */
   setAvailability: publicProcedure
-    .input(z.object({ id: z.string(), attendee: z.string() }))
+    .input(CREATE_AVAILABILITY_API_SCHEMA)
     .mutation(async ({ input, ctx }) => {
-      const jsonData = JSON.parse(input.attendee);
-
-      const schedule = await ctx.prisma.schedule.findFirst({
-        where: {
-          id: input.id,
-        },
-      });
-      const prevData = schedule?.attendees as UserAvailability[];
-      let dataToStore;
-
-      if (prevData?.length > 0) {
-        const otherData = prevData.filter(
-          (entry) => entry.user !== jsonData.user
-        );
-        dataToStore = otherData.concat([jsonData]);
-      } else {
-        dataToStore = [jsonData];
-      }
-      const newSchedule = await ctx.prisma.schedule.update({
-        data: { attendees: dataToStore },
-        where: { id: input.id },
-      });
-      return newSchedule;
+      // const jsonData = JSON.parse(input.attendee);
+      // const schedule = await ctx.prisma.schedule.findFirst({
+      //   where: {
+      //     id: input.id,
+      //   },
+      // });
+      // const prevData = schedule?.attendees as UserAvailability[];
+      // let dataToStore;
+      // if (prevData?.length > 0) {
+      //   const otherData = prevData.filter(
+      //     (entry) => entry.user !== jsonData.user
+      //   );
+      //   dataToStore = otherData.concat([jsonData]);
+      // } else {
+      //   dataToStore = [jsonData];
+      // }
+      // const newSchedule = await ctx.prisma.schedule.update({
+      //   data: { attendees: dataToStore },
+      //   where: { id: input.id },
+      // });
+      // return newSchedule;
     }),
 
   /**
