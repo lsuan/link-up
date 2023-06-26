@@ -1,4 +1,5 @@
 import { type Schedule } from "@prisma/client";
+import { cva } from "cva";
 import { atom } from "jotai";
 import { getFormattedHours } from "./formUtils";
 
@@ -99,6 +100,25 @@ export function handleCellAvailability(
     [currentDate]: [currentHour],
   };
 }
+
+/**
+ * Describes the color of a cell in the availability grid.
+ * Used for `cellStyles` intent.
+ */
+export type CellColorStatus = "filled" | "empty";
+/** Styles for a specific cell in the availability grid. */
+export const cellStyles = cva("h-10 w-20 border transition-all", {
+  variants: {
+    fill: {
+      filled: "bg-indigo-500",
+      empty: "bg-white",
+    },
+    readOnly: {
+      true: "",
+      false: "cursor-pointer",
+    },
+  },
+});
 
 /** Gets which users are available per time cell.
  *

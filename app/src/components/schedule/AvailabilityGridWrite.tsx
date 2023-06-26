@@ -1,6 +1,4 @@
-import { type Schedule } from "@prisma/client";
 import { notice } from "@ui/Snackbar";
-import { cva } from "cva";
 import { useAtom } from "jotai";
 import React, {
   memo,
@@ -10,13 +8,13 @@ import React, {
   type SetStateAction,
 } from "react";
 import {
+  cellStyles,
   disabled,
   handleCellAvailability,
   isCellSelected,
   type CalendarDays,
 } from "../../utils/availabilityUtils";
 import { THIRTY_MINUTES_MS } from "../../utils/timeUtils";
-import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
 
 interface StartCoordinates {
   clientX: number;
@@ -32,15 +30,6 @@ interface AvailabilityGridWriteProps {
   selectedCells: CalendarDays;
   setSelectedCells: Dispatch<SetStateAction<CalendarDays>>;
 }
-
-const cellStyles = cva("h-10 w-20 cursor-pointer border transition-all", {
-  variants: {
-    intent: {
-      filled: "bg-indigo-500",
-      empty: "bg-white",
-    },
-  },
-});
 
 const AvailabilityGridWrite = memo(
   ({
@@ -208,9 +197,10 @@ const AvailabilityGridWrite = memo(
                 // data-row={hourIndex}
                 // data-col={dayIndex}
                 className={cellStyles({
-                  intent: isCellSelected(selectedCells, day, hour)
+                  fill: isCellSelected(selectedCells, day, hour)
                     ? "filled"
                     : "empty",
+                  readOnly: false,
                 })}
                 onPointerDown={() => onPointerDown(day, hour)}
                 onPointerEnter={() => onPointerOver(day, hour)}

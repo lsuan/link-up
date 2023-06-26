@@ -1,3 +1,4 @@
+import { type Availability } from "@prisma/client";
 import Typography from "@ui/Typography";
 import React, {
   memo,
@@ -8,13 +9,15 @@ import React, {
   useState,
 } from "react";
 import {
+  CalendarDays,
+  CellColorStatus,
   categorizeUsers,
+  cellStyles,
   getCellColor,
   getMostUsers,
   parseRange,
   setColors,
   type AvailabilityStatus,
-  type UserAvailability,
 } from "../../utils/availabilityUtils";
 import { getFormattedHours } from "../../utils/formUtils";
 import {
@@ -25,6 +28,8 @@ import AvailabilityCellPopup from "./AvailabilityCellPopup";
 
 interface AvailabilityGridReadCellProps {
   hour: number;
+  // TODO: change based on the number of attendees
+  availability: Availability[];
 }
 
 const AvailabilityGridReadCell = memo(
@@ -35,6 +40,7 @@ const AvailabilityGridReadCell = memo(
     // date,
     // dateIndex,
     hour,
+    availability,
   }: AvailabilityGridReadCellProps) => {
     const [status, setStatus] = useState<AvailabilityStatus>();
     // const categorizedUsers = useMemo(
@@ -114,6 +120,8 @@ const AvailabilityGridReadCell = memo(
 
     // TODO: fix styling for long words
 
+    const colorStatus = getCellColorStatus(availability, hour);
+
     return (
       <section className="relative">
         {status && status.available.length !== 0 && (
@@ -121,15 +129,7 @@ const AvailabilityGridReadCell = memo(
         )}
         <div
           data-time={hour}
-          className={`h-10 w-20 border transition-all ${
-            // dateIndex !== dates.length - 1 ? "border-r" : ""
-            // } ${
-            //   hourIndex !== hours.length - 1
-            //     ? "border-b border-b-neutral-100"
-            //     : ""
-            // } ${users ? `cursor-pointer ${cellColor}` : ""}`}
-            ""
-          }`}
+          className={cellStyles({ fill: colorStatus, readOnly: true })}
           // onPointerOver={(e) =>
           //   users && onMouseOver(e, date, `${hour}-${hour + 0.5}`)
           // }
@@ -140,5 +140,23 @@ const AvailabilityGridReadCell = memo(
     );
   }
 );
+
+/** Returns  "filled" or "empty" if a user filled out available for a given cell. */
+function getCellColorStatus(
+  availability: Availability[],
+  currentHour: number
+): CellColorStatus {
+  let found = false;
+  availability.forEach((availabilityRecord) => {
+    Object.values(availabilityRecord.availability as CalendarDays).forEach(
+      (hours) => {
+        if (hours.find((hour) => hour === currentHour)) {
+          found = true;
+        }
+      }
+    );
+  });
+  return found ? "filled" : "empty";
+}
 
 export default AvailabilityGridReadCell;

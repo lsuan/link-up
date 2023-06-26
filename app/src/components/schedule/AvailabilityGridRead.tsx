@@ -1,13 +1,16 @@
-import { memo, useEffect, useState } from "react";
+import { type Availability, type Schedule } from "@prisma/client";
+import { memo, useState } from "react";
 import { type CalendarDays } from "../../utils/availabilityUtils";
+import { trpc } from "../../utils/trpc";
 import AvailabilityGridReadCell from "./AvailabilityGridReadCell";
 
 interface AvailabilityGridReadProps {
+  scheduleId: Schedule["id"];
   calendarDays: CalendarDays;
 }
 
 const AvailabilityGridRead = memo(
-  ({ calendarDays }: AvailabilityGridReadProps) => {
+  ({ scheduleId, calendarDays }: AvailabilityGridReadProps) => {
     // const [allUsers, setAllUsers] = useState<string[]>([]);
 
     // useEffect(() => {
@@ -22,6 +25,14 @@ const AvailabilityGridRead = memo(
     //   });
     //   setAllUsers([...users]);
     // }, [attendees]);
+    const [availability, setAvailability] = useState<Availability[]>([]);
+
+    trpc.schedule.getAllAvailability.useQuery(scheduleId, {
+      onSuccess: (data) => {
+        setAvailability(data);
+      },
+      refetchOnWindowFocus: false,
+    });
 
     return (
       <div
@@ -47,6 +58,7 @@ const AvailabilityGridRead = memo(
                     // date={date}
                     // dateIndex={dateIndex}
                     hour={hour}
+                    availability={availability}
                   />
                 )
             )}

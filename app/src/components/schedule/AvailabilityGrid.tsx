@@ -158,7 +158,10 @@ function AvailabilityGrid({
             ))}
           </div>
           {mode === "read" && (
-            <AvailabilityGridRead calendarDays={calendarDays} />
+            <AvailabilityGridRead
+              scheduleId={schedule.id}
+              calendarDays={calendarDays}
+            />
           )}
           {mode === "write" && (
             <AvailabilityGridWrite

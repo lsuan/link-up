@@ -105,62 +105,16 @@ const scheduleRouter = router({
     return unstarted;
   }),
 
-  /** Sets the availability for the specific user in the following format:
-   *
-   * JSON DATA STRUCTURE
-   * `[ {user: "user", availability: {"date": []}} ]`
-   */
-  setAvailability: publicProcedure
-    .input(CREATE_AVAILABILITY_API_SCHEMA)
-    .mutation(async ({ input, ctx }) => {
-      // const jsonData = JSON.parse(input.attendee);
-      // const schedule = await ctx.prisma.schedule.findFirst({
-      //   where: {
-      //     id: input.id,
-      //   },
-      // });
-      // const prevData = schedule?.attendees as UserAvailability[];
-      // let dataToStore;
-      // if (prevData?.length > 0) {
-      //   const otherData = prevData.filter(
-      //     (entry) => entry.user !== jsonData.user
-      //   );
-      //   dataToStore = otherData.concat([jsonData]);
-      // } else {
-      //   dataToStore = [jsonData];
-      // }
-      // const newSchedule = await ctx.prisma.schedule.update({
-      //   data: { attendees: dataToStore },
-      //   where: { id: input.id },
-      // });
-      // return newSchedule;
-    }),
+  /** Given the `scheduleId`, gets all availability records for the schedule. */
+  getAllAvailability: publicProcedure.input(z.string()).query(async (input) => {
+    const availabilities = await input.ctx.prisma.availability.findMany({
+      where: {
+        scheduleId: input.input,
+      },
+    });
 
-  /**
-   * Gets the availability of the current logged in user.
-   */
-  getUserAvailability: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const userId = ctx.session?.user?.id;
-
-      try {
-        const schedule = await ctx.prisma.schedule.findFirst({
-          where: {
-            id: input.id,
-            attendees: { path: "$[*].user", array_contains: userId },
-          },
-        });
-        const attendees = schedule?.attendees as UserAvailability[];
-        const userAvailability = attendees.filter(
-          (attendee) => attendee.user === userId
-        );
-        return userAvailability;
-      } catch (e) {
-        // if user is not logged in, just an empty array
-        return [];
-      }
-    }),
+    return availabilities;
+  }),
 });
 
 export default scheduleRouter;
