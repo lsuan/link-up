@@ -10,12 +10,12 @@ import Loading from "../../../components/shared/Loading";
 import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
 
 function AvailabilityPage() {
-  const { status } = useSession();
+  const session = useSession();
   const router = useRouter();
   const { schedule, isScheduleLoading, slug } = useSchedule(router);
   const { title, isLoading: isUserAvailabilityLoading } = useUserAvailability(
-    status,
-    schedule
+    session,
+    schedule?.id
   );
 
   if (!router.isReady || isScheduleLoading || isUserAvailabilityLoading) {

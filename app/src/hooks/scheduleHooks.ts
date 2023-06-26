@@ -1,48 +1,52 @@
-import { type Schedule } from "@prisma/client";
+import { type Availability, type Schedule } from "@prisma/client";
 import { type SessionContextValue } from "next-auth/react";
 import { type NextRouter } from "next/router";
 import { useState } from "react";
-import { type UserAvailability } from "../utils/availabilityUtils";
 import { parseSlug } from "../utils/scheduleUtils";
 import { trpc } from "../utils/trpc";
 
-type SessionStatus = Pick<SessionContextValue, "status">["status"];
-
-const getPageTitle = (
-  status: SessionStatus,
-  availability: UserAvailability[]
-): string => {
+function getPageTitle(
+  status: Pick<SessionContextValue, "status">["status"],
+  availability: Availability["availability"] | undefined
+): string {
   if (status === "unauthenticated") {
     return "Add/Edit Availability";
   }
-  return availability.length > 0 ? "Edit Availability" : "Add Availability";
-};
+  return availability ? "Edit Availability" : "Add Availability";
+}
 
-export const useUserAvailability = (
-  status: SessionStatus,
-  schedule: Schedule | null | undefined
-): { title: string; isLoading: boolean } => {
+/** Sets the title for the availability button at the bottom of the schedule page. */
+export function useUserAvailability(
+  session: SessionContextValue,
+  scheduleId: Schedule["id"] | undefined
+): { title: string; isLoading: boolean } {
   const [title, setTitle] = useState<string>("");
-  const { isLoading } = trpc.schedule.getUserAvailability.useQuery(
+
+  const { isLoading } = trpc.availability.getAvailability.useQuery(
     {
-      id: schedule?.id ?? "",
+      user: session.status === "authenticated" ? session.data.user?.id : null,
+      scheduleId: scheduleId!,
     },
     {
-      enabled: schedule !== undefined,
+      enabled: scheduleId !== undefined && session.status !== "loading",
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
-        const currentTitle = getPageTitle(status, data);
+        const currentTitle = getPageTitle(
+          session.status,
+          data.availability?.availability
+        );
         setTitle(currentTitle);
       },
     }
   );
-  return { title, isLoading };
-};
+  return { title, isLoading: isLoading ?? true };
+}
 
-export const useSchedule = (
+/** Retrieves the `Schedule` record. */
+export function useSchedule(
   router: NextRouter,
   onSuccess?: (data: Schedule | null) => void
-) => {
+) {
   const { slug } = router.query as { slug: string };
   const { name, scheduleIdPart } = parseSlug(slug);
   const { data: schedule, isLoading: isScheduleLoading } =
@@ -59,4 +63,4 @@ export const useSchedule = (
     );
 
   return { schedule, isScheduleLoading, slug };
-};
+}

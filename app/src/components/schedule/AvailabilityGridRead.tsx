@@ -22,7 +22,6 @@ const AvailabilityGridRead = memo(
     //   });
     //   setAllUsers([...users]);
     // }, [attendees]);
-    console.log("calendarDays", calendarDays);
 
     return (
       <div

@@ -125,7 +125,6 @@ function AvailabilityGrid({
   const dates = getAllDates(startDate, endDate);
   const calendarDays = getAllCalendarDays(dates, startTime, endTime);
   const hours = getHourLabels(calendarDays, schedule.timezone);
-  console.log("selectedCells", selectedCells);
 
   return (
     <section className="availability-container">

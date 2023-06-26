@@ -65,7 +65,8 @@ function PublishSection({ slug }: { slug: string }) {
 /** The individual schedule page. */
 function SchedulePage() {
   const router = useRouter();
-  const { status, data: sessionData } = useSession();
+  const session = useSession();
+  const { status, data: sessionData } = session;
   // this is needed since the host is different from the actual user
   // and users can still browse this page even if they are not logged in
   const { schedule, isScheduleLoading, slug } = useSchedule(router);
@@ -76,7 +77,7 @@ function SchedulePage() {
   const {
     title: availabilityButtonTitle,
     isLoading: isUserAvailabilityLoading,
-  } = useUserAvailability(status, schedule);
+  } = useUserAvailability(session, schedule?.id);
 
   const host = schedule?.host;
   const isHost = host ? host.id === sessionData?.user?.id : false;
