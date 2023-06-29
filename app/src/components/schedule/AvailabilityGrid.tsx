@@ -16,7 +16,6 @@ import {
   getShortenedDateWithDay,
 } from "../../utils/timeUtils";
 // import Loading from "../shared/Loading";
-import { type Schedule } from "@prisma/client";
 import AvailabilityGridRead from "./AvailabilityGridRead";
 import AvailabilityGridWrite from "./AvailabilityGridWrite";
 import AvailabilityGridWriteApplyCheckbox from "./AvailabilityGridWriteApplyCheckbox";
@@ -90,7 +89,7 @@ function getHourLabels(
 }
 
 type AvailabilityGridProps = {
-  schedule: Schedule;
+  schedule: AvailabilityProps["schedule"];
 } & (ReadMode | WriteMode);
 
 interface ReadMode {
@@ -110,7 +109,7 @@ function AvailabilityGrid({
   selectedCells,
   setSelectedCells,
 }: AvailabilityGridProps) {
-  const { startDate, endDate, startTime, endTime } = schedule;
+  const { startDate, endDate, startTime, endTime, availabilities } = schedule;
   const gridRef = useRef<HTMLDivElement>(null);
   // const [isGridLoading, setIsGridLoading] = useState<boolean>(false);
 
@@ -159,7 +158,7 @@ function AvailabilityGrid({
           </div>
           {mode === "read" && (
             <AvailabilityGridRead
-              scheduleId={schedule.id}
+              availabilities={availabilities}
               calendarDays={calendarDays}
             />
           )}

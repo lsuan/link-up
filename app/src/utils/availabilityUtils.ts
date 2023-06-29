@@ -1,10 +1,10 @@
-import { type Schedule } from "@prisma/client";
+import { type Availability, type Schedule } from "@prisma/client";
 import { cva } from "cva";
 import { atom } from "jotai";
 import { getFormattedHours } from "./formUtils";
 
 export type AvailabilityProps = {
-  schedule: Schedule;
+  schedule: Schedule & { availabilities: Availability[] };
   slug?: string;
   mode?: "read" | "write";
 };

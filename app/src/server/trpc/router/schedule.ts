@@ -53,6 +53,7 @@ const scheduleRouter = router({
         include: {
           host: true,
           events: true,
+          availabilities: true,
         },
       });
 

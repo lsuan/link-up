@@ -18,6 +18,8 @@ const availabilityRouter = router({
       return { availability: newAvailability };
     }),
 
+  // TODO: change this from a query in the api to a check in the client
+  // no need to create another query if we can use the data we already have on the client
   /** Retrieves the specific availability for a user based on the schedule. */
   getAvailability: publicProcedure
     .input(GET_AVAILABILITY_API_SCHEMA)
