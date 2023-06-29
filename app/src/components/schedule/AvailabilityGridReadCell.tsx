@@ -1,34 +1,17 @@
 import { type Availability } from "@prisma/client";
-import Typography from "@ui/Typography";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { memo, useState } from "react";
 import {
-  CalendarDays,
-  CellColorStatus,
-  categorizeUsers,
   cellStyles,
-  getCellColor,
-  getMostUsers,
-  parseRange,
-  setColors,
   type AvailabilityStatus,
+  type BlockAvailabilityCounts,
+  type CellColorStatus,
 } from "../../utils/availabilityUtils";
-import { getFormattedHours } from "../../utils/formUtils";
-import {
-  THIRTY_MINUTES_MS,
-  getShortenedDateWithDay,
-} from "../../utils/timeUtils";
 import AvailabilityCellPopup from "./AvailabilityCellPopup";
 
 interface AvailabilityGridReadCellProps {
   hour: number;
   availabilities: Availability[];
+  blockAvailabilityCounts: BlockAvailabilityCounts;
 }
 
 const AvailabilityGridReadCell = memo(
@@ -40,6 +23,7 @@ const AvailabilityGridReadCell = memo(
     // dateIndex,
     hour,
     availabilities,
+    blockAvailabilityCounts,
   }: AvailabilityGridReadCellProps) => {
     const [status, setStatus] = useState<AvailabilityStatus>();
     // const categorizedUsers = useMemo(
@@ -119,7 +103,11 @@ const AvailabilityGridReadCell = memo(
 
     // TODO: fix styling for long words
 
-    const colorStatus = getCellColorStatus(availabilities, hour);
+    const colorStatus = getCellColorStatus(
+      hour,
+      availabilities,
+      blockAvailabilityCounts
+    );
 
     return (
       <section className="relative">
@@ -140,22 +128,32 @@ const AvailabilityGridReadCell = memo(
   }
 );
 
-/** Returns  "filled" or "empty" if a user filled out available for a given cell. */
+/** Returns the specific fill value for a given cell. */
 function getCellColorStatus(
-  availability: Availability[],
-  currentHour: number
+  currentHour: number,
+  availabilities: Availability[],
+  blockAvailabilityCounts: BlockAvailabilityCounts
 ): CellColorStatus {
-  let found = false;
-  availability.forEach((availabilityRecord) => {
-    Object.values(availabilityRecord.availability as CalendarDays).forEach(
-      (hours) => {
-        if (hours.find((hour) => hour === currentHour)) {
-          found = true;
-        }
-      }
-    );
-  });
-  return found ? "filled" : "empty";
+  const total = availabilities.length;
+  const currentBlock = blockAvailabilityCounts[currentHour];
+  const ratio = (currentBlock?.count ?? 0) / total;
+
+  if (ratio > 0.8) {
+    return 900;
+  }
+  if (ratio > 0.6) {
+    return 700;
+  }
+  if (ratio > 0.4) {
+    return 500;
+  }
+  if (ratio > 0.2) {
+    return 300;
+  }
+  if (ratio > 0) {
+    return 100;
+  }
+  return 0;
 }
 
 export default AvailabilityGridReadCell;

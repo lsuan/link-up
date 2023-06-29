@@ -1,9 +1,4 @@
-import {
-  useRef,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
-} from "react";
+import { useRef, type Dispatch, type SetStateAction } from "react";
 import {
   getHourNumber,
   type AvailabilityProps,
@@ -110,6 +105,7 @@ function AvailabilityGrid({
   setSelectedCells,
 }: AvailabilityGridProps) {
   const { startDate, endDate, startTime, endTime, availabilities } = schedule;
+
   const gridRef = useRef<HTMLDivElement>(null);
   // const [isGridLoading, setIsGridLoading] = useState<boolean>(false);
 

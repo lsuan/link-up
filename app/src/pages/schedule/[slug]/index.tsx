@@ -1,4 +1,4 @@
-import { Availability } from "@prisma/client";
+import { type Availability } from "@prisma/client";
 import Button from "@ui/Button";
 import Typography from "@ui/Typography";
 import { useAtom } from "jotai";

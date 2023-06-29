@@ -29,6 +29,20 @@ export type TimeBlock = {
  */
 export type CalendarDays = Record<number, number[]>;
 
+/**
+ * Stores information for how many users are in the same timeblock.
+ * Key represents each day as its time value in milliseconds.
+ * Its value is the number of users in that timeblock.
+ */
+export type BlockAvailabilityCounts = Record<
+  number,
+  {
+    count: number;
+    /** An array user ids or user's name if anonymous user. */
+    users: string[];
+  }
+>;
+
 export interface AvailabilityStatus {
   timeKey: string;
   available: string[];
@@ -103,15 +117,20 @@ export function handleCellAvailability(
 
 /**
  * Describes the color of a cell in the availability grid.
- * Used for `cellStyles` intent.
+ * Used for `cellStyles` fill.
  */
-export type CellColorStatus = "filled" | "empty";
+export type CellColorStatus = 900 | 700 | 500 | 300 | 100 | 0;
+
 /** Styles for a specific cell in the availability grid. */
 export const cellStyles = cva("h-10 w-20 border transition-all", {
   variants: {
     fill: {
-      filled: "bg-indigo-500",
-      empty: "bg-white",
+      900: "bg-indigo-900",
+      700: "bg-indigo-700",
+      500: "bg-indigo-500",
+      300: "bg-indigo-300",
+      100: "bg-indigo-100",
+      0: "bg-white",
     },
     readOnly: {
       true: "",
