@@ -21,23 +21,23 @@ const availabilityRouter = router({
   // TODO: change this from a query in the api to a check in the client
   // no need to create another query if we can use the data we already have on the client
   /** Retrieves the specific availability for a user based on the schedule. */
-  getAvailability: publicProcedure
-    .input(GET_AVAILABILITY_API_SCHEMA)
-    .query(async ({ input, ctx }) => {
-      const { user, scheduleId } = input;
+  // getAvailability: publicProcedure
+  //   .input(GET_AVAILABILITY_API_SCHEMA)
+  //   .query(async ({ input, ctx }) => {
+  //     const { user, scheduleId } = input;
 
-      if (!user) {
-        return { availability: null };
-      }
+  //     if (!user) {
+  //       return { availability: null };
+  //     }
 
-      const availability = await ctx.prisma.availability.findFirst({
-        where: {
-          user,
-          scheduleId,
-        },
-      });
-      return { availability };
-    }),
+  //     const availability = await ctx.prisma.availability.findFirst({
+  //       where: {
+  //         user,
+  //         scheduleId,
+  //       },
+  //     });
+  //     return { availability };
+  //   }),
 });
 
 export default availabilityRouter;

@@ -1,3 +1,4 @@
+import { Availability } from "@prisma/client";
 import Button from "@ui/Button";
 import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
@@ -14,7 +15,7 @@ import ShareModal, {
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
 import ModalBackground from "../../../components/shared/ModalBackground";
-import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import useSchedule from "../../../hooks/scheduleHooks";
 import { type AvailabilityProps } from "../../../utils/availabilityUtils";
 import { getHost } from "../../../utils/scheduleUtils";
 
@@ -74,10 +75,8 @@ function SchedulePage() {
   const [isAddToCalendarModalShown, setIsAddToCalendarModalShown] = useState<
     boolean[]
   >([]);
-  const {
-    title: availabilityButtonTitle,
-    isLoading: isUserAvailabilityLoading,
-  } = useUserAvailability(session, schedule?.id);
+  const { title: availabilityButtonTitle, isLoading: isButtonTitleLoading } =
+    getAvailabilityButtonTitle(sessionData?.user?.id, schedule?.availabilities);
 
   const host = schedule?.host;
   const isHost = host ? host.id === sessionData?.user?.id : false;
@@ -90,7 +89,7 @@ function SchedulePage() {
     setIsAddToCalendarModalShown([...modalsShown]);
   }, [events]);
 
-  if (status === "loading" || isScheduleLoading || isUserAvailabilityLoading) {
+  if (status === "loading" || isScheduleLoading || isButtonTitleLoading) {
     return <Loading />;
   }
 
@@ -172,7 +171,7 @@ function SchedulePage() {
           )}
         </div>
 
-        {schedule && (
+        {schedule && availabilityButtonTitle && (
           <AvailabilitySection
             schedule={schedule}
             slug={slug}
@@ -183,6 +182,27 @@ function SchedulePage() {
       </section>
     </>
   );
+}
+
+/**
+ * Gets the availability title based on whether the logged in user
+ * has given a previous availabilty.
+ * Anonymous users default to add "Add Availability"
+ */
+function getAvailabilityButtonTitle(
+  user: string | undefined,
+  availabilities: Availability[] | undefined
+): { title?: string; isLoading: boolean } {
+  if (user === undefined || availabilities === undefined) {
+    return { isLoading: true };
+  }
+  const foundUser = availabilities.find(
+    (availability) => availability.user === user
+  );
+  if (foundUser) {
+    return { title: "Edit Availability", isLoading: false };
+  }
+  return { title: "Add Availability", isLoading: false };
 }
 
 export default SchedulePage;
