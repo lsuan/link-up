@@ -38,9 +38,9 @@ export type BlockAvailabilityCounts = Record<
   number,
   {
     count: number;
-    /** An array of available user ids or user's name if anonymous user. */
+    /** An array of available user names. */
     availableUsers: string[];
-    /** An array of unavailable user ids or user's name if anonymous user. */
+    /** An array of unavailable user names */
     unavailableUsers: string[];
   }
 >;
