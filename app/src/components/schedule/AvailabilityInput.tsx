@@ -1,3 +1,4 @@
+import { type User } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import Button from "@ui/Button";
 import { notice } from "@ui/Snackbar";
@@ -91,9 +92,6 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   const createAvailability = trpc.availability.createAvailability.useMutation();
   const [guestUser, setGuestUser] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
-
-  // might change this type to be timeBlock
-  // const [selectedCells, setSelectedCells] = useAtom(selected);
   const [selectedCells, setSelectedCells] = useState<CalendarDays>({});
   const [isDisabled, setIsDisabled] = useAtom(disabled);
   const [, setIsUpated] = useAtom(updated);
@@ -131,7 +129,8 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   );
 
   const save = async () => {
-    const user = sessionData?.user?.id ?? guestUser;
+    const user = getUserDisplayName(userFullName.data) ?? guestUser;
+
     const availabilityData: AvailabilityAPIInputs = {
       user,
       scheduleId: schedule.id,
@@ -203,6 +202,15 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
       )}
     </section>
   );
+}
+
+function getUserDisplayName(
+  user: Pick<User, "firstName" | "lastName"> | null | undefined
+): string | undefined {
+  if (!user) {
+    return;
+  }
+  return `${user.firstName}${user.lastName ? `${user.lastName}` : ""}`;
 }
 
 export default AvailabilityInput;

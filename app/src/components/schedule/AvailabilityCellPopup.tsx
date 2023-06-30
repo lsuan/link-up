@@ -1,6 +1,5 @@
 import Typography from "@ui/Typography";
 import { cva } from "cva";
-import { hoursToMilliseconds } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import {
   parseRange,
@@ -42,6 +41,7 @@ function AvailabilityCellPopUp({
   const end = Intl.DateTimeFormat("en-US", { timeStyle: "short" }).format(
     hour + THIRTY_MINUTES_MS
   );
+
   // const dateString = timeKey.split(":")[0] as string;
   // const [startTime, endTime] = parseRange(timeKey) as [string, string];
   // const [start, end] = getFormattedHours(

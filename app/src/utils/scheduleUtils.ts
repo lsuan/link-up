@@ -1,3 +1,5 @@
+import { type Availability } from "@prisma/client";
+
 type ScheduleParam = {
   userId: string;
   host: {
@@ -28,3 +30,26 @@ export const getHost = (userId: string, schedule: ScheduleParam) => {
     ` ${schedule.host.lastName}` ?? ""
   }`;
 };
+
+/**
+ * Gets the availability title based on whether the logged in user
+ * has given a previous availabilty.
+ * Anonymous users default to add "Add Availability"
+ */
+export function getAvailabilityButtonTitle(
+  user: string | undefined,
+  availabilities: Availability[] | undefined
+): { title?: string; isLoading: boolean } {
+  console.log("user", user);
+  console.log("availabilities", availabilities);
+  if (user === undefined && availabilities === undefined) {
+    return { isLoading: true };
+  }
+  const foundUser = availabilities?.find(
+    (availability) => availability.user === user
+  );
+  if (foundUser) {
+    return { title: "Edit Availability", isLoading: false };
+  }
+  return { title: "Add Availability", isLoading: false };
+}

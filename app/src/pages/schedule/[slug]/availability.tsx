@@ -7,16 +7,15 @@ import PublishedEventsNote from "../../../components/schedule/PublishedEventsNot
 import ScheduleHeader from "../../../components/schedule/ScheduleHeader";
 import BackArrow from "../../../components/shared/BackArrow";
 import Loading from "../../../components/shared/Loading";
-import { useSchedule, useUserAvailability } from "../../../hooks/scheduleHooks";
+import useSchedule from "../../../hooks/scheduleHooks";
+import { getAvailabilityButtonTitle } from "../../../utils/scheduleUtils";
 
 function AvailabilityPage() {
-  const session = useSession();
+  const { data: sessionData } = useSession();
   const router = useRouter();
   const { schedule, isScheduleLoading, slug } = useSchedule(router);
-  const { title, isLoading: isUserAvailabilityLoading } = useUserAvailability(
-    session,
-    schedule?.id
-  );
+  const { title, isLoading: isUserAvailabilityLoading } =
+    getAvailabilityButtonTitle(sessionData?.user?.id, schedule?.availabilities);
 
   if (!router.isReady || isScheduleLoading || isUserAvailabilityLoading) {
     return <Loading />;
@@ -31,7 +30,9 @@ function AvailabilityPage() {
     <section className="relative">
       <div className="px-8">
         <BackArrow href={`/schedule/${slug}`} page="Schedule" />
-        <ScheduleHeader title={title} scheduleName={schedule?.name ?? ""} />
+        {title && (
+          <ScheduleHeader title={title} scheduleName={schedule?.name ?? ""} />
+        )}
         {schedule && <AvailabilityInput schedule={schedule} />}
         <Typography intent="h2">Responses</Typography>
         {schedule && <AvailabilityResponses schedule={schedule} />}

@@ -4,7 +4,7 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 const availabilityRouter = router({
   /** Creates a new user availability for a given schedule. */
-  createAvailability: protectedProcedure
+  createAvailability: publicProcedure
     .input(CREATE_AVAILABILITY_API_SCHEMA)
     .mutation(async ({ input, ctx }) => {
       const { user, scheduleId, availability } = input;
