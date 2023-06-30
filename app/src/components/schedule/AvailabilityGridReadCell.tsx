@@ -2,13 +2,13 @@ import { type Availability } from "@prisma/client";
 import React, { memo, useState } from "react";
 import {
   cellStyles,
-  type AvailabilityStatus,
   type BlockAvailabilityCounts,
-  type CellColorStatus,
+  type CellColorFill,
 } from "../../utils/availabilityUtils";
 import AvailabilityCellPopup from "./AvailabilityCellPopup";
 
 interface AvailabilityGridReadCellProps {
+  day: string;
   hour: number;
   availabilities: Availability[];
   blockAvailabilityCounts: BlockAvailabilityCounts;
@@ -21,11 +21,13 @@ const AvailabilityGridReadCell = memo(
     // dates,
     // date,
     // dateIndex,
+    day,
     hour,
     availabilities,
     blockAvailabilityCounts,
   }: AvailabilityGridReadCellProps) => {
-    const [status, setStatus] = useState<AvailabilityStatus>();
+    const [isPopupShown, setIsPopupShown] = useState(false);
+    // const [status, setStatus] = useState<AvailabilityStatus>();
     // const categorizedUsers = useMemo(
     //   () => categorizeUsers(attendees),
     //   [attendees]
@@ -109,19 +111,31 @@ const AvailabilityGridReadCell = memo(
       blockAvailabilityCounts
     );
 
+    const currentBlock = blockAvailabilityCounts[hour];
+
     return (
-      <section className="relative">
-        {status && status.available.length !== 0 && (
+      <section
+        className="relative"
+        onPointerOver={currentBlock ? () => setIsPopupShown(true) : undefined}
+        onPointerLeave={currentBlock ? () => setIsPopupShown(false) : undefined}
+      >
+        {/* {status && status.available.length !== 0 && (
           <AvailabilityCellPopup {...status} />
+        )} */}
+        {currentBlock && isPopupShown && (
+          <AvailabilityCellPopup
+            day={day}
+            hour={hour}
+            availableUsers={currentBlock?.availableUsers}
+            unavailableUsers={currentBlock?.unavailableUsers}
+          />
         )}
         <div
           data-time={hour}
-          className={cellStyles({ fill: colorStatus, readOnly: true })}
-          // onPointerOver={(e) =>
-          //   users && onMouseOver(e, date, `${hour}-${hour + 0.5}`)
-          // }
-          // onFocus={(e) => e} // TODO: include onFocus for accessibility
-          // onPointerLeave={() => setStatus(undefined)}
+          className={cellStyles({
+            fill: colorStatus,
+            hasAction: !!currentBlock,
+          })}
         />
       </section>
     );
@@ -133,7 +147,7 @@ function getCellColorStatus(
   currentHour: number,
   availabilities: Availability[],
   blockAvailabilityCounts: BlockAvailabilityCounts
-): CellColorStatus {
+): CellColorFill {
   const total = availabilities.length;
   const currentBlock = blockAvailabilityCounts[currentHour];
   const ratio = (currentBlock?.count ?? 0) / total;

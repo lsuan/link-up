@@ -38,8 +38,10 @@ export type BlockAvailabilityCounts = Record<
   number,
   {
     count: number;
-    /** An array user ids or user's name if anonymous user. */
-    users: string[];
+    /** An array of available user ids or user's name if anonymous user. */
+    availableUsers: string[];
+    /** An array of unavailable user ids or user's name if anonymous user. */
+    unavailableUsers: string[];
   }
 >;
 
@@ -119,7 +121,7 @@ export function handleCellAvailability(
  * Describes the color of a cell in the availability grid.
  * Used for `cellStyles` fill.
  */
-export type CellColorStatus = 900 | 700 | 500 | 300 | 100 | 0;
+export type CellColorFill = 900 | 700 | 500 | 300 | 100 | 0;
 
 /** Styles for a specific cell in the availability grid. */
 export const cellStyles = cva("h-10 w-20 border transition-all", {
@@ -132,9 +134,9 @@ export const cellStyles = cva("h-10 w-20 border transition-all", {
       100: "bg-indigo-100",
       0: "bg-white",
     },
-    readOnly: {
-      true: "",
-      false: "cursor-pointer",
+    hasAction: {
+      true: "cursor-pointer",
+      false: "",
     },
   },
 });

@@ -32,6 +32,7 @@ const AvailabilityGridRead = memo(
                     // dates={dates}
                     // date={date}
                     // dateIndex={dateIndex}
+                    day={day}
                     hour={hour}
                     availabilities={availabilities}
                     blockAvailabilityCounts={blockAvailabilityCounts}
@@ -55,10 +56,18 @@ function getAvailbilityCounts(availabilities: Availability[]) {
           hours.forEach((hour) => {
             blockAvailabilityCounts[hour] = {
               count: (blockAvailabilityCounts[hour]?.count ?? 0) + 1,
-              users: [
-                ...(blockAvailabilityCounts[hour]?.users ?? []),
+              availableUsers: [
+                ...(blockAvailabilityCounts[hour]?.availableUsers ?? []),
                 currentAvailabilities.user,
               ],
+              unavailableUsers: availabilities
+                .filter(
+                  (availability) =>
+                    !Object.values(availability.availability as CalendarDays)
+                      .flatMap((selectedHours) => selectedHours)
+                      .includes(hour)
+                )
+                .map((availability) => availability.user),
             };
           });
         }

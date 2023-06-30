@@ -197,10 +197,8 @@ const AvailabilityGridWrite = memo(
                 // data-row={hourIndex}
                 // data-col={dayIndex}
                 className={cellStyles({
-                  fill: isCellSelected(selectedCells, day, hour)
-                    ? "filled"
-                    : "empty",
-                  readOnly: false,
+                  fill: isCellSelected(selectedCells, day, hour) ? 500 : 0,
+                  hasAction: true,
                 })}
                 onPointerDown={() => onPointerDown(day, hour)}
                 onPointerEnter={() => onPointerOver(day, hour)}
