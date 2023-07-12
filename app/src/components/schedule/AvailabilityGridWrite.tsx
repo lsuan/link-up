@@ -190,22 +190,25 @@ const AvailabilityGridWrite = memo(
             //   new Date(date.toDateString()).toISOString().split("T")[0]
             // }
           >
-            {hours.map((hour, hourIndex) => (
-              <div
-                key={hour}
-                // data-time={hour}
-                // data-row={hourIndex}
-                // data-col={dayIndex}
-                className={cellStyles({
-                  fill: isCellSelected(selectedCells, day, hour) ? 500 : 0,
-                  hasAction: true,
-                })}
-                onPointerDown={() => onPointerDown(day, hour)}
-                onPointerEnter={() => onPointerOver(day, hour)}
-                onFocus={(e) => e} // TODO: add onFocus functionality for accessibility
-                onPointerUp={onPointerUp}
-              />
-            ))}
+            {hours.map(
+              (hour, hourIndex) =>
+                hourIndex !== hours.length - 1 && (
+                  <div
+                    key={hour}
+                    // data-time={hour}
+                    // data-row={hourIndex}
+                    // data-col={dayIndex}
+                    className={cellStyles({
+                      fill: isCellSelected(selectedCells, day, hour) ? 500 : 0,
+                      hasAction: true,
+                    })}
+                    onPointerDown={() => onPointerDown(day, hour)}
+                    onPointerEnter={() => onPointerOver(day, hour)}
+                    onFocus={(e) => e} // TODO: add onFocus functionality for accessibility
+                    onPointerUp={onPointerUp}
+                  />
+                )
+            )}
           </div>
         ))}
       </div>

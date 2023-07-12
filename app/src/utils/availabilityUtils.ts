@@ -1,5 +1,5 @@
 import { type Availability, type Schedule } from "@prisma/client";
-import { cva } from "cva";
+import { cva, type VariantProps } from "cva";
 import { atom } from "jotai";
 import { getFormattedHours } from "./formUtils";
 
@@ -121,7 +121,9 @@ export function handleCellAvailability(
  * Describes the color of a cell in the availability grid.
  * Used for `cellStyles` fill.
  */
-export type CellColorFill = 900 | 700 | 500 | 300 | 100 | 0;
+export type CellColorFill = NonNullable<
+  VariantProps<typeof cellStyles>["fill"]
+>;
 
 /** Styles for a specific cell in the availability grid. */
 export const cellStyles = cva("h-10 w-20 border transition-all", {

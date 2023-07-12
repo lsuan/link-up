@@ -33,40 +33,6 @@ const AnonAvailabilitySchema = z.object({ name: z.string() });
 /** The shape of the inputs that the mutation requires. */
 type AvailabilityAPIInputs = z.infer<typeof CREATE_AVAILABILITY_API_SCHEMA>;
 
-/** Handles optimistic updates to a user's availability. */
-const updateSchedule = (
-  variables: {
-    id: string;
-    attendee: string;
-  },
-  newData: RouterOutputs["schedule"]["getScheduleFromSlugId"]
-) => {
-  // if attendees is null, just set it to an empty array
-  // const prevAttendees = (newData?.attendees ?? []) as UserAvailability[];
-  const prevAttendees = [];
-  console.log(variables);
-  // const updatedAvailability = JSON.parse(
-  //   variables.attendee
-  // ) as UserAvailability;
-
-  // const prevAvailability = prevAttendees.find(
-  //   (attendee) => attendee.user === updatedAvailability.user
-  // );
-  // // when a new user sets their availablity, just add their availability to the current schedule
-  // if (!prevAvailability) {
-  //   return { ...newData, attendees: [...prevAttendees, updatedAvailability] };
-  // }
-  // // otherwise, update their old availability
-  // const newAttendees = prevAttendees?.map((attendee) => {
-  //   if (attendee.user === updatedAvailability.user) {
-  //     return updatedAvailability;
-  //   }
-  //   return attendee;
-  // });
-
-  // return { ...newData, attendees: newAttendees };
-};
-
 function AvailabilityInput({ schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
   const queryClient = useQueryClient();
@@ -204,6 +170,41 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   );
 }
 
+/** Handles optimistic updates to a user's availability. */
+function updateSchedule(
+  variables: {
+    id: string;
+    attendee: string;
+  },
+  newData: RouterOutputs["schedule"]["getScheduleFromSlugId"]
+) {
+  // if attendees is null, just set it to an empty array
+  // const prevAttendees = (newData?.attendees ?? []) as UserAvailability[];
+  const prevAttendees = [];
+  console.log(variables);
+  // const updatedAvailability = JSON.parse(
+  //   variables.attendee
+  // ) as UserAvailability;
+
+  // const prevAvailability = prevAttendees.find(
+  //   (attendee) => attendee.user === updatedAvailability.user
+  // );
+  // // when a new user sets their availablity, just add their availability to the current schedule
+  // if (!prevAvailability) {
+  //   return { ...newData, attendees: [...prevAttendees, updatedAvailability] };
+  // }
+  // // otherwise, update their old availability
+  // const newAttendees = prevAttendees?.map((attendee) => {
+  //   if (attendee.user === updatedAvailability.user) {
+  //     return updatedAvailability;
+  //   }
+  //   return attendee;
+  // });
+
+  // return { ...newData, attendees: newAttendees };
+}
+
+/** Gets the name  */
 function getUserDisplayName(
   user: Pick<User, "firstName" | "lastName"> | null | undefined
 ): string | undefined {
