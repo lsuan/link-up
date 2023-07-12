@@ -7,10 +7,11 @@ const availabilityRouter = router({
   createAvailability: publicProcedure
     .input(CREATE_AVAILABILITY_API_SCHEMA)
     .mutation(async ({ input, ctx }) => {
-      const { user, scheduleId, availability } = input;
+      const { userId, name, scheduleId, availability } = input;
       const newAvailability = await ctx.prisma.availability.create({
         data: {
-          user,
+          userId,
+          name,
           scheduleId,
           availability: JSON.parse(availability),
         },

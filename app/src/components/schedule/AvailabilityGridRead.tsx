@@ -58,7 +58,7 @@ function getAvailbilityCounts(availabilities: Availability[]) {
               count: (blockAvailabilityCounts[hour]?.count ?? 0) + 1,
               availableUsers: [
                 ...(blockAvailabilityCounts[hour]?.availableUsers ?? []),
-                currentAvailabilities.user,
+                currentAvailabilities.name,
               ],
               unavailableUsers: availabilities
                 .filter(
@@ -67,7 +67,7 @@ function getAvailbilityCounts(availabilities: Availability[]) {
                       .flatMap((selectedHours) => selectedHours)
                       .includes(hour)
                 )
-                .map((availability) => availability.user),
+                .map((availability) => availability.name),
             };
           });
         }

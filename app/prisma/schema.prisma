@@ -101,7 +101,12 @@ model Schedule {
 
 model Availability {
   id           String @id @default(cuid())
-  user         String // an anonymous user's name or a logged in user full name
+  
+  // logged in user's id, null if anonymous
+  userId       String? 
+
+  // an anonymous user's name or a logged in user full name
+  name         String
   scheduleId   String 
 
   // this is in the same shape as `CalendarDays` in the frontend

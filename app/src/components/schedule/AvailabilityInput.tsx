@@ -95,10 +95,11 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   );
 
   const save = async () => {
-    const user = getUserDisplayName(userFullName.data) ?? guestUser;
+    const name = getUserDisplayName(userFullName.data) ?? guestUser;
 
     const availabilityData: AvailabilityAPIInputs = {
-      user,
+      userId: sessionData?.user?.id,
+      name,
       scheduleId: schedule.id,
       availability: JSON.stringify(selectedCells),
     };
