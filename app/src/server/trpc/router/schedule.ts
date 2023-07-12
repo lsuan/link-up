@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
-import SET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
 import { CREATE_SCHEDULE_API_SCHEMA } from "../../../utils/schemas/createSchedule";
+import SET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/setAvailability";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 const scheduleRouter = router({
@@ -81,7 +81,7 @@ const scheduleRouter = router({
           {
             availabilities: {
               every: {
-                user: userId,
+                userId,
               },
             },
           },

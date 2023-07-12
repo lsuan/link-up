@@ -48,7 +48,7 @@ const eventRouter = router({
             {
               availabilities: {
                 every: {
-                  user: userId,
+                  userId,
                 },
               },
             },

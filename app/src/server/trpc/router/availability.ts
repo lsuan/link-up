@@ -1,6 +1,6 @@
 import { CalendarDays } from "../../../utils/availabilityUtils";
-import SET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
 import GET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/getAvailability";
+import SET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/setAvailability";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 const availabilityRouter = router({

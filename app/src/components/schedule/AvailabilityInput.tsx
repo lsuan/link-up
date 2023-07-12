@@ -15,7 +15,7 @@ import {
   type AvailabilityProps,
   type CalendarDays,
 } from "../../utils/availabilityUtils";
-import type SET_AVAILABILITY_API_SCHEMA from "../../utils/schemas/createAvailability";
+import type SET_AVAILABILITY_API_SCHEMA from "../../utils/schemas/setAvailability";
 import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
 import Form from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
