@@ -1,13 +1,38 @@
-import CREATE_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
+import { CalendarDays } from "../../../utils/availabilityUtils";
+import SET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
 import GET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/getAvailability";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 const availabilityRouter = router({
-  /** Creates a new user availability for a given schedule. */
-  createAvailability: publicProcedure
-    .input(CREATE_AVAILABILITY_API_SCHEMA)
+  /**
+   * Creates a new user availability or updates an existing user availability
+   * for a given schedule.
+   */
+  setAvailability: publicProcedure
+    .input(SET_AVAILABILITY_API_SCHEMA)
     .mutation(async ({ input, ctx }) => {
       const { userId, name, scheduleId, availability } = input;
+
+      const existingAvailability = await ctx.prisma.availability.findFirst({
+        where: {
+          userId,
+          name,
+          scheduleId,
+        },
+      });
+
+      if (existingAvailability) {
+        const updatedAvailability = await ctx.prisma.availability.update({
+          where: {
+            id: existingAvailability.id,
+          },
+          data: {
+            availability: JSON.parse(availability),
+          },
+        });
+        return { availability: updatedAvailability };
+      }
+
       const newAvailability = await ctx.prisma.availability.create({
         data: {
           userId,

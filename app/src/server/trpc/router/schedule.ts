@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type UserAvailability } from "../../../utils/availabilityUtils";
-import CREATE_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
+import SET_AVAILABILITY_API_SCHEMA from "../../../utils/schemas/createAvailability";
 import { CREATE_SCHEDULE_API_SCHEMA } from "../../../utils/schemas/createSchedule";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 

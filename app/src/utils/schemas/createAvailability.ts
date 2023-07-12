@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const CREATE_AVAILABILITY_API_SCHEMA = z.object({
+const SET_AVAILABILITY_API_SCHEMA = z.object({
   userId: z.string().optional(),
   name: z.string(),
   scheduleId: z.string(),
@@ -8,4 +8,4 @@ const CREATE_AVAILABILITY_API_SCHEMA = z.object({
   availability: z.string(),
 });
 
-export default CREATE_AVAILABILITY_API_SCHEMA;
+export default SET_AVAILABILITY_API_SCHEMA;

@@ -15,7 +15,7 @@ import {
   type AvailabilityProps,
   type CalendarDays,
 } from "../../utils/availabilityUtils";
-import type CREATE_AVAILABILITY_API_SCHEMA from "../../utils/schemas/createAvailability";
+import type SET_AVAILABILITY_API_SCHEMA from "../../utils/schemas/createAvailability";
 import { trpc, type RouterInputs, type RouterOutputs } from "../../utils/trpc";
 import Form from "../form/Form";
 import AvailabilityGrid from "./AvailabilityGrid";
@@ -31,8 +31,9 @@ type AnonAvailabilityInputs = {
 const AnonAvailabilitySchema = z.object({ name: z.string() });
 
 /** The shape of the inputs that the mutation requires. */
-type AvailabilityAPIInputs = z.infer<typeof CREATE_AVAILABILITY_API_SCHEMA>;
+type AvailabilityAPIInputs = z.infer<typeof SET_AVAILABILITY_API_SCHEMA>;
 
+// TODO: fix optimistic updates
 function AvailabilityInput({ schedule }: AvailabilityProps) {
   const { data: sessionData } = useSession();
   const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   //     );
   //   },
   // });
-  const createAvailability = trpc.availability.createAvailability.useMutation();
+  const createAvailability = trpc.availability.setAvailability.useMutation();
   const [userName, setUserName] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [selectedCells, setSelectedCells] = useState<CalendarDays>({});
