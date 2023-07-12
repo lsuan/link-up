@@ -1,4 +1,4 @@
-import { type User } from "@prisma/client";
+import { type Availability, type User } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import Button from "@ui/Button";
 import { notice } from "@ui/Snackbar";
@@ -56,50 +56,33 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   //   },
   // });
   const createAvailability = trpc.availability.createAvailability.useMutation();
-  const [guestUser, setGuestUser] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
   const [, setNoticeMessage] = useAtom(notice);
   const [selectedCells, setSelectedCells] = useState<CalendarDays>({});
   const [isDisabled, setIsDisabled] = useAtom(disabled);
   const [, setIsUpated] = useAtom(updated);
 
-  /** Sets the grid to render all previously entered timeslots from the user. */
-  const onSuccess = () => {
-    console.log("ehgre ? ? ?");
-    // if (!attendees) {
-    //   return;
-    // }
-    // const user = sessionData?.user?.id ?? guestUser;
-    // const userAvailability = attendees.filter(
-    //   (attendee) => attendee.user === user
-    // )[0];
-    // const oldAvailability: string[] = [];
-    // Object.entries(userAvailability?.availability ?? {}).forEach(
-    //   ([date, hours]) => {
-    //     const times = hours as string[];
-    //     times.forEach((time) => {
-    //       oldAvailability.push(`${date}:${time}`);
-    //     });
-    //   }
-    // );
-    // setSelectedCells([...oldAvailability]);
-  };
-
   /** Handles reformatting of the data to fit the API. */
-  const userFullName = trpc.user.getUserFullName.useQuery(
-    sessionData?.user?.id ?? "",
-    {
-      enabled: sessionData?.user !== undefined || guestUser !== "",
-      refetchOnWindowFocus: false,
-      onSuccess: () => onSuccess(),
-    }
-  );
+  trpc.user.getUserFullName.useQuery(sessionData?.user?.id ?? "", {
+    enabled: sessionData?.user !== undefined || userName !== "",
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      const name = data ? getUserDisplayName(data) : userName;
+      setUserName(name);
+      const previouslySelectedCells =
+        (onUserLoad(
+          sessionData?.user?.id,
+          name,
+          schedule.availabilities
+        ) as CalendarDays) ?? {};
+      setSelectedCells(previouslySelectedCells);
+    },
+  });
 
   const save = async () => {
-    const name = getUserDisplayName(userFullName.data) ?? guestUser;
-
     const availabilityData: AvailabilityAPIInputs = {
       userId: sessionData?.user?.id,
-      name,
+      name: userName,
       scheduleId: schedule.id,
       availability: JSON.stringify(selectedCells),
     };
@@ -120,12 +103,12 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
   const handleGuestUserSubmit: SubmitHandler<AnonAvailabilityInputs> = (
     data
   ) => {
-    setGuestUser(data.name);
+    setUserName(data.name);
   };
 
   return (
     <section>
-      {!sessionData?.user && !guestUser && (
+      {!sessionData?.user && !userName && (
         <Form<AnonAvailabilityInputs, typeof AnonAvailabilitySchema>
           schema={AnonAvailabilitySchema}
           onSubmit={handleGuestUserSubmit}
@@ -149,7 +132,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
           <Form.Button type="submit" name="Continue" />
         </Form>
       )}
-      {(guestUser || sessionData?.user) && (
+      {userName && (
         <>
           <AvailabilityGrid
             schedule={schedule}
@@ -169,6 +152,21 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
       )}
     </section>
   );
+}
+
+/** Gets the previously entered timeslots from the user's availability. */
+function onUserLoad(
+  userId: string | undefined,
+  name: string,
+  availability: Availability[]
+) {
+  if (userId === undefined) {
+    return availability.find((attendee) => attendee.name === name)
+      ?.availability;
+  }
+
+  return availability.find((attendee) => attendee.userId === userId)
+    ?.availability;
 }
 
 /** Handles optimistic updates to a user's availability. */
@@ -205,13 +203,10 @@ function updateSchedule(
   // return { ...newData, attendees: newAttendees };
 }
 
-/** Gets the name  */
+/** Gets the name of the logged-in user. */
 function getUserDisplayName(
-  user: Pick<User, "firstName" | "lastName"> | null | undefined
-): string | undefined {
-  if (!user) {
-    return;
-  }
+  user: NonNullable<Pick<User, "firstName" | "lastName"> | null | undefined>
+): string {
   return `${user.firstName}${user.lastName ? `${user.lastName}` : ""}`;
 }
 
