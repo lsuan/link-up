@@ -6,7 +6,7 @@ import Typography from "@ui/Typography";
 import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -80,7 +80,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
     },
   });
 
-  const save = async () => {
+  const onAvailabilitySave = useCallback(async () => {
     const availabilityData: AvailabilityAPIInputs = {
       userId: sessionData?.user?.id,
       name: userName,
@@ -89,7 +89,8 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
     };
 
     await createAvailability.mutateAsync(availabilityData, {
-      onSuccess: () => {
+      onSuccess: (data, variables) => {
+        updateSchedule(variables, data);
         setIsUpated(true);
         setNoticeMessage({
           action: "close",
@@ -99,7 +100,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
         setIsDisabled(true);
       },
     });
-  };
+  }, []);
 
   const handleGuestUserSubmit: SubmitHandler<AnonAvailabilityInputs> = (
     data
@@ -144,7 +145,7 @@ function AvailabilityInput({ schedule }: AvailabilityProps) {
           <Button
             intent={isDisabled ? "primaryDisabled" : "primary"}
             type="button"
-            onClick={() => save()}
+            onClick={() => onAvailabilitySave()}
             fullWidth
           >
             Save Response
@@ -172,10 +173,7 @@ function onUserLoad(
 
 /** Handles optimistic updates to a user's availability. */
 function updateSchedule(
-  variables: {
-    id: string;
-    attendee: string;
-  },
+  variables,
   newData: RouterOutputs["schedule"]["getScheduleFromSlugId"]
 ) {
   // if attendees is null, just set it to an empty array
@@ -206,7 +204,7 @@ function updateSchedule(
 
 /** Gets the name of the logged-in user. */
 function getUserDisplayName(
-  user: NonNullable<Pick<User, "firstName" | "lastName"> | null | undefined>
+  user: NonNullable<Pick<User, "firstName" | "lastName">>
 ): string {
   return `${user.firstName}${user.lastName ? `${user.lastName}` : ""}`;
 }

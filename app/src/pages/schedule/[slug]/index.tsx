@@ -85,6 +85,7 @@ function SchedulePage() {
   const events = schedule?.events;
   const hasEvents = events?.length ? events.length > 0 : false;
   const numberOfAttendees = 0;
+
   useEffect(() => {
     const modalsShown: boolean[] = [];
     events?.forEach(() => modalsShown.push(false));

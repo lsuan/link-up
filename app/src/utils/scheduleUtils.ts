@@ -37,16 +37,14 @@ export const getHost = (userId: string, schedule: ScheduleParam) => {
  * Anonymous users default to add "Add Availability"
  */
 export function getAvailabilityButtonTitle(
-  user: string | undefined,
+  userId: string | undefined,
   availabilities: Availability[] | undefined
 ): { title?: string; isLoading: boolean } {
-  console.log("user", user);
-  console.log("availabilities", availabilities);
-  if (user === undefined && availabilities === undefined) {
+  if (userId === undefined && availabilities === undefined) {
     return { isLoading: true };
   }
   const foundUser = availabilities?.find(
-    (availability) => availability.user === user
+    (availability) => availability.userId === userId
   );
   if (foundUser) {
     return { title: "Edit Availability", isLoading: false };
